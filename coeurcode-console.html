@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cœur Code — console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300&family=Frank+Ruhl+Libre:wght@600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#FBF7F0; --carte:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.2);
+  --encre:#191428; --second:#453B62; --sourd:#5E5280;
+  --accent:#8A2B4A; --accent-doux:#FDEDF1; --or:#8A6410;
+  --alerte:#B3261E; --alerte-doux:#FDECEA; --ok:#1F6B45; --ok-doux:#E9F5EE;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif; --data:'Space Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;padding:0 14px calc(24px + env(safe-area-inset-bottom))}
+.enveloppe{max-width:470px;margin:0 auto}
+
+.entete{position:sticky;top:0;z-index:20;background:var(--fond);padding:15px 2px 11px;
+  display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--bord-fin)}
+.marque{font-family:var(--display);font-size:18px}
+.marque .c{color:var(--accent)}
+.etat{margin-left:auto;font-family:var(--data);font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 11px;border-radius:99px;background:var(--accent-doux);color:var(--accent)}
+
+.horloge{background:var(--carte);border:2px solid var(--bord);border-radius:18px;
+  padding:18px;margin:14px 0 12px;text-align:center}
+.horloge .ronde{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--or);font-weight:700}
+.horloge .temps{font-family:var(--data);font-size:62px;font-weight:700;line-height:1.05;margin-top:4px}
+.horloge .temps.chaud{color:var(--alerte)}
+.horloge .piste{height:6px;background:#EFEAE0;border-radius:6px;overflow:hidden;margin-top:12px}
+.horloge .piste i{display:block;height:100%;background:var(--accent);transition:width .9s linear}
+
+.bandeau{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.bandeau div{background:var(--carte);border:2px solid var(--bord-fin);border-radius:13px;padding:11px 6px;text-align:center}
+.bandeau span{display:block;font-family:var(--data);font-size:22px;font-weight:700;line-height:1.1}
+.bandeau small{display:block;font-family:var(--data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sourd);margin-top:3px;font-weight:700}
+.bandeau .a{color:var(--accent)}
+
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+button{font-family:var(--corps);font-size:15.5px;font-weight:700;cursor:pointer;border-radius:14px;
+  padding:17px 8px;min-height:62px;border:2px solid var(--bord);background:var(--carte);color:var(--encre)}
+button:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.38;cursor:not-allowed}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.plein{background:var(--accent);color:#fff;border-color:var(--accent)}
+.large{grid-column:1/-1}
+.petit{min-height:52px;font-size:14px;padding:13px 6px}
+
+.bloc{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:14px;margin-bottom:12px}
+.bloc h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+.bloc h2 b{margin-left:auto;color:var(--accent)}
+
+.coins{display:flex;flex-direction:column;gap:10px}
+.coin{border:2px solid;border-radius:15px;overflow:hidden}
+.coin .tete{display:flex;align-items:center;gap:11px;padding:11px 13px;color:#fff}
+.coin .tete .lettre{font-family:'Frank Ruhl Libre',serif;font-size:26px;font-weight:600;line-height:1}
+.coin .tete .nom{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+.coin .tete .cb{margin-left:auto;font-family:var(--data);font-size:13px;font-weight:700}
+.coin .duos{display:flex;flex-wrap:wrap;gap:6px;padding:11px 12px;background:var(--carte)}
+.coin .duo{font-family:var(--data);font-size:15px;font-weight:700;background:var(--fond);
+  border:1.5px solid var(--bord-fin);border-radius:10px;padding:8px 11px}
+.coin .duo em{font-style:normal;color:var(--accent);margin:0 4px}
+.coin .duo.vote{background:var(--ok-doux);border-color:rgba(31,107,69,.4)}
+.coin .duo.fige{background:var(--accent-doux);border-color:var(--accent);color:var(--accent)}
+
+.seuls{display:flex;flex-wrap:wrap;gap:6px}
+.seuls span{font-family:var(--data);font-size:14px;font-weight:700;background:var(--alerte-doux);
+  color:var(--alerte);border-radius:9px;padding:8px 11px}
+.seuls .aucun{background:var(--ok-doux);color:var(--ok);font-family:var(--corps);font-size:14px}
+
+.avert{font-size:13.5px;line-height:1.45;padding:12px 13px;border-radius:12px;font-weight:600;margin-bottom:12px;display:none}
+.avert.on{display:block;background:var(--alerte-doux);color:var(--alerte)}
+
+.matches{display:flex;flex-direction:column;gap:7px}
+.matches div{display:flex;align-items:center;gap:10px;background:var(--accent-doux);border-radius:11px;padding:12px 13px;
+  font-family:var(--data);font-size:16px;font-weight:700;color:var(--accent)}
+.journal ul{list-style:none;font-family:var(--data);font-size:12px;color:var(--second);line-height:1.85}
+.journal li b{color:var(--or)}
+.note{font-size:12.5px;line-height:1.5;color:var(--sourd);margin-top:14px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <header class="entete">
+    <div class="marque">Cœur Code <span class="c">❤️</span></div>
+    <div class="etat" id="etat">salle en attente</div>
+  </header>
+
+  <div class="horloge">
+    <div class="ronde" id="hRonde">avant le premier RDV</div>
+    <div class="temps" id="hTemps">5:00</div>
+    <div class="piste"><i id="hPiste" style="width:0%"></i></div>
+  </div>
+
+  <div class="bandeau">
+    <div><span id="bPresents">0</span><small>présents</small></div>
+    <div><span class="a" id="bVotes">0/0</span><small>votes reçus</small></div>
+    <div><span id="bDates">0</span><small>dates ce RDV</small></div>
+  </div>
+
+  <div class="avert" id="avert"></div>
+
+  <div class="grille">
+    <button class="plein large" id="bAction">Lancer le RDV 1</button>
+    <button class="petit" id="bPlus" disabled>+ 1 minute</button>
+    <button class="petit" id="bClore" disabled>Clore le RDV</button>
+    <button class="petit" id="bEntracte" disabled>Entracte</button>
+    <button class="petit" id="bMatches" disabled>Révéler les matches</button>
+    <button class="petit large" id="bRester" disabled>Proposer de rester ensemble</button>
+    <button class="petit large" id="bRedistribuer" disabled>Redistribuer les coins</button>
+  </div>
+
+  <div class="bloc">
+    <h2>Qui est dans quel coin <b id="cTables"></b></h2>
+    <div class="coins" id="tables"><span style="font-size:14px;color:var(--sourd)">Les coins se remplissent au lancement du RDV.</span></div>
+  </div>
+
+  <div class="bloc">
+    <h2>Sans date ce RDV — va les voir</h2>
+    <div class="seuls" id="seuls"><span class="aucun">Rien à signaler.</span></div>
+  </div>
+
+  <div class="bloc" id="blocMatches" style="display:none">
+    <h2>Cœurs mutuels <b id="cMatches"></b></h2>
+    <div class="matches" id="lesMatches"></div>
+  </div>
+
+  <div class="bloc" id="blocFiges" style="display:none">
+    <h2>Ils restent ensemble <b id="cFiges"></b></h2>
+    <div class="matches" id="lesFiges"></div>
+  </div>
+
+  <div class="bloc journal">
+    <h2>Journal</h2>
+    <ul id="journal"><li>En attente du lancement.</li></ul>
+  </div>
+
+  <p class="note">Démo : 48 participants simulés, votes automatiques. Les commandes, l'appariement et les alertes sont ceux du soir J.</p>
+</div>
+
+<script>
+/* ============================================================
+   Cœur Code — console de soirée
+   Appariement anonyme par numéro de badge. Le genre vient des
+   deux QR codes de l'entrée, personne ne le saisit.
+   ============================================================ */
+
+const DUREE = 300, NB_F = 22, NB_H = 26;
+
+/* la question « veux-tu rester le reste de la soirée avec cette personne ? »
+   ne part que sur un cœur mutuel, et seulement à partir de ce RDV */
+const RDV_MINIMUM = 3;
+const COUPLES_MAX = 4;
+
+/* les quatre coins de la salle */
+const COINS=[
+  {lettre:"א", nom:"Rouge", c:"#C22E2E"},
+  {lettre:"ב", nom:"Bleu",  c:"#2C6FD1"},
+  {lettre:"ג", nom:"Jaune", c:"#A8760C"},
+  {lettre:"ד", nom:"Vert",  c:"#1D7A52"}
+];
+const rnd = n => Math.floor(Math.random()*n);
+
+function roster(nF,nH){
+  const p=[]; let num=1;
+  const gen=(genre,n)=>{for(let i=0;i<n;i++)p.push({
+    n:num++, genre, age:22+rnd(24),
+    chabbat:rnd(4), cachere:rnd(4), enfants:rnd(5), pourquoi:rnd(4), lieu:rnd(5), flirt:rnd(4)
+  });};
+  gen('F',nF); gen('H',nH);
+  return p;
+}
+
+/* filtres durs, puis score d'affinité */
+function score(a,b){
+  if(a.genre===b.genre) return null;
+  if(Math.abs(a.age-b.age)>12) return null;
+  if(Math.abs(a.chabbat-b.chabbat)>=3) return null;
+  if((a.enfants===0&&b.enfants===3)||(a.enfants===3&&b.enfants===0)) return null;
+  let s=0;
+  if(a.pourquoi===b.pourquoi) s+=30;
+  if(a.pourquoi===0&&b.pourquoi===0) s+=15;
+  s+=Math.max(0,14-Math.abs(a.age-b.age))*1.5;
+  s+=Math.max(0,4-Math.abs(a.chabbat-b.chabbat))*4;
+  s+=Math.max(0,4-Math.abs(a.cachere-b.cachere))*3;
+  if(a.lieu===b.lieu) s+=8;
+  if(a.flirt!==b.flirt) s+=4;
+  return Math.round(s);
+}
+
+function construitRonde(){
+  const bloques=new Set();
+  S.figes.forEach(c=>{bloques.add(c.f.n);bloques.add(c.h.n);});
+  const libres=S.gens.filter(x=>!bloques.has(x.n));
+  const F=libres.filter(x=>x.genre==='F'), H=libres.filter(x=>x.genre==='H');
+  const cand=[];
+  for(const f of F) for(const h of H){
+    const cle = f.n<h.n ? f.n+'-'+h.n : h.n+'-'+f.n;
+    if(S.vus.has(cle)) continue;
+    const s=score(f,h);
+    if(s!==null) cand.push({f,h,s,cle});
+  }
+  /* équité d'abord : celui qui a eu le moins de dates passe en tête */
+  cand.sort((a,b)=>{
+    const ca=(S.compte[a.f.n]||0)+(S.compte[a.h.n]||0);
+    const cb=(S.compte[b.f.n]||0)+(S.compte[b.h.n]||0);
+    return ca!==cb ? ca-cb : b.s-a.s;
+  });
+  const pris=new Set(), duos=[];
+  for(const x of cand){
+    if(pris.has(x.f.n)||pris.has(x.h.n)) continue;
+    pris.add(x.f.n); pris.add(x.h.n); duos.push(x);
+  }
+  /* les couples figés restent ensemble et occupent toujours un coin */
+  S.figes.forEach(c=>{duos.push({...c, fige:true}); pris.add(c.f.n); pris.add(c.h.n);});
+  return {duos, seuls:S.gens.filter(x=>!pris.has(x.n)&&!bloques.has(x.n)).map(x=>x.n)};
+}
+
+const S={phase:"attente", ronde:0, duos:[], seuls:[], reste:DUREE, tic:null,
+         gens:roster(NB_F,NB_H), vus:new Set(), compte:{}, votes:{}, recu:0,
+         figes:[], enAttente:[]};
+
+const el=id=>document.getElementById(id);
+function journal(t){
+  const ul=el('journal');
+  if(ul.dataset.v!=="1"){ul.innerHTML='';ul.dataset.v="1";}
+  const h=new Date(), li=document.createElement('li');
+  li.innerHTML=`<b>${String(h.getHours()).padStart(2,'0')}:${String(h.getMinutes()).padStart(2,'0')}</b> · ${t}`;
+  ul.prepend(li);
+  while(ul.children.length>9) ul.lastChild.remove();
+}
+const mmss=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+
+function majHorloge(){
+  el('hTemps').textContent=mmss(Math.max(0,S.reste));
+  el('hTemps').classList.toggle('chaud',S.reste<=30&&S.phase==="ronde");
+  el('hPiste').style.width=(100-S.reste/DUREE*100)+'%';
+}
+function majBandeau(){
+  el('bPresents').textContent=S.gens.length;
+  el('bVotes').textContent=`${S.recu}/${S.duos.length*2}`;
+  el('bDates').textContent=S.duos.length;
+}
+function repartitCoins(){
+  /* on étale les duos sur les quatre coins, au plus équilibré */
+  S.duos.forEach((d,i)=>d.coin=i%4);
+}
+function dessineTables(){
+  const box=el('tables');
+  if(!S.duos.length){box.innerHTML='<span style="font-size:14px;color:var(--sourd)">Les coins se remplissent au lancement du RDV.</span>';el('cTables').textContent='';return;}
+  el('cTables').textContent=S.duos.length+' rencontres';
+  box.innerHTML=COINS.map((c,k)=>{
+    const dedans=S.duos.filter(d=>d.coin===k);
+    return `<div class="coin" style="border-color:${c.c}">
+      <div class="tete" style="background:${c.c}">
+        <span class="lettre">${c.lettre}</span><span class="nom">${c.nom}</span>
+        <span class="cb">${dedans.length} rencontre${dedans.length>1?'s':''}</span>
+      </div>
+      <div class="duos">${dedans.length?dedans.map(d=>{
+        const v=(S.votes[d.cle]||[]).length;
+        if(d.fige) return `<span class="duo fige">${d.f.n}<em>❤</em>${d.h.n} 🔒</span>`;
+        return `<span class="duo${v===2?' vote':''}">${d.f.n}<em>❤</em>${d.h.n}</span>`;
+      }).join(''):'<span style="font-size:13.5px;color:var(--sourd)">Coin vide ce RDV.</span>'}</div>
+    </div>`;
+  }).join('');
+}
+function dessineSeuls(){
+  const box=el('seuls');
+  box.innerHTML = S.seuls.length
+    ? S.seuls.map(n=>`<span>${n}</span>`).join('')
+    : '<span class="aucun">Personne. Tout le monde a un date.</span>';
+}
+function verifie(){
+  const a=el('avert');
+  if(S.phase==="attente"){a.classList.remove('on');return;}
+  if(S.figes.length && S.seuls.length>=8){
+    a.textContent=`${S.figes.length} couple${S.figes.length>1?'s':''} figé${S.figes.length>1?'s':''} et déjà ${S.seuls.length} personnes sans date. Arrête de proposer de rester ensemble.`;
+    a.classList.add('on'); return;
+  }
+  if(S.seuls.length>=6){
+    a.textContent=`${S.seuls.length} personnes sans date ce RDV. Envoie-les au bar ensemble plutôt que de les laisser seules — c'est là que se font les vraies rencontres de la soirée.`;
+    a.classList.add('on');
+  } else if(S.phase==="ouvert" && S.recu < S.duos.length*2*0.7){
+    a.textContent=`Il manque ${S.duos.length*2-S.recu} votes. N'ouvre pas le RDV suivant avant, sinon les matches seront faux.`;
+    a.classList.add('on');
+  } else a.classList.remove('on');
+}
+
+function lance(){
+  S.ronde++;
+  const r=construitRonde();
+  if(!r.duos.length){journal('Plus aucun appariement possible : tout le monde s\'est rencontré.');el('bAction').disabled=true;return;}
+  S.duos=r.duos; S.seuls=r.seuls; S.recu=0; S.votes={}; S.reste=DUREE; S.phase="ronde";
+  repartitCoins();
+  S.duos.forEach(d=>{S.vus.add(d.cle);S.compte[d.f.n]=(S.compte[d.f.n]||0)+1;S.compte[d.h.n]=(S.compte[d.h.n]||0)+1;});
+  el('hRonde').textContent='RDV '+S.ronde;
+  el('etat').textContent='RDV en cours';
+  el('bAction').textContent='Lancer le RDV '+(S.ronde+1);
+  ['bPlus','bClore','bEntracte'].forEach(b=>el(b).disabled=false);
+  el('bMatches').disabled=false; el('bRedistribuer').disabled=false;
+  el('bRester').disabled = S.ronde<RDV_MINIMUM;
+  journal(`RDV ${S.ronde} lancé · ${S.duos.length} rencontres réparties sur 4 coins · ${S.seuls.length} au bar`);
+  dessineTables(); dessineSeuls(); majHorloge(); majBandeau(); verifie();
+  clearInterval(S.tic); S.tic=setInterval(battement,1000);
+}
+
+function battement(){
+  if(S.phase!=="ronde") return;
+  S.reste--;
+  /* les votes arrivent surtout dans la dernière minute */
+  if(S.reste<150 && Math.random()<.28){
+    const ouverts=S.duos.filter(d=>(S.votes[d.cle]||[]).length<2);
+    if(ouverts.length){
+      const d=ouverts[rnd(ouverts.length)];
+      S.votes[d.cle]=(S.votes[d.cle]||[]);
+      S.votes[d.cle].push(Math.random()<.42);   /* 42 % de ❤ */
+      S.recu++; dessineTables();
+    }
+  }
+  if(S.reste<=0){S.phase="ouvert";el('etat').textContent='temps écoulé';journal('Fin du RDV. Les votes se terminent.');}
+  majHorloge(); majBandeau(); verifie();
+}
+
+el('bAction').addEventListener('click',lance);
+el('bPlus').addEventListener('click',()=>{S.reste+=60;S.phase="ronde";el('etat').textContent='RDV en cours';journal('Prolongation de 1 minute.');majHorloge();});
+el('bClore').addEventListener('click',()=>{S.phase="ouvert";S.reste=0;el('etat').textContent='RDV clos';journal('RDV clos à la main.');majHorloge();verifie();});
+el('bEntracte').addEventListener('click',()=>{
+  clearInterval(S.tic);S.phase="entracte";el('etat').textContent='entracte';
+  el('hRonde').textContent='entracte';journal('Entracte. Écran neutre, la salle respire.');
+});
+function mutuels(){
+  const m=[];
+  S.duos.forEach(d=>{
+    if(d.fige) return;
+    const v=S.votes[d.cle]||[];
+    if(v.length===2 && v[0] && v[1]) m.push(d);
+  });
+  return m;
+}
+
+el('bRester').addEventListener('click',()=>{
+  if(S.ronde<RDV_MINIMUM){
+    journal(`Question bloquée : pas avant le RDV ${RDV_MINIMUM}, sinon trop de monde quitte le circuit.`);
+    return;
+  }
+  const m=mutuels();
+  if(!m.length){ journal('Aucun cœur mutuel : la question ne part à personne.'); return; }
+  const place=COUPLES_MAX-S.figes.length;
+  if(place<=0){ journal(`Plafond atteint : ${COUPLES_MAX} couples figés, la question ne part plus.`); return; }
+
+  let oui=0, moitie=0, non=0;
+  m.forEach(d=>{
+    /* chacun répond séparément, sans savoir que l'autre a liké */
+    const a=Math.random()<.55, b=Math.random()<.55;
+    if(a&&b){
+      if(S.figes.length<COUPLES_MAX){ S.figes.push({f:d.f,h:d.h,cle:d.cle}); oui++; }
+    } else if(a||b) moitie++;
+    else non++;
+  });
+
+  journal(`Question envoyée à ${m.length} couple${m.length>1?'s':''} · ${oui} restent ensemble · ${moitie+non} repartent dans le circuit, sans explication`);
+  if(moitie) journal(`${moitie} cas où un seul a dit oui : les deux repartent, personne ne saura qui a refusé.`);
+
+  el('blocFiges').style.display=S.figes.length?'block':'none';
+  el('cFiges').textContent=`${S.figes.length} / ${COUPLES_MAX}`;
+  el('lesFiges').innerHTML=S.figes.map(c=>
+    `<div>${c.f.n} <span style="opacity:.6">et</span> ${c.h.n} <span style="margin-left:auto;font-size:19px">🔒</span></div>`).join('');
+  dessineTables(); verifie();
+});
+
+el('bRedistribuer').addEventListener('click',()=>{
+  for(let i=S.duos.length-1;i>0;i--){const j=rnd(i+1);[S.duos[i],S.duos[j]]=[S.duos[j],S.duos[i]];}
+  repartitCoins(); dessineTables();
+  journal('Coins redistribués à la main.');
+});
+
+el('bMatches').addEventListener('click',()=>{
+  const m=[];
+  Object.entries(S.votes).forEach(([cle,v])=>{ if(v.length===2 && v[0] && v[1]) m.push(cle); });
+  el('blocMatches').style.display='block';
+  el('cMatches').textContent=m.length+' ce RDV';
+  el('lesMatches').innerHTML = m.length
+    ? m.map(c=>{const [a,b]=c.split('-');return `<div>${a} <span style="opacity:.6">et</span> ${b} <span style="margin-left:auto;font-size:19px">❤</span></div>`;}).join('')
+    : '<div style="background:var(--fond);color:var(--second);font-family:var(--corps);font-weight:600">Aucun cœur mutuel ce RDV. Ça arrive, et ça ne s\'annonce pas au micro.</div>';
+  journal(`${m.length} cœurs mutuels révélés — envoyés en privé, jamais à l'écran.`);
+});
+
+majHorloge(); majBandeau(); dessineSeuls();
+</script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>❤️ Kod — accueil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Frank+Ruhl+Libre:wght@400;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- CLAIR (par défaut) ---------- */
+:root{
+  --fond:#FBF7F0;
+  --carte:#FFFFFF;
+  --champ:#FFFFFF;
+  --bord:#2B2440;
+  --bord-fin:rgba(43,36,64,.22);
+  --encre:#191428;      /* texte principal — 15:1 */
+  --second:#453B62;     /* texte secondaire — 9:1 */
+  --sourd:#5E5280;      /* notes — 6:1 */
+  --accent:#8A2B4A;     /* bordeaux */
+  --accent-doux:#FDEDF1;
+  --or:#8A6410;         /* doré lisible sur clair */
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif;
+}
+/* ---------- SOMBRE ---------- */
+body.sombre{
+  --fond:#100C1E;
+  --carte:#1D1733;
+  --champ:#2A2145;
+  --bord:#F5D48F;
+  --bord-fin:rgba(245,212,143,.4);
+  --encre:#FFFCF7;
+  --second:#DCD2F0;
+  --sourd:#B8ACD8;
+  --accent:#FF7D91;
+  --accent-doux:rgba(255,125,145,.14);
+  --or:#F5D48F;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .25s;
+  padding:0 16px calc(30px + env(safe-area-inset-bottom))}
+.enveloppe{max-width:420px;margin:0 auto}
+
+.entete{padding:22px 2px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.marque{font-family:var(--display);font-size:21px}
+.marque .c{color:var(--accent)}
+.bascule{font-family:var(--data);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--second);background:none;border:1.5px solid var(--bord-fin);border-radius:99px;
+  padding:8px 13px;cursor:pointer;margin-left:auto}
+.etape-num{font-family:var(--data);font-size:11px;letter-spacing:.16em;color:var(--sourd)}
+.fil{display:flex;gap:5px;margin-bottom:26px}
+.fil i{flex:1;height:4px;border-radius:4px;background:var(--bord-fin);transition:.4s}
+.fil i.faite{background:var(--or)}
+.fil i.encours{background:var(--accent)}
+
+.etape{display:none}
+.etape.actif{display:block;animation:monte .4s cubic-bezier(.2,.7,.3,1) both}
+@keyframes monte{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.sur-titre{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:12px;font-weight:700}
+h1{font-family:var(--display);font-weight:300;font-size:31px;line-height:1.16;margin-bottom:12px}
+h1 em{font-style:normal;color:var(--accent)}
+.chapeau{color:var(--second);font-size:15px;line-height:1.55;margin-bottom:26px}
+
+.champ-bloc{margin-bottom:20px}
+label{display:block;font-size:14px;font-weight:700;margin-bottom:9px}
+input,select{width:100%;font-family:var(--corps);font-size:16.5px;font-weight:500;color:var(--encre);
+  background:var(--champ);border:2px solid var(--bord);border-radius:14px;
+  padding:16px 15px;min-height:58px;appearance:none}
+select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='9'><path d='M1.5 1.5l5 5 5-5' stroke='%238A2B4A' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 16px center;padding-right:42px}
+body.sombre select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='9'><path d='M1.5 1.5l5 5 5-5' stroke='%23F5D48F' stroke-width='2' fill='none' stroke-linecap='round'/></svg>")}
+input:focus,select:focus{outline:3px solid var(--accent);outline-offset:2px}
+input::placeholder{color:var(--sourd)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+body.sombre input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1) sepia(1) saturate(4) hue-rotate(2deg);opacity:.95}
+.badge-saisie{font-family:var(--data);font-size:48px;font-weight:700;text-align:center;
+  letter-spacing:.12em;color:var(--accent);padding:22px 15px;min-height:104px}
+
+.bascule-ligne{display:flex;align-items:flex-start;gap:12px;margin-top:16px;cursor:pointer;
+  color:var(--encre);font-size:15px;font-weight:500;line-height:1.45}
+.bascule-ligne input{width:auto;min-height:0;padding:0;flex:0 0 auto;border:0}
+.case{width:26px;height:26px;flex:0 0 26px;border-radius:8px;border:2px solid var(--bord);
+  background:var(--champ);display:grid;place-items:center;transition:.16s}
+.bascule-ligne input:checked+.case{background:var(--accent);border-color:var(--accent)}
+.case svg{opacity:0}.bascule-ligne input:checked+.case svg{opacity:1}
+.bascule-ligne input:focus-visible+.case{outline:3px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.mini{font-size:13.5px;color:var(--sourd);line-height:1.5;margin-top:9px;padding-left:38px}
+
+.primaire{width:100%;font-family:var(--corps);font-size:17px;font-weight:700;color:#fff;
+  background:var(--accent);border:0;border-radius:15px;padding:20px;min-height:62px;cursor:pointer;margin-top:16px}
+body.sombre .primaire{color:#2A0A13}
+.primaire:disabled{background:var(--bord-fin);color:var(--sourd);cursor:not-allowed}
+.primaire:not(:disabled):active{transform:scale(.985)}
+.aide{font-size:13.5px;color:var(--sourd);text-align:center;margin-top:14px;min-height:20px}
+.aide.alerte{color:var(--accent);font-weight:700}
+
+.reveal{text-align:center}
+.he-grand{font-family:var(--hebreu);font-weight:600;font-size:80px;line-height:1;color:var(--accent);
+  direction:rtl;margin-top:14px;animation:apparait .8s cubic-bezier(.2,.8,.3,1) both}
+@keyframes apparait{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+.fr-nom{font-family:var(--display);font-weight:300;font-size:36px;margin-top:10px;animation:apparait .8s .25s both}
+.meta{font-family:var(--data);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--or);font-weight:700;margin-top:16px;animation:apparait .8s .45s both}
+.phrase{font-family:var(--display);font-weight:300;font-size:20px;line-height:1.5;
+  margin:22px 4px 0;animation:apparait .8s .6s both}
+
+.plaque{border:2px solid var(--bord);border-radius:18px;background:var(--carte);
+  padding:4px 20px;margin-top:28px;text-align:left;animation:apparait .8s .8s both}
+.plaque .ligne{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 0}
+.plaque .ligne+.ligne{border-top:1.5px solid var(--bord-fin)}
+.plaque .cle{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--second);font-weight:700}
+.plaque .val{font-family:var(--display);font-size:18px;text-align:right}
+.plaque .val.he{font-family:var(--hebreu);font-weight:600;direction:rtl;font-size:21px}
+.plaque .val.num{font-family:var(--data);font-size:18px;color:var(--accent);font-weight:700}
+
+.talmud{margin-top:26px;padding:18px;border-radius:16px;background:var(--accent-doux);
+  animation:apparait .8s .95s both}
+.talmud .he{font-family:var(--hebreu);font-weight:600;font-size:23px;color:var(--accent);direction:rtl;margin-bottom:9px}
+.talmud p{font-size:14px;line-height:1.6;color:var(--second)}
+.sortie{font-size:15px;line-height:1.6;color:var(--second);margin-top:24px}
+.intro-mazal{font-family:var(--data);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--second);font-weight:700;margin-top:6px}
+.logo-mazal{display:flex;justify-content:center;margin-top:18px;color:var(--or);
+  animation:apparait .7s both}
+.logo-mazal svg{width:46px;height:46px}
+.cartes{display:flex;flex-direction:column;gap:11px;margin-top:4px}
+.carte{width:100%;text-align:left;cursor:pointer;background:var(--carte);
+  border:2px solid var(--bord-fin);border-radius:16px;padding:19px 17px;transition:.16s;
+  font-family:var(--display);font-weight:300;font-size:23px;color:var(--encre)}
+.carte:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.carte[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-doux)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+  <header class="entete">
+    <div class="marque"><span class="c">❤️</span> Kod</div>
+    <button class="bascule" id="theme">Sombre</button>
+    <div class="etape-num" id="etapeNum">01 / 03</div>
+  </header>
+  <div class="fil" aria-hidden="true"><i id="f1" class="encours"></i><i id="f2"></i><i id="f3"></i></div>
+
+  <section class="etape actif" id="e1">
+    <p class="sur-titre">Bienvenue</p>
+    <h1>Recopie le numéro <em>de ton badge</em>.</h1>
+    <p class="chapeau">C'est ce numéro qui te suit toute la soirée. Garde le badge visible, on va s'en servir.</p>
+    <div class="champ-bloc">
+      <label for="badge">Numéro de badge</label>
+      <input class="badge-saisie" id="badge" type="number" inputmode="numeric" min="1" max="999" placeholder="00" autocomplete="off">
+    </div>
+    <button class="primaire" id="b1" disabled>Continuer</button>
+    <p class="aide" id="a1"></p>
+  </section>
+
+  <section class="etape" id="e2">
+    <p class="sur-titre">Ta naissance</p>
+    <h1>Ta date, <em>et on lit ton ciel</em>.</h1>
+    <p class="chapeau">Le mazal se lit sur le jour où tu es né.</p>
+
+    <div class="champ-bloc">
+      <label for="dateN">Date de naissance</label>
+      <input id="dateN" type="date" min="1920-01-01">
+      <label class="bascule-ligne">
+        <input type="checkbox" id="nuit" class="sr">
+        <span class="case" aria-hidden="true"><svg width="14" height="11" viewBox="0 0 14 11"><path d="M2 5.5l3.6 3.6L12 2" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Je suis né le soir, après la tombée de la nuit</span>
+      </label>
+      <p class="mini">Le jour hébraïque commence au coucher du soleil. Un vendredi soir, c'est déjà chabbat.</p>
+    </div>
+
+    <div class="champ-bloc">
+      <label for="lieuN">Lieu de naissance</label>
+      <select id="lieuN"><option value="">Choisis une ville</option></select>
+    </div>
+
+    <button class="primaire" id="b2" disabled>Découvrir mon mazal</button>
+    <p class="aide" id="a2"></p>
+  </section>
+
+  <section class="etape" id="e3">
+    <p class="sur-titre">Une seule est la bonne</p>
+    <h1>D'après ta date, <em>tu es né un…</em></h1>
+    <p class="chapeau">Une seule de ces quatre dates est la tienne. Choisis, on te dira tout de suite.</p>
+    <div class="cartes" id="cartes"></div>
+    <button class="primaire" id="b3" disabled>Valider mon choix</button>
+  </section>
+
+  <section class="etape" id="e4">
+    <div class="reveal">
+      <p class="intro-mazal">Ta date hébraïque</p>
+      <div class="he-grand" id="rDate" style="font-size:44px;line-height:1.15">—</div>
+      <p class="chapeau" id="rVerdict" style="margin-top:20px"></p>
+      <button class="primaire" id="b4">Et maintenant, ton mazal</button>
+    </div>
+  </section>
+
+  <section class="etape" id="e5">
+    <div class="reveal">
+      <p class="intro-mazal">Ton mazal est</p>
+      <div class="logo-mazal" id="rLogo"></div>
+      <div class="he-grand" id="rHe">—</div>
+      <div class="fr-nom" id="rFr">—</div>
+      <div class="plaque">
+        <div class="ligne"><span class="cle">Badge</span><span class="val num" id="pBadge">—</span></div>
+        <div class="ligne"><span class="cle">Né à</span><span class="val" id="pLieu">—</span></div>
+      </div>
+      <div class="talmud">
+        <div class="he">אין מזל לישראל</div>
+        <p>Le Talmud donne ces sept étoiles, puis ajoute aussitôt que rien là-dedans ne t'enferme. C'est un point de départ, pas une sentence.</p>
+      </div>
+      
+      <p class="sortie">Garde ton badge en évidence et rejoins la salle. La première question arrive bientôt.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const VILLES=["Paris","Lyon","Marseille","Nice","Toulouse","Strasbourg","Bordeaux","Lille","Nancy","Grenoble","Montpellier",
+"Tel Aviv","Jérusalem","Haïfa","Netanya","Beer Sheva","Ashdod","Raanana","Casablanca","Marrakech","Fès",
+"Rabat","Tunis","Djerba","Alger","Oran","Constantine","Bruxelles","Anvers","Genève","Zurich","Londres",
+"Manchester","Madrid","Barcelone","Rome","Milan","Montréal","Toronto","New York","Miami","Los Angeles",
+"Buenos Aires","São Paulo","Mexico","Moscou","Kiev","Odessa","Téhéran","Istanbul","Le Caire","Autre / ailleurs"];
+
+const LOGO={
+ "'Hama":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/></svg>',
+ "Levana":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15.4 3.2a9.2 9.2 0 1 0 0 17.6 7.4 7.4 0 0 1 0-17.6z"/></svg>',
+ "Maadim":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9.5" cy="14.5" r="6"/><path d="M14.2 9.8 20.5 3.5"/><path d="M15.2 3.5h5.3v5.3"/></svg>',
+ "Kokhav":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="11.5" r="5"/><path d="M8.4 4.6a5 5 0 0 0 7.2 0"/><path d="M12 16.5v5"/><path d="M8.8 19h6.4"/></svg>',
+ "Tzedek":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M14.6 5.5v14"/><path d="M9.5 19.5h9.4"/><path d="M5.2 6.2c0-1.9 1.5-3 3-3 2.1 0 3.3 1.8 3.3 4.2 0 2.6-1.9 4.6-4.4 5.9"/></svg>',
+ "Nogah":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.8" r="5.8"/><path d="M12 14.6v7"/><path d="M8.6 18.4h6.8"/></svg>',
+ "Chabtaï":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 3.2v9.4"/><path d="M4.4 6.6h7.2"/><path d="M8 12.6c1.6-1.6 3.6-1.4 4.9 0 1.5 1.6 1.7 4.3 1 6.6"/><path d="M18.6 20.4c-1.5-.4-2.5-1.4-2.9-2.6"/></svg>'
+};
+
+const MAZAL={
+  0:{he:"חמה",fr:"'Hama",jour:"dimanche",p:"Celui qui éclaire par lui-même, et ne doit rien à personne."},
+  1:{he:"לבנה",fr:"Levana",jour:"lundi",p:"Celui qui bâtit, défait, rebâtit — et recommence sans se lasser."},
+  2:{he:"מאדים",fr:"Maadim",jour:"mardi",p:"L'énergie franche. Celle qui tranche, et qui n'a pas peur."},
+  3:{he:"כוכב",fr:"Kokhav",jour:"mercredi",p:"L'esprit vif, la parole juste, une curiosité qui ne se calme jamais."},
+  4:{he:"צדק",fr:"Tzedek",jour:"jeudi",p:"Le penchant pour ce qui est juste, même quand ça coûte."},
+  5:{he:"נוגה",fr:"Nogah",jour:"vendredi",p:"La douceur, le goût des belles choses, et une générosité qui revient toujours."},
+  6:{he:"שבתאי",fr:"Chabtaï",jour:"chabbat",p:"La patience longue, celle qui obtient ce que la hâte n'obtient jamais."}
+};
+const MOIS_FR={"Tishri":"Tichri","Heshvan":"'Hechvan","Marheshvan":"'Hechvan","Kislev":"Kislev","Tevet":"Tevet",
+ "Shevat":"Chevat","Adar":"Adar","Adar I":"Adar I","Adar II":"Adar II","Nisan":"Nissan","Iyar":"Iyar",
+ "Sivan":"Sivan","Tamuz":"Tamouz","Av":"Av","Elul":"Eloul"};
+const MOIS_HE={"Tishri":"תשרי","Heshvan":"חשוון","Marheshvan":"חשוון","Kislev":"כסלו","Tevet":"טבת",
+ "Shevat":"שבט","Adar":"אדר","Adar I":"אדר א׳","Adar II":"אדר ב׳","Nisan":"ניסן","Iyar":"אייר",
+ "Sivan":"סיוון","Tamuz":"תמוז","Av":"אב","Elul":"אלול"};
+const GUEM=[[400,"ת"],[300,"ש"],[200,"ר"],[100,"ק"],[90,"צ"],[80,"פ"],[70,"ע"],[60,"ס"],[50,"נ"],[40,"מ"],
+ [30,"ל"],[20,"כ"],[10,"י"],[9,"ט"],[8,"ח"],[7,"ז"],[6,"ו"],[5,"ה"],[4,"ד"],[3,"ג"],[2,"ב"],[1,"א"]];
+function guematria(n){
+  if(n===15)return"ט״ו"; if(n===16)return"ט״ז";
+  let r=n,s=""; for(const[v,l]of GUEM){while(r>=v){s+=l;r-=v;}}
+  return s.length>1?s.slice(0,-1)+"״"+s.slice(-1):s+"׳";
+}
+const fmtEn=new Intl.DateTimeFormat('en-u-ca-hebrew',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+function dateHebraique(ms){
+  const p=fmtEn.formatToParts(new Date(ms)).reduce((a,x)=>(a[x.type]=x.value,a),{});
+  const an=parseInt(String(p.year).replace(/\D/g,''),10);
+  return `${p.day} ${MOIS_FR[p.month]||p.month} ${an}`;
+}
+
+const S={}, sel=document.getElementById('lieuN');
+VILLES.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);});
+
+document.getElementById('theme').addEventListener('click',e=>{
+  document.body.classList.toggle('sombre');
+  e.target.textContent=document.body.classList.contains('sombre')?'Clair':'Sombre';
+});
+
+function aller(n){
+  ['e1','e2','e3','e4','e5'].forEach((id,i)=>document.getElementById(id).classList.toggle('actif',i===n));
+  const pas=[1,2,3,3,3][n];
+  document.getElementById('etapeNum').textContent=`0${pas} / 03`;
+  document.getElementById('f1').className=n>0?'faite':'encours';
+  document.getElementById('f2').className=n>1?'faite':n===1?'encours':'';
+  document.getElementById('f3').className=n>3?'faite':n>=2?'encours':'';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+const inBadge=document.getElementById('badge'),b1=document.getElementById('b1');
+inBadge.addEventListener('input',()=>{
+  const v=parseInt(inBadge.value,10),ok=Number.isInteger(v)&&v>=1&&v<=999;
+  b1.disabled=!ok;
+  const a=document.getElementById('a1');
+  a.textContent=inBadge.value&&!ok?"Un numéro entre 1 et 999.":"";
+  a.classList.toggle('alerte',!!(inBadge.value&&!ok));
+});
+b1.addEventListener('click',()=>{S.badge=+inBadge.value;aller(1);});
+
+const inDate=document.getElementById('dateN'),cbNuit=document.getElementById('nuit'),b2=document.getElementById('b2');
+inDate.max=new Date().toISOString().slice(0,10);
+const verifie=()=>{b2.disabled=!(inDate.value && sel.value);};
+inDate.addEventListener('input',verifie); sel.addEventListener('change',verifie);
+
+b2.addEventListener('click',()=>{
+  const [y,m,d]=inDate.value.split('-').map(Number);
+  let ms=Date.UTC(y,m-1,d,12);
+  if(cbNuit.checked) ms+=864e5;
+  const z=MAZAL[new Date(ms).getUTCDay()];
+  document.getElementById('rLogo').innerHTML=LOGO[z.fr]||'';
+  document.getElementById('rHe').textContent=z.he;
+  document.getElementById('rFr').textContent=z.fr;
+  document.getElementById('pBadge').textContent=String(S.badge).padStart(2,'0');
+  document.getElementById('pLieu').textContent=sel.value;
+  S.jourHeb=ms; S.mazal=z;
+  construitQCM(ms);
+  aller(2);
+});
+
+function construitQCM(jourMs){
+  const vraie=dateHebraique(jourMs), an=vraie.split(' ').pop();
+  const vues=new Set([vraie]), leurres=[];
+  [[18,70],[80,150],[160,200]].forEach(([min,max])=>{
+    let t=null;
+    for(let i=0;i<300&&!t;i++){
+      const n=min+Math.floor(Math.random()*(max-min));
+      const c=dateHebraique(jourMs+(Math.random()<.5?-n:n)*864e5);
+      if(c.split(' ').pop()===an&&!vues.has(c)) t=c;
+    }
+    if(!t) for(let n=min;n<=340&&!t;n++) for(const s of [1,-1]){
+      const c=dateHebraique(jourMs+s*n*864e5);
+      if(c.split(' ').pop()===an&&!vues.has(c)){t=c;break;}
+    }
+    vues.add(t); leurres.push(t);
+  });
+  const opts=[{d:vraie,juste:true},...leurres.map(d=>({d,juste:false}))];
+  for(let i=3;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+
+  const box=document.getElementById('cartes'); box.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='carte'; b.type='button'; b.setAttribute('aria-pressed','false'); b.textContent=o.d;
+    b.addEventListener('click',()=>{
+      [...box.children].forEach(c=>c.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      S.choix=o; document.getElementById('b3').disabled=false;
+    });
+    box.appendChild(b);
+  });
+}
+
+/* on valide le choix -> on révèle la vraie date, gentiment */
+document.getElementById('b3').addEventListener('click',()=>{
+  const vraie=dateHebraique(S.jourHeb);
+  document.getElementById('rDate').textContent=vraie;
+  document.getElementById('rVerdict').textContent = S.choix && S.choix.juste
+    ? "Bien vu. C'était la bonne."
+    : `Raté — mais tu la connais maintenant, et c'est la tienne pour toujours.`;
+  aller(3);
+});
+
+document.getElementById('b4').addEventListener('click',()=>aller(4));
+</script>
+</body>
+</html>

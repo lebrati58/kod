@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>❤️ Kod — question ouverte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Manrope:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --encre:#120B22; --voile:#1C1236; --voile-2:#271A48;
+  --trait:rgba(232,197,114,.18); --or:#E8C572; --coeur:#E8536A;
+  --texte:#EDE7F6; --sourdine:#9C8FB8;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif; --data:'Space Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--encre);color:var(--texte);font-family:var(--corps);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(60vw 40vw at 15% -5%, rgba(91,140,255,.16), transparent 60%),
+             radial-gradient(50vw 40vw at 90% 105%, rgba(232,83,106,.13), transparent 60%)}
+
+.bascule{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;padding:12px 16px;
+  background:rgba(18,11,34,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--trait)}
+.marque{font-family:var(--display);font-size:19px;white-space:nowrap}
+.marque .c{color:var(--coeur)}
+.onglets{display:flex;gap:4px;margin-left:auto;background:var(--voile);padding:4px;border-radius:999px}
+.onglets button{font-family:var(--corps);font-size:12.5px;font-weight:600;color:var(--sourdine);
+  background:none;border:0;cursor:pointer;padding:8px 13px;border-radius:999px;transition:.18s}
+.onglets button[aria-selected="true"]{background:var(--or);color:#241703}
+.onglets button:focus-visible{outline:2px solid var(--or);outline-offset:2px}
+
+.scene{position:relative;z-index:1;padding:22px 16px 60px;max-width:1120px;margin:0 auto}
+.vue{display:none}
+.vue.actif{display:block;animation:monte .4s ease both}
+@keyframes monte{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.legende{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--sourdine);margin-bottom:14px}
+
+/* ---------- téléphone ---------- */
+.tel-cadre{max-width:390px;margin:0 auto;background:var(--voile);border:1px solid var(--trait);
+  border-radius:34px;padding:26px 22px 30px;min-height:560px;display:flex;flex-direction:column;
+  box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.tel-tete{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+.badge-num{font-family:var(--data);font-size:12px;color:var(--or);border:1px solid var(--trait);border-radius:999px;padding:5px 11px}
+.etat{font-family:var(--data);font-size:10.5px;letter-spacing:.1em;color:var(--sourdine);text-transform:uppercase}
+h1.q{font-family:var(--display);font-weight:300;font-size:30px;line-height:1.16;margin-bottom:10px}
+.consigne{color:var(--sourdine);font-size:14.5px;line-height:1.55;margin-bottom:22px}
+
+.saisie{position:relative}
+.saisie input{width:100%;font-family:var(--display);font-weight:300;font-size:26px;color:var(--texte);
+  background:var(--voile-2);border:1px solid var(--trait);border-radius:16px;padding:20px 16px;min-height:74px;text-align:center}
+.saisie input:focus{outline:2px solid var(--or);outline-offset:1px;border-color:transparent}
+.saisie input::placeholder{color:#5E5286;font-size:20px}
+.compteur{font-family:var(--data);font-size:11px;color:var(--sourdine);text-align:right;margin-top:8px}
+.compteur.limite{color:var(--coeur)}
+
+.primaire{width:100%;font-family:var(--corps);font-size:16.5px;font-weight:700;color:#241703;background:var(--or);
+  border:0;border-radius:16px;padding:19px;min-height:60px;cursor:pointer;margin-top:16px;transition:.16s}
+.primaire:disabled{background:var(--voile-2);color:#6E6191;cursor:not-allowed}
+.primaire:not(:disabled):active{transform:scale(.985)}
+.secondaire{width:100%;font-family:var(--corps);font-size:14px;font-weight:600;color:var(--sourdine);
+  background:none;border:1px solid var(--trait);border-radius:14px;padding:14px;cursor:pointer;margin-top:10px}
+
+.envoye{margin:auto 0;text-align:center}
+.envoye .mot{font-family:var(--display);font-size:36px;font-weight:300;color:var(--or);line-height:1.2}
+.envoye p{color:var(--sourdine);font-size:15px;line-height:1.6;margin-top:16px}
+.envoye .pastille{display:inline-block;margin-top:20px;font-family:var(--data);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--coeur);border:1px solid rgba(232,83,106,.35);border-radius:999px;padding:7px 14px}
+
+/* ---------- écran géant ---------- */
+.geant{background:#0B0616;border:1px solid var(--trait);border-radius:20px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.geant-tete{display:flex;justify-content:space-between;align-items:baseline;padding:20px 26px 0}
+.geant-tete .titre{font-family:var(--display);font-weight:300;font-size:clamp(20px,3.2vw,34px)}
+.geant-tete .compte{font-family:var(--data);font-size:clamp(11px,1.6vw,15px);color:var(--or)}
+#nuage{position:relative;height:min(62vh,520px);margin:6px 10px 0}
+.mot-nuage{position:absolute;white-space:nowrap;font-family:var(--display);font-weight:300;line-height:1;
+  transition:left .7s cubic-bezier(.2,.7,.3,1),top .7s cubic-bezier(.2,.7,.3,1),font-size .7s cubic-bezier(.2,.7,.3,1),opacity .5s;
+  will-change:left,top,font-size}
+.mot-nuage.neuf{animation:surgit .55s cubic-bezier(.2,.8,.3,1) both}
+@keyframes surgit{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+.mot-nuage .pc{font-family:var(--data);font-size:.34em;opacity:.55;margin-left:.35em;vertical-align:.9em}
+.geant-pied{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 20px;
+  font-family:var(--data);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--sourdine);
+  border-top:1px solid rgba(232,197,114,.09);margin-top:8px}
+.barre-part{height:3px;background:var(--voile-2);border-radius:3px;overflow:hidden;margin:0 26px}
+.barre-part i{display:block;height:100%;background:var(--or);transition:width .5s}
+
+/* ---------- console ---------- */
+.console{max-width:520px;margin:0 auto}
+.bloc{background:var(--voile);border:1px solid var(--trait);border-radius:18px;padding:18px;margin-bottom:14px}
+.bloc h2{font-family:var(--data);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sourdine);font-weight:400;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.stats div span{display:block;font-family:var(--data);font-size:26px;color:var(--or);font-weight:700}
+.stats div small{font-family:var(--data);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--sourdine)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions button{font-family:var(--corps);font-size:15px;font-weight:700;color:#241703;background:var(--or);
+  border:0;border-radius:14px;padding:17px 12px;min-height:58px;cursor:pointer}
+.actions button.large{grid-column:1/-1}
+.actions button.sombre{background:var(--voile-2);color:var(--texte);border:1px solid var(--trait)}
+.actions button:disabled{background:var(--voile-2);color:#6E6191;border:1px solid transparent;cursor:not-allowed}
+
+.moderation{display:flex;flex-wrap:wrap;gap:8px}
+.moderation button{font-family:var(--corps);font-size:13.5px;color:var(--texte);background:var(--voile-2);
+  border:1px solid transparent;border-radius:999px;padding:9px 13px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.moderation button b{font-family:var(--data);font-size:11px;color:var(--sourdine);font-weight:400}
+.moderation button.masque{opacity:.4;text-decoration:line-through;border-color:rgba(232,83,106,.45)}
+.moderation .vide{color:var(--sourdine);font-size:13.5px}
+.note{font-size:12.5px;line-height:1.55;color:var(--sourdine);margin-top:12px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="bascule">
+  <div class="marque"><span class="c">❤️</span> Kod</div>
+  <div class="onglets" role="tablist">
+    <button role="tab" aria-selected="true" data-vue="v-tel">Téléphone</button>
+    <button role="tab" aria-selected="false" data-vue="v-geant">Écran géant</button>
+    <button role="tab" aria-selected="false" data-vue="v-console">Console</button>
+  </div>
+</div>
+
+<div class="scene">
+
+  <!-- TÉLÉPHONE -->
+  <section class="vue actif" id="v-tel">
+    <p class="legende">Ce que voit un participant</p>
+    <div class="tel-cadre">
+      <div class="tel-tete">
+        <span class="badge-num">n° 34</span>
+        <span class="etat" id="telEtat">question ouverte</span>
+      </div>
+
+      <div id="telSaisie">
+        <h1 class="q">Pour toi, l'amour, c'est quoi&nbsp;?</h1>
+        <p class="consigne">Un seul mot. Le premier qui te vient. Il va s'afficher sur le grand écran avec ceux de toute la salle.</p>
+        <div class="saisie">
+          <input id="mot" type="text" maxlength="16" placeholder="un mot" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <p class="compteur" id="cpt">0 / 16</p>
+        </div>
+        <button class="primaire" id="envoyer" disabled>Envoyer sur l'écran</button>
+      </div>
+
+      <div id="telEnvoye" style="display:none">
+        <div class="envoye">
+          <div class="mot" id="monMot">—</div>
+          <p>Ton mot est sur le grand écran. Lève la tête.</p>
+          <span class="pastille" id="maPart">—</span>
+        </div>
+        <button class="secondaire" id="rejouer">Recommencer la démo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÉCRAN GÉANT -->
+  <section class="vue" id="v-geant">
+    <p class="legende">Écran géant de la salle</p>
+    <div class="geant">
+      <div class="geant-tete">
+        <div class="titre">Pour toi, l'amour, c'est quoi&nbsp;?</div>
+        <div class="compte"><span id="gCompte">0</span> / 100</div>
+      </div>
+      <div class="barre-part"><i id="gBarre" style="width:0%"></i></div>
+      <div id="nuage"></div>
+      <div class="geant-pied">
+        <span id="gPied">en attente</span>
+        <span id="gTete">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONSOLE -->
+  <section class="vue" id="v-console">
+    <p class="legende">Console de l'organisateur</p>
+    <div class="console">
+
+      <div class="bloc">
+        <h2>En direct</h2>
+        <div class="stats">
+          <div><span id="cRep">0</span><small>réponses</small></div>
+          <div><span id="cMots">0</span><small>mots distincts</small></div>
+          <div><span id="cTete">—</span><small>en tête</small></div>
+        </div>
+      </div>
+
+      <div class="bloc">
+        <h2>Commandes</h2>
+        <div class="actions">
+          <button class="large" id="bLancer">Lancer la question</button>
+          <button class="sombre" id="bPause" disabled>Suspendre</button>
+          <button class="sombre" id="bFiger" disabled>Figer l'écran</button>
+        </div>
+      </div>
+
+      <div class="bloc">
+        <h2>Modération — touche un mot pour le retirer de l'écran</h2>
+        <div class="moderation" id="mod"><span class="vide">Rien à modérer pour l'instant.</span></div>
+        <p class="note">Sur 100 personnes en soirée, il y aura une vanne. Elle disparaît du grand écran en une touche, sans que personne sache d'où c'est parti.</p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===========================================================
+   ❤️ Kod — question ouverte + nuage de mots
+   Démo : les 100 réponses sont simulées. Le rendu, le
+   regroupement et la modération sont ceux de la vraie soirée.
+   =========================================================== */
+
+/* --- onglets --- */
+document.querySelectorAll('.onglets button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.onglets button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('.vue').forEach(v=>v.classList.toggle('actif',v.id===b.dataset.vue));
+  if(b.dataset.vue==='v-geant') dessine();
+}));
+
+/* --- normalisation : « La Confiance » et « confiance » sont le même mot --- */
+const VIDES=new Set(['le','la','les','l','un','une','des','du','de','d','mon','ma','mes','ton','ta','tes','c','est','ce','du']);
+function normalise(s){
+  let t=s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z' -]/g,'').trim();
+  t=t.split(/[\s'-]+/).filter(m=>m && !VIDES.has(m)).join(' ');
+  if(t.length>4 && t.endsWith('s')) t=t.slice(0,-1);   /* pluriels simples */
+  return t;
+}
+/* quelques regroupements de sens, à enrichir avant la soirée */
+const SYNONYMES={'complicite':'complicite','rigoler':'rire','rires':'rire','marrer':'rire',
+  'securite':'securite','confience':'confiance','partager':'partage','donner':'don','ecoute':'ecoute'};
+function cle(s){ const n=normalise(s); return SYNONYMES[n]||n; }
+function joli(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+/* --- réservoir de réponses simulées (ce que répond vraiment une salle) --- */
+const RESERVOIR=[
+  ['confiance',13],['respect',9],['complicité',9],['partage',8],['patience',6],['liberté',6],
+  ['rire',6],['écoute',5],['don',5],['amitié',4],['sécurité',4],['tendresse',4],['choix',4],
+  ['passion',3],['famille',3],['engagement',3],['présence',3],['temps',3],['foi',3],['folie',2],
+  ['honnêteté',2],['chaleur',2],['mystère',2],['souffrance',2],['maison',2],['paix',2],
+  ['la confiance',3],['Respect',2],['des rires',2],['se marrer',1],['confience',1],
+  ['un projet',1],['travail',1],['chabbat',1],['mes enfants',1],['fromage',1]
+];
+function tirage(){
+  const sac=[];
+  RESERVOIR.forEach(([m,n])=>{for(let i=0;i<n;i++) sac.push(m);});
+  while(sac.length<100) sac.push('amour');
+  for(let i=sac.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sac[i],sac[j]]=[sac[j],sac[i]];}
+  return sac.slice(0,100);
+}
+
+/* --- état --- */
+let compte=0, comptes=new Map(), masques=new Set(), file=[], minuteur=null, fige=false, monMot=null;
+
+/* --- mesure de texte pour le placement --- */
+const mesureur=document.createElement('canvas').getContext('2d');
+function largeur(txt,taille){ mesureur.font=`300 ${taille}px Fraunces, Georgia, serif`; return mesureur.measureText(txt).width; }
+
+/* --- placement en spirale --- */
+function dessine(){
+  const zone=document.getElementById('nuage');
+  if(!zone.clientWidth) return;
+  const L=zone.clientWidth, H=zone.clientHeight, cx=L/2, cy=H/2;
+
+  const liste=[...comptes.entries()].filter(([k])=>!masques.has(k))
+    .sort((a,b)=>b[1].n-a[1].n).slice(0,42);
+  if(!liste.length){ zone.innerHTML=''; return; }
+  const max=liste[0][1].n, total=compte||1;
+
+  const min=Math.max(13,L*0.014), grand=Math.min(H*0.30,L*0.115);
+  const places=[];
+  const inter=(a,b)=>!(a.x+a.w<b.x||b.x+b.w<a.x||a.y+a.h<b.y||b.y+b.h<a.y);
+
+  liste.forEach(([k,v],rang)=>{
+    const taille=min+(grand-min)*Math.pow(v.n/max,.68);
+    const pc=Math.round(v.n/total*100);
+    const txt=joli(v.label);
+    const w=largeur(txt,taille)*(rang<6?1.22:1.06), h=taille*1.32;
+    let x=cx-w/2, y=cy-h/2, a=Math.random()*6.28, r=0, ok=false;
+    for(let i=0;i<1400;i++){
+      const bx=cx+r*Math.cos(a)-w/2, by=cy+r*Math.sin(a)*.58-h/2;
+      const box={x:bx,y:by,w,h};
+      if(bx>2&&by>2&&bx+w<L-2&&by+h<H-2&&!places.some(p=>inter(p,box))){x=bx;y=by;ok=true;break;}
+      a+=.32; r+=.85;
+    }
+    if(!ok) return;
+    places.push({x,y,w,h});
+
+    let el=zone.querySelector(`[data-k="${CSS.escape(k)}"]`);
+    if(!el){
+      el=document.createElement('div');
+      el.className='mot-nuage neuf'; el.dataset.k=k;
+      zone.appendChild(el);
+      setTimeout(()=>el.classList.remove('neuf'),600);
+    }
+    el.innerHTML = rang<3 ? `${txt}<span class="pc">${pc}%</span>` : txt;
+    el.style.fontSize=taille+'px';
+    el.style.left=x+'px'; el.style.top=y+'px';
+    el.style.color = rang===0?'var(--or)' : rang<3?'var(--texte)' : rang<9?'#B9AEDA' : 'var(--sourdine)';
+    el.style.opacity = rang<3?1 : rang<9?.92 : .62;
+  });
+
+  zone.querySelectorAll('.mot-nuage').forEach(el=>{
+    const k=el.dataset.k;
+    if(masques.has(k)||!liste.some(([kk])=>kk===k)){ el.style.opacity=0; setTimeout(()=>el.remove(),450); }
+  });
+}
+window.addEventListener('resize',dessine);
+
+/* --- arrivée d'une réponse --- */
+function encaisse(brut){
+  const k=cle(brut);
+  if(!k) return;
+  compte++;
+  if(!comptes.has(k)) comptes.set(k,{n:0,label:k});
+  comptes.get(k).n++;
+  majAffichage();
+}
+function majAffichage(){
+  document.getElementById('gCompte').textContent=compte;
+  document.getElementById('gBarre').style.width=Math.min(compte,100)+'%';
+  document.getElementById('cRep').textContent=compte;
+  document.getElementById('cMots').textContent=comptes.size;
+  const tri=[...comptes.entries()].filter(([k])=>!masques.has(k)).sort((a,b)=>b[1].n-a[1].n);
+  const tete=tri[0];
+  const nom=tete?joli(tete[1].label):'—';
+  document.getElementById('cTete').textContent=nom;
+  document.getElementById('gTete').textContent=tete?`${nom} — ${Math.round(tete[1].n/(compte||1)*100)}%`:'—';
+  document.getElementById('gPied').textContent = compte===0?'en attente' : fige?'écran figé' : file.length?'réponses en direct':'toutes les réponses sont là';
+  majModeration();
+  if(!fige) dessine();
+  if(monMot){
+    const e=comptes.get(cle(monMot));
+    document.getElementById('maPart').textContent =
+      e&&e.n>1 ? `${e.n} personnes ont écrit le même mot` : 'tu es le seul à avoir écrit ce mot';
+  }
+}
+function majModeration(){
+  const box=document.getElementById('mod');
+  const tri=[...comptes.entries()].sort((a,b)=>b[1].n-a[1].n).slice(0,24);
+  if(!tri.length){ box.innerHTML='<span class="vide">Rien à modérer pour l\'instant.</span>'; return; }
+  box.innerHTML='';
+  tri.forEach(([k,v])=>{
+    const b=document.createElement('button');
+    b.className=masques.has(k)?'masque':'';
+    b.innerHTML=`${joli(v.label)} <b>${v.n}</b>`;
+    b.addEventListener('click',()=>{ masques.has(k)?masques.delete(k):masques.add(k); majAffichage(); });
+    box.appendChild(b);
+  });
+}
+
+/* --- téléphone --- */
+const champ=document.getElementById('mot'), bEnv=document.getElementById('envoyer');
+champ.addEventListener('input',()=>{
+  document.getElementById('cpt').textContent=`${champ.value.length} / 16`;
+  document.getElementById('cpt').classList.toggle('limite',champ.value.length>=16);
+  bEnv.disabled=!cle(champ.value);
+});
+champ.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!bEnv.disabled) bEnv.click(); });
+bEnv.addEventListener('click',()=>{
+  monMot=champ.value.trim();
+  encaisse(monMot);
+  document.getElementById('monMot').textContent=joli(cle(monMot));
+  document.getElementById('telSaisie').style.display='none';
+  document.getElementById('telEnvoye').style.display='block';
+  document.getElementById('telEtat').textContent='envoyé';
+});
+document.getElementById('rejouer').addEventListener('click',()=>location.reload());
+
+/* --- console --- */
+const bLancer=document.getElementById('bLancer'), bPause=document.getElementById('bPause'), bFiger=document.getElementById('bFiger');
+bLancer.addEventListener('click',()=>{
+  file=tirage(); bLancer.disabled=true; bPause.disabled=false; bFiger.disabled=false;
+  bLancer.textContent='Question en cours';
+  coule();
+});
+function coule(){
+  clearTimeout(minuteur);
+  if(!file.length){ majAffichage(); bPause.disabled=true; return; }
+  encaisse(file.shift());
+  minuteur=setTimeout(coule, 90+Math.random()*260);   /* les réponses n'arrivent pas régulièrement */
+}
+bPause.addEventListener('click',()=>{
+  if(minuteur){ clearTimeout(minuteur); minuteur=null; bPause.textContent='Reprendre'; }
+  else { bPause.textContent='Suspendre'; coule(); }
+});
+bFiger.addEventListener('click',()=>{
+  fige=!fige; bFiger.textContent=fige?'Reprendre l\'écran':'Figer l\'écran';
+  if(!fige) dessine(); majAffichage();
+});
+majModeration();
+</script>
+</body>
+</html>

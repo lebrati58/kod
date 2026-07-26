@@ -1,0 +1,678 @@
+{
+  "app": "Kod",
+  "zones": [
+    {
+      "id": "vert",
+      "lettre": "א",
+      "couleur": "#2FBF8F"
+    },
+    {
+      "id": "bleu",
+      "lettre": "ב",
+      "couleur": "#5B8CFF"
+    },
+    {
+      "id": "jaune",
+      "lettre": "ג",
+      "couleur": "#F0A73C"
+    },
+    {
+      "id": "gris",
+      "lettre": "ד",
+      "couleur": "#AEB4CC"
+    }
+  ],
+  "regles": {
+    "melanger_ordre_reponses": true,
+    "temps_reponse_secondes": 45,
+    "tri": "la zone est la reponse a la question en cours",
+    "cumul": false,
+    "coins": "les lettres et couleurs nomment un endroit, elles ne portent aucun profil"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "acte": 1,
+      "texte": "Un dimanche parfait, c'est quoi ?",
+      "choix": [
+        {
+          "texte": "Une rando, partie tôt et sans plan",
+          "zone": "vert"
+        },
+        {
+          "texte": "Un brunch qui s'éternise à trois",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Rideaux fermés, série, personne",
+          "zone": "bleu"
+        },
+        {
+          "texte": "J'avance sur un truc à moi",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "acte": 1,
+      "texte": "Tu arrives à une soirée où tu ne connais personne.",
+      "choix": [
+        {
+          "texte": "Je vais vers le groupe le plus bruyant",
+          "zone": "vert"
+        },
+        {
+          "texte": "Je prends un verre et j'observe",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Je repère quelqu'un de seul et je vais lui parler",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Je cherche celui qui organise",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "acte": 1,
+      "texte": "Ton rapport au retard.",
+      "choix": [
+        {
+          "texte": "Le temps est un concept",
+          "zone": "vert"
+        },
+        {
+          "texte": "Pile à l'heure",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Un quart d'heure, c'est de la politesse",
+          "zone": "jaune"
+        },
+        {
+          "texte": "En avance, toujours",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "acte": 1,
+      "texte": "On t'offre un billet pour demain matin, destination inconnue.",
+      "choix": [
+        {
+          "texte": "Je fais mon sac ce soir",
+          "zone": "vert"
+        },
+        {
+          "texte": "Je décline, ma semaine était prévue",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Je pars si quelqu'un vient avec moi",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Je demande d'abord où",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "acte": 1,
+      "texte": "Le meilleur moment d'un repas de Shabbat.",
+      "choix": [
+        {
+          "texte": "Les chants",
+          "zone": "vert"
+        },
+        {
+          "texte": "La dvar Torah",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Quand tout le monde parle en même temps",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Quand on refait le monde jusqu'à 2h",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "acte": 2,
+      "texte": "Une décision importante, tu la prends…",
+      "choix": [
+        {
+          "texte": "Au feeling, tout de suite",
+          "zone": "vert"
+        },
+        {
+          "texte": "Après avoir dormi dessus",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Après en avoir parlé à trois personnes",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Après avoir fait un tableau",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "acte": 2,
+      "texte": "Ton argent, tu préfères…",
+      "choix": [
+        {
+          "texte": "Le dépenser en voyages",
+          "zone": "vert"
+        },
+        {
+          "texte": "Le garder de côté, ça rassure",
+          "zone": "bleu"
+        },
+        {
+          "texte": "L'offrir aux gens que j'aime",
+          "zone": "jaune"
+        },
+        {
+          "texte": "L'investir",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "acte": 2,
+      "texte": "Ce qui te fatigue le plus.",
+      "choix": [
+        {
+          "texte": "Ne rien faire",
+          "zone": "vert"
+        },
+        {
+          "texte": "Le bruit",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Les gens faux",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Perdre mon temps",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "acte": 2,
+      "texte": "Tu pars vivre ailleurs demain. Une seule chose dans la valise.",
+      "choix": [
+        {
+          "texte": "Ma guitare, mon appareil photo",
+          "zone": "vert"
+        },
+        {
+          "texte": "Mes livres",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Les photos de famille",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Mon ordinateur",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "acte": 2,
+      "texte": "Dans un groupe, tu es plutôt…",
+      "choix": [
+        {
+          "texte": "Celui qui propose",
+          "zone": "vert"
+        },
+        {
+          "texte": "Celui qui écoute",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Celui qui fait rire",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Celui qui organise",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "acte": 2,
+      "texte": "Ta relation à Shabbat.",
+      "choix": [
+        {
+          "texte": "C'est social avant tout",
+          "zone": "vert"
+        },
+        {
+          "texte": "Je déconnecte vraiment",
+          "zone": "bleu"
+        },
+        {
+          "texte": "C'est le repas et la famille",
+          "zone": "jaune"
+        },
+        {
+          "texte": "J'en profite pour réfléchir à ma semaine",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "acte": 2,
+      "texte": "On dit de toi que tu es…",
+      "choix": [
+        {
+          "texte": "Imprévisible",
+          "zone": "vert"
+        },
+        {
+          "texte": "Loyal",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Attachant",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Déterminé",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "acte": 2,
+      "texte": "Ta plus grande crainte.",
+      "choix": [
+        {
+          "texte": "M'ennuyer",
+          "zone": "vert"
+        },
+        {
+          "texte": "Perdre ceux que j'aime",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Décevoir",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Passer à côté de ma vie",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "acte": 3,
+      "texte": "Le vrai signe que c'est la bonne personne.",
+      "choix": [
+        {
+          "texte": "On ne s'ennuie jamais",
+          "zone": "vert"
+        },
+        {
+          "texte": "Les mêmes valeurs",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Je me sens enfin moi-même",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Ça me tire vers le haut",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "acte": 3,
+      "texte": "Ton premier geste quand quelqu'un te plaît.",
+      "choix": [
+        {
+          "texte": "Je fonce",
+          "zone": "vert"
+        },
+        {
+          "texte": "J'attends que l'autre ose",
+          "zone": "bleu"
+        },
+        {
+          "texte": "J'envoie un ami en éclaireur",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Je me renseigne d'abord",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "acte": 3,
+      "texte": "Le coup de foudre.",
+      "choix": [
+        {
+          "texte": "Je ne fonctionne qu'à ça",
+          "zone": "vert"
+        },
+        {
+          "texte": "Ça existe, mais ça ne suffit pas",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Ça m'est arrivé",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Je n'y crois pas une seconde",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "acte": 3,
+      "texte": "Un premier rendez-vous réussi, ça finit…",
+      "choix": [
+        {
+          "texte": "À 3h du matin sans voir le temps passer",
+          "zone": "vert"
+        },
+        {
+          "texte": "Par un silence gênant assumé",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Par un fou rire",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Par un deuxième déjà calé",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "acte": 3,
+      "texte": "Tu tombes amoureux…",
+      "choix": [
+        {
+          "texte": "En une soirée",
+          "zone": "vert"
+        },
+        {
+          "texte": "Au bout de quelques mois d'amitié",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Quand on me surprend",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Quand je vois comment la personne traite les autres",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "acte": 3,
+      "texte": "Ce qui te toucherait le plus venant de quelqu'un.",
+      "choix": [
+        {
+          "texte": "Un week-end surprise",
+          "zone": "vert"
+        },
+        {
+          "texte": "Qu'il soit là un jour difficile",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Une lettre",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Qu'il croie à mon projet",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "acte": 3,
+      "texte": "La rencontre idéale.",
+      "choix": [
+        {
+          "texte": "Dans un bar, par hasard",
+          "zone": "vert"
+        },
+        {
+          "texte": "On se connaît depuis toujours et un jour ça bascule",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Par des amis communs",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Un shidduch bien pensé",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "acte": 3,
+      "texte": "Dans un couple, tu as besoin de…",
+      "choix": [
+        {
+          "texte": "Bouger ensemble",
+          "zone": "vert"
+        },
+        {
+          "texte": "Calme",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Beaucoup se parler",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Construire quelque chose",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "acte": 3,
+      "texte": "Le Yanuka, pour toi, c'est…",
+      "choix": [
+        {
+          "texte": "Un rappeur",
+          "zone": "vert"
+        },
+        {
+          "texte": "Un rav",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Un bébé",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Un whisky japonais",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "acte": 4,
+      "texte": "Ce que tu cherches vraiment ce soir.",
+      "choix": [
+        {
+          "texte": "Une bande, des amis",
+          "zone": "vert"
+        },
+        {
+          "texte": "Je ne sais pas, je suis venu voir",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Rencontrer quelqu'un",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Un partenaire de projet ou de voyage",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "acte": 4,
+      "texte": "La émouna, pour toi, c'est…",
+      "choix": [
+        {
+          "texte": "Une question ouverte",
+          "zone": "vert"
+        },
+        {
+          "texte": "Une certitude",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Un sentiment",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Un combat",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "acte": 4,
+      "texte": "Dans dix ans, tu te vois…",
+      "choix": [
+        {
+          "texte": "Ailleurs, je ne sais pas encore où",
+          "zone": "vert"
+        },
+        {
+          "texte": "À peu près ici, mais plus serein",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Avec une famille",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Avec quelque chose que j'ai construit",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "acte": 4,
+      "texte": "Ce qui te définit le mieux.",
+      "choix": [
+        {
+          "texte": "Mes voyages",
+          "zone": "vert"
+        },
+        {
+          "texte": "Mon histoire",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Mes rencontres",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Mes projets",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "acte": 4,
+      "texte": "Le pardon.",
+      "choix": [
+        {
+          "texte": "Je coupe",
+          "zone": "vert"
+        },
+        {
+          "texte": "J'ai besoin de temps",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Je pardonne vite",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Je pardonne, je n'oublie pas",
+          "zone": "gris"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "acte": 4,
+      "texte": "S'il te restait un an.",
+      "choix": [
+        {
+          "texte": "Je pars",
+          "zone": "vert"
+        },
+        {
+          "texte": "Je vis exactement pareil",
+          "zone": "bleu"
+        },
+        {
+          "texte": "Je rassemble tous ceux que j'aime",
+          "zone": "jaune"
+        },
+        {
+          "texte": "Je finis ce que j'ai commencé",
+          "zone": "gris"
+        }
+      ]
+    }
+  ]
+}
