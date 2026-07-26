@@ -9,6 +9,9 @@ Deux concepts de soirée pour Tou B'Av — avec Yoella.
 
 ## Démos (GitHub Pages)
 
+### 🎛 Soirée mixte (test)
+- [mix.html](https://lebrati58.github.io/kod/mix.html) — Kod + Cœur Code en une seule soirée : **mazal révélé en premier** (dès la date de naissance), questions Kod, speed dating Cœur Code, et **nuage de mots en clôture (optionnel)**. Mode test accéléré intégré, relançable à volonté.
+
 ### Kod
 - [Accueil](https://lebrati58.github.io/kod/kod-accueil.html)
 - [Console](https://lebrati58.github.io/kod/kod-console.html)
