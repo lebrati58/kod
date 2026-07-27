@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>❤️ Kod — écran géant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Frank+Ruhl+Libre:wght@600&family=Manrope:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* L'écran géant vit dans un bar sombre, lisible à quinze mètres. */
+:root{
+  --fond:#100C1E; --carte:#1D1733; --bord:#F5D48F; --bord-fin:rgba(245,212,143,.4);
+  --encre:#FFFCF7; --second:#DCD2F0; --sourd:#B8ACD8;
+  --accent:#FF7D91; --or:#F5D48F; --piste:rgba(245,212,143,.14);
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;overflow:hidden}
+.scene{height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:4vh 6vw;text-align:center}
+.scene.actif{display:flex;animation:monte .5s cubic-bezier(.2,.7,.3,1) both}
+@keyframes monte{from{opacity:0;transform:translateY(2vh)}to{opacity:1;transform:none}}
+
+.marque{font-family:var(--display);font-size:4vmin;color:var(--second)}
+.marque .c{color:var(--accent)}
+
+/* ---------- attente / saisie ---------- */
+.gros-code{font-family:var(--data);font-size:16vmin;font-weight:700;letter-spacing:.22em;
+  color:var(--or);margin:3vh 0 1vh;text-indent:.22em}
+.sous{font-size:3.2vmin;color:var(--second);line-height:1.5;max-width:60ch}
+.saisie input{font-family:var(--data);font-size:8vmin;font-weight:700;text-align:center;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--or);background:var(--carte);
+  border:3px solid var(--bord);border-radius:2vmin;padding:2vmin 3vmin;width:44vmin;margin:3vh 0 2vh}
+.saisie input:focus{outline:.6vmin solid var(--accent);outline-offset:.4vmin}
+.saisie button{font-family:var(--corps);font-size:3vmin;font-weight:700;color:#2A0A13;
+  background:var(--accent);border:0;border-radius:2vmin;padding:2vmin 5vmin;cursor:pointer;display:block;margin:0 auto}
+.saisie .err{color:var(--accent);font-size:2.6vmin;margin-top:2vh;min-height:3vmin;font-weight:700}
+
+/* ---------- question ---------- */
+.q-num{font-family:var(--data);font-size:2.6vmin;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--or);font-weight:700;margin-bottom:3vh;display:flex;gap:4vmin;align-items:center}
+.q-chrono{font-family:var(--data);font-size:5vmin;font-weight:700;color:var(--encre)}
+.q-chrono.chaud{color:var(--accent)}
+.q-texte{font-family:var(--display);font-weight:300;font-size:9vmin;line-height:1.12;max-width:92vw}
+.q-choix{list-style:none;margin-top:5vh;display:grid;grid-template-columns:1fr 1fr;gap:2vmin 5vmin;
+  text-align:left;max-width:88vw}
+.q-choix li{font-size:3.6vmin;font-weight:600;color:var(--second);display:flex;align-items:center;gap:2vmin}
+.q-choix li b{font-family:var(--hebreu);font-size:5vmin;width:6vmin;text-align:center;flex:0 0 6vmin}
+.q-recu{font-family:var(--data);font-size:2.8vmin;color:var(--sourd);margin-top:4vh}
+
+/* ---------- résultats : les barres montent, jamais pleines d'un coup ---------- */
+.r-titre{font-family:var(--display);font-weight:300;font-size:6.5vmin;margin-bottom:5vh;max-width:90vw;line-height:1.15}
+.barres{width:min(88vw,180vmin);display:flex;flex-direction:column;gap:3.2vh}
+.barre{display:flex;align-items:center;gap:3vmin}
+.barre .l{font-family:var(--hebreu);font-weight:600;font-size:9vmin;width:11vmin;flex:0 0 11vmin;text-align:center}
+.barre .piste{flex:1;height:9vmin;background:var(--piste);border-radius:2vmin;overflow:hidden}
+.barre .piste i{display:block;height:100%;width:0%;border-radius:2vmin}
+.barre .n{font-family:var(--data);font-size:4.6vmin;font-weight:700;width:16vmin;flex:0 0 16vmin;text-align:right}
+
+/* ---------- migration : compte à rebours plein écran ---------- */
+.m-phrase{font-family:var(--display);font-weight:300;font-size:6.5vmin;line-height:1.2;max-width:80vw}
+.m-compte{font-family:var(--data);font-size:34vmin;font-weight:700;line-height:1;color:var(--or);
+  margin:1vh 0 2vh;font-variant-numeric:tabular-nums}
+.m-lettres{display:flex;gap:7vmin;margin-top:2vh}
+.m-lettres span{font-family:var(--hebreu);font-weight:600;font-size:12vmin;line-height:1}
+
+/* ---------- message libre de la console ---------- */
+.message{position:fixed;left:0;right:0;bottom:0;z-index:40;display:none;
+  background:var(--or);color:#2A2145;text-align:center;padding:3vh 5vw;
+  font-family:var(--display);font-size:6vmin;font-weight:600;line-height:1.2;
+  animation:glisse .45s cubic-bezier(.2,.7,.3,1) both}
+.message.on{display:block}
+@keyframes glisse{from{transform:translateY(100%)}to{transform:none}}
+
+.coin-code{position:fixed;top:2.5vh;right:2.5vw;z-index:30;font-family:var(--data);
+  font-size:2.4vmin;font-weight:700;letter-spacing:.24em;color:var(--sourd)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="coin-code" id="coinCode"></div>
+
+<!-- saisie du code (si pas de ?code=XXXX dans l'URL) -->
+<section class="scene actif saisie" id="sSaisie">
+  <div class="marque"><span class="c">❤️</span> Kod — écran géant</div>
+  <input id="inCode" maxlength="4" autocomplete="off" autocapitalize="characters"
+         spellcheck="false" placeholder="CODE" aria-label="Code de la soirée">
+  <button id="bBrancher">Brancher l'écran</button>
+  <p class="err" id="errCode"></p>
+</section>
+
+<!-- attente -->
+<section class="scene" id="sAttente">
+  <div class="marque"><span class="c">❤️</span> Kod</div>
+  <div class="gros-code" id="grosCode"></div>
+  <p class="sous">Scanne ton QR code à l'entrée, entre ce code et ton numéro de badge.<br>Ça commence bientôt.</p>
+</section>
+
+<!-- question -->
+<section class="scene" id="sQuestion">
+  <div class="q-num"><span id="qNum"></span><span class="q-chrono" id="qChrono"></span></div>
+  <h1 class="q-texte" id="qTexte"></h1>
+  <ol class="q-choix" id="qChoix"></ol>
+  <p class="q-recu" id="qRecu"></p>
+</section>
+
+<!-- résultats -->
+<section class="scene" id="sResultats">
+  <h1 class="r-titre" id="rTitre"></h1>
+  <div class="barres" id="barres"></div>
+</section>
+
+<!-- migration -->
+<section class="scene" id="sMigration">
+  <p class="m-phrase">Regardez votre téléphone.<br>Vous avez une lettre.</p>
+  <div class="m-compte" id="mCompte">60</div>
+  <div class="m-lettres" id="mLettres"></div>
+</section>
+
+<!-- fin -->
+<section class="scene" id="sFin">
+  <div class="marque"><span class="c">❤️</span> Kod</div>
+  <h1 class="q-texte" style="margin-top:4vh">Merci. La suite se passe dans la salle.</h1>
+</section>
+
+<!-- message libre envoyé depuis la console -->
+<div class="message" id="message"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="config.js"></script>
+<script src="commun.js"></script>
+<script>
+(function(){
+"use strict";
+/* ============================================================
+   ❤️ Kod — l'écran géant (étape 1)
+   - Résultats en barres qui MONTENT progressivement (elles
+     poursuivent leur cible, jamais pleines d'un coup).
+   - Compte à rebours plein écran calculé sur l'heure serveur.
+   - Messages libres de la console.
+   ============================================================ */
+var K = KOD.init();
+var el = function(id){ return document.getElementById(id); };
+var LET = KOD.LETTRES, COINS = KOD.COINS;
+
+var S = {
+  code: null, etat: null, phasePrec: null, qPrec: null,
+  qIdEcoute: null, refRep: null,
+  cible: {}, recu: 0,          // comptes réels par coin
+  montre: [0,0,0,0],           // valeurs affichées (elles montent)
+  raf: null, tic: null
+};
+
+var SCENES = ['sSaisie','sAttente','sQuestion','sResultats','sMigration','sFin'];
+function scene(id){
+  SCENES.forEach(function(x){ el(x).classList.toggle('actif', x === id); });
+}
+
+/* ---------- branchement ---------- */
+function branche(code){
+  S.code = code;
+  el('coinCode').textContent = code;
+  try { localStorage.setItem('kodEcran', code); } catch(e){}
+  K.db.ref('sessions/' + code + '/state').on('value', function(snap){
+    S.etat = snap.val() || {};
+    surEtat();
+  });
+  clearInterval(S.tic);
+  S.tic = setInterval(chrono, 200);
+}
+
+function surEtat(){
+  var e = S.etat, phase = e.phase || 'attente';
+
+  /* entrée en résultats ? (un simple message pendant ne compte pas) */
+  var entreeResultats = phase === 'resultats' &&
+    (S.phasePrec !== 'resultats' || S.qPrec !== e.qId);
+  S.phasePrec = phase; S.qPrec = e.qId;
+
+  /* le message libre, par-dessus tout le reste */
+  var m = el('message');
+  if (e.msgEcran && e.msgEcran.texte){
+    m.textContent = e.msgEcran.texte;
+    m.classList.add('on');
+  } else m.classList.remove('on');
+
+  if (e.qId != null && e.qId !== S.qIdEcoute) ecouteReponses(e.qId);
+
+  if (phase === 'fin'){ scene('sFin'); return; }
+  if (phase === 'attente' || e.qId == null || !e.q){
+    el('grosCode').textContent = S.code;
+    scene('sAttente'); return;
+  }
+  if (phase === 'question'){
+    el('qNum').textContent = 'Question ' + (e.qNum || '');
+    el('qTexte').textContent = e.q.texte || '';
+    el('qChoix').innerHTML = (e.q.choix || []).map(function(ch){
+      return '<li><b style="color:' + (COINS[ch.coin]||{}).c + '">' + ch.coin + '</b>' +
+        String(ch.texte||'').replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</li>';
+    }).join('');
+    scene('sQuestion'); return;
+  }
+  if (phase === 'resultats'){
+    el('rTitre').textContent = e.q.texte || '';
+    /* on repart de zéro à l'ENTRÉE en résultats : les barres doivent
+       monter devant la salle, jamais apparaître pleines d'un coup */
+    if (entreeResultats) S.montre = [0,0,0,0];
+    dessineBarres();
+    scene('sResultats');
+    animeBarres();
+    return;
+  }
+  if (phase === 'migration'){
+    el('mLettres').innerHTML = LET.map(function(l){
+      return '<span style="color:' + COINS[l].c + '">' + l + '</span>';
+    }).join('');
+    scene('sMigration'); return;
+  }
+}
+
+/* ---------- réponses de la question en cours ---------- */
+function ecouteReponses(qId){
+  if (S.refRep) S.refRep.off();
+  S.qIdEcoute = qId;
+  S.cible = {}; S.recu = 0;
+  S.refRep = K.db.ref('sessions/' + S.code + '/reponses/' + qId);
+  S.refRep.on('value', function(snap){
+    var c = {}, n = 0;
+    snap.forEach(function(ch){
+      var coin = ch.child('coin').val();
+      if (COINS[coin]){ c[coin] = (c[coin]||0) + 1; n++; }
+    });
+    S.cible = c; S.recu = n;
+    el('qRecu').textContent = n ? (n + ' réponse' + (n>1?'s':'') + ' reçue' + (n>1?'s':'')) : '';
+  });
+}
+
+/* ---------- barres : elles poursuivent leur cible, en douceur ---------- */
+function dessineBarres(){
+  var box = el('barres');
+  if (!box.children.length){
+    LET.forEach(function(l,i){
+      var d = document.createElement('div');
+      d.className = 'barre';
+      d.innerHTML = '<span class="l" style="color:' + COINS[l].c + '">' + l + '</span>' +
+        '<span class="piste"><i id="bar' + i + '" style="background:' + COINS[l].c + '"></i></span>' +
+        '<span class="n" id="num' + i + '">0%</span>';
+      box.appendChild(d);
+    });
+  }
+}
+function animeBarres(){
+  cancelAnimationFrame(S.raf);
+  function pas(){
+    if (!S.etat || S.etat.phase !== 'resultats') return;
+    var tot = Math.max(S.recu, 1);
+    LET.forEach(function(l,i){
+      var cible = S.cible[l] || 0;
+      /* montée progressive : ~4 % du chemin restant par image */
+      S.montre[i] += (cible - S.montre[i]) * 0.04;
+      if (Math.abs(cible - S.montre[i]) < 0.05) S.montre[i] = cible;
+      var pc = S.montre[i] / tot * 100;
+      el('bar' + i).style.width = pc + '%';
+      el('num' + i).textContent = Math.round(pc) + '%';
+    });
+    S.raf = requestAnimationFrame(pas);
+  }
+  S.raf = requestAnimationFrame(pas);
+}
+
+/* ---------- chronos (heure serveur, jamais un décompte local) ---------- */
+function chrono(){
+  var e = S.etat;
+  if (!e || !e.phaseAt || !e.dureeMs) return;
+  var reste = (e.phaseAt + e.dureeMs - K.now()) / 1000;
+  if (e.phase === 'question'){
+    el('qChrono').textContent = KOD.mmss(reste);
+    el('qChrono').classList.toggle('chaud', reste <= 10);
+  } else if (e.phase === 'migration'){
+    el('mCompte').textContent = String(Math.max(0, Math.ceil(reste)));
+  }
+}
+
+/* ---------- démarrage ---------- */
+function tenter(code){
+  code = (code || '').toUpperCase().trim();
+  if (!/^[A-Z]{4}$/.test(code)){
+    el('errCode').textContent = 'Le code fait quatre lettres.';
+    return;
+  }
+  K.db.ref('sessions/' + code + '/state').once('value').then(function(snap){
+    if (!snap.exists()){
+      el('errCode').textContent = 'Aucune soirée avec le code ' + code + '.';
+      return;
+    }
+    branche(code);
+  });
+}
+el('bBrancher').addEventListener('click', function(){ tenter(el('inCode').value); });
+el('inCode').addEventListener('keydown', function(ev){
+  if (ev.key === 'Enter') tenter(el('inCode').value);
+});
+
+if (K){
+  var p = KOD.litParamsURL();
+  var code = (p.code || '').toUpperCase();
+  if (!/^[A-Z]{4}$/.test(code)){
+    try { code = localStorage.getItem('kodEcran') || ''; } catch(e){ code = ''; }
+  }
+  if (/^[A-Z]{4}$/.test(code)) tenter(code);
+} else {
+  el('bBrancher').disabled = true;
+}
+})();
+</script>
+</body>
+</html>

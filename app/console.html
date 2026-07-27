@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>❤️ Kod — console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300&family=Frank+Ruhl+Libre:wght@600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Palette sombre validée (reprise de kod-accueil.html, mode sombre) :
+   la console vit dans un bar noir, dans la main de l'organisateur. */
+:root{
+  --fond:#100C1E; --carte:#1D1733; --champ:#2A2145;
+  --bord:#F5D48F; --bord-fin:rgba(245,212,143,.4);
+  --encre:#FFFCF7; --second:#DCD2F0; --sourd:#B8ACD8;
+  --accent:#FF7D91; --accent-doux:rgba(255,125,145,.14);
+  --or:#F5D48F; --alerte:#FFB4A8; --alerte-doux:rgba(255,90,70,.16); --ok:#7FE0B0;
+  --piste:rgba(245,212,143,.16);
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;padding:0 14px calc(24px + env(safe-area-inset-bottom))}
+.enveloppe{max-width:460px;margin:0 auto}
+
+.entete{position:sticky;top:0;z-index:20;background:var(--fond);padding:16px 2px 12px;
+  display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--bord-fin)}
+.marque{font-family:var(--display);font-size:19px}
+.marque .c{color:var(--accent)}
+.code-session{font-family:var(--data);font-size:13px;font-weight:700;letter-spacing:.18em;
+  color:var(--or);border:1.5px solid var(--bord-fin);border-radius:99px;padding:6px 11px;display:none}
+.pastille-etat{margin-left:auto;font-family:var(--data);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:99px;
+  background:var(--accent-doux);color:var(--accent)}
+
+.ecran{display:none}
+.ecran.actif{display:block;animation:monte .35s cubic-bezier(.2,.7,.3,1) both}
+@keyframes monte{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- écran d'entrée ---------- */
+.entree{padding-top:26px}
+.entree h1{font-family:var(--display);font-weight:300;font-size:29px;line-height:1.18;margin-bottom:10px}
+.entree p{color:var(--second);font-size:14.5px;line-height:1.55;margin-bottom:22px}
+.entree input{width:100%;font-family:var(--data);font-size:30px;font-weight:700;text-align:center;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--or);background:var(--champ);
+  border:2px solid var(--bord);border-radius:14px;padding:16px;min-height:70px;margin-bottom:10px}
+.entree input:focus{outline:3px solid var(--accent);outline-offset:2px}
+.ou{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sourd);text-align:center;margin:18px 0;font-weight:700}
+.aide{font-size:13.5px;color:var(--sourd);text-align:center;margin-top:12px;min-height:20px;line-height:1.5}
+.aide.alerte{color:var(--alerte);font-weight:700}
+
+/* ---------- pilotage ---------- */
+.bandeau{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.bandeau div{background:var(--carte);border:2px solid var(--bord-fin);border-radius:14px;padding:12px 8px;text-align:center}
+.bandeau span{display:block;font-family:var(--data);font-size:25px;font-weight:700;line-height:1.1}
+.bandeau small{display:block;font-family:var(--data);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--sourd);margin-top:4px;font-weight:700}
+.bandeau .gros{color:var(--accent)}
+
+.question{background:var(--carte);border:2px solid var(--bord);border-radius:16px;padding:16px;margin-bottom:12px}
+.question .num{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--or);font-weight:700;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+.question .num button{margin-left:auto;font-family:var(--corps);font-size:12.5px;font-weight:700;
+  min-height:0;padding:7px 11px;border-radius:9px;border:1.5px solid var(--bord-fin);
+  background:none;color:var(--second);cursor:pointer}
+.question h1{font-family:var(--display);font-weight:300;font-size:23px;line-height:1.2}
+.question ol{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.question li{display:flex;align-items:center;gap:9px;font-size:14.5px;color:var(--second)}
+.question li b{font-family:var(--hebreu);font-size:19px;width:20px;text-align:center;flex:0 0 20px}
+
+.coins,.bloc-pret,.msg,.journal{background:var(--carte);border:2px solid var(--bord-fin);
+  border-radius:16px;padding:14px;margin-bottom:12px}
+h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+h2 b{margin-left:auto;color:var(--accent);font-family:var(--data)}
+.coin,.pret{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.coin .l,.pret .l{font-family:var(--hebreu);font-size:22px;width:22px;text-align:center;flex:0 0 22px}
+.piste{flex:1;height:22px;background:var(--piste);border-radius:6px;overflow:hidden;position:relative}
+.piste i{display:block;height:100%;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.piste u{position:absolute;top:0;bottom:0;width:2px;background:var(--encre);opacity:.5}
+.coin .n{font-family:var(--data);font-size:14px;font-weight:700;width:74px;text-align:right;flex:0 0 74px}
+.pret .n{font-family:var(--data);font-size:13px;font-weight:700;width:62px;text-align:right;flex:0 0 62px}
+.pret.ok .n{color:var(--ok)}
+.avert{margin-top:4px;font-size:13.5px;line-height:1.45;padding:11px 13px;border-radius:12px;
+  background:var(--alerte-doux);color:var(--alerte);font-weight:600;display:none}
+.avert.on{display:block}
+.pret-note{font-size:13px;line-height:1.5;color:var(--sourd);margin-top:10px}
+.pret-note.chaud{color:var(--ok);font-weight:700}
+
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+button{font-family:var(--corps);font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;
+  padding:18px 10px;min-height:64px;border:2px solid var(--bord);background:var(--carte);color:var(--encre)}
+button:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.plein{background:var(--accent);color:#2A0A13;border-color:var(--accent)}
+.large{grid-column:1/-1}
+.mini-btn{font-size:14px;min-height:52px;padding:14px 8px}
+
+.msg input{width:100%;font-family:var(--corps);font-size:16px;color:var(--encre);background:var(--champ);
+  border:2px solid var(--bord-fin);border-radius:12px;padding:14px;min-height:52px}
+.msg input::placeholder{color:var(--sourd)}
+.msg input:focus{outline:3px solid var(--accent);outline-offset:1px}
+.msg .rangee{display:flex;gap:8px;margin-top:9px}
+.msg .rangee button{flex:1;min-height:50px;padding:13px 8px;font-size:14px}
+
+.journal ul{list-style:none;font-family:var(--data);font-size:12.5px;color:var(--second);line-height:1.9}
+.journal li b{color:var(--or)}
+.note{font-size:12.5px;line-height:1.5;color:var(--sourd);margin-top:14px;text-align:center}
+
+/* ---------- choix d'une question (panneau plein écran) ---------- */
+.panneau{position:fixed;inset:0;z-index:50;background:var(--fond);overflow-y:auto;
+  padding:16px 14px calc(24px + env(safe-area-inset-bottom));display:none}
+.panneau.actif{display:block}
+.panneau .haut{position:sticky;top:0;background:var(--fond);padding:6px 0 12px;display:flex;
+  align-items:center;gap:10px;border-bottom:2px solid var(--bord-fin);margin-bottom:12px}
+.panneau .haut h3{font-family:var(--display);font-weight:300;font-size:21px}
+.panneau .haut button{margin-left:auto;min-height:48px;padding:10px 16px;font-size:14px}
+.item-q{width:100%;text-align:left;background:var(--carte);border:2px solid var(--bord-fin);
+  border-radius:13px;padding:13px 14px;margin-bottom:8px;min-height:0;font-weight:500;font-size:15px;
+  line-height:1.4;color:var(--encre)}
+.item-q small{display:block;font-family:var(--data);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--sourd);margin-bottom:4px;font-weight:700}
+.item-q.deja{opacity:.45}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <header class="entete">
+    <div class="marque"><span class="c">❤️</span> Kod</div>
+    <div class="code-session" id="codeSession"></div>
+    <div class="pastille-etat" id="etat">console</div>
+  </header>
+
+  <!-- ============ ENTRÉE : créer ou reprendre une soirée ============ -->
+  <section class="ecran actif entree" id="eEntree">
+    <h1>La console de la soirée.</h1>
+    <p>Crée une soirée : un code de quatre lettres apparaît. C'est lui que l'écran géant et la page de
+       test utilisent. Les participants, eux, passent par les deux QR codes.</p>
+    <button class="plein large" id="bCreer" style="width:100%">Créer une soirée</button>
+    <p class="ou">— ou reprendre une soirée existante —</p>
+    <input id="codeEntree" maxlength="4" autocomplete="off" autocapitalize="characters"
+           spellcheck="false" placeholder="CODE" aria-label="Code de la soirée">
+    <button class="large" id="bReprendre" style="width:100%">Reprendre cette soirée</button>
+    <p class="aide" id="entreeAide"></p>
+  </section>
+
+  <!-- ============ PILOTAGE ============ -->
+  <section class="ecran" id="ePilotage">
+
+    <div class="bandeau">
+      <div><span id="bCo">0</span><small>connectés</small></div>
+      <div><span class="gros" id="bRep">0/0</span><small>réponses</small></div>
+      <div><span id="bTemps">—</span><small>temps</small></div>
+    </div>
+
+    <div class="question">
+      <div class="num"><span id="qNum">aucune question lancée</span>
+        <button type="button" id="bChoisir">Choisir…</button></div>
+      <h1 id="qTexte">Choisis une question, puis appuie sur « Lancer ».</h1>
+      <ol id="qChoix"></ol>
+    </div>
+
+    <div class="coins">
+      <h2>Répartition dans la salle</h2>
+      <div id="lesCoins"></div>
+      <div class="avert" id="avert"></div>
+    </div>
+
+    <div class="bloc-pret">
+      <h2>Ils se disent prêts <b id="pretEtat"></b></h2>
+      <div id="lesPrets"></div>
+      <div class="pret-note" id="pretNote">Le bouton « prêt » est grisé sur chaque téléphone pendant
+        les trois premières minutes après l'arrivée dans le coin.</div>
+    </div>
+
+    <div class="grille">
+      <button class="plein large" id="bLancer">Lancer la question</button>
+      <button class="mini-btn" id="bPlus" disabled>+ 2 minutes</button>
+      <button class="mini-btn" id="bResultats" disabled>Afficher résultats</button>
+      <button class="mini-btn" id="bMigration" disabled>Lancer la migration</button>
+      <button class="mini-btn" id="bAttente" disabled>Écran d'attente</button>
+    </div>
+
+    <div class="msg">
+      <h2>Message libre sur l'écran géant</h2>
+      <input id="msgTexte" placeholder="Les gars du fond, vous êtes en ב" maxlength="80">
+      <div class="rangee">
+        <button id="bEnvoyer">Envoyer</button>
+        <button id="bEffacer">Effacer l'écran</button>
+      </div>
+    </div>
+
+    <div class="journal">
+      <h2>Journal de la soirée</h2>
+      <ul id="journal"><li>En attente du lancement.</li></ul>
+    </div>
+
+    <p class="note">Rien n'est automatique : le système signale, c'est toi qui décides.</p>
+  </section>
+</div>
+
+<!-- panneau de choix d'une question -->
+<div class="panneau" id="panneauQ">
+  <div class="haut">
+    <h3>Les 40 questions</h3>
+    <button type="button" id="bFermerPanneau">Fermer</button>
+  </div>
+  <div id="listeQ"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="config.js"></script>
+<script src="commun.js"></script>
+<script>
+(function(){
+"use strict";
+var K = KOD.init(); // null si config manquante → bandeau déjà affiché
+
+var el = function(id){ return document.getElementById(id); };
+var LET = KOD.LETTRES, COINS = KOD.COINS;
+
+/* ordre conseillé (le Yanuka ouvre, puis on alterne les axes) */
+var ORDRE = [22,30,23,4,36,6,13,40,1,32,26,31,2,3,19,38,9,21,33,24,28];
+
+var S = {
+  code: null,
+  etat: null,          // sessions/CODE/state
+  connectes: 0,
+  reps: {},            // lettre -> nombre (question en cours)
+  recu: 0,
+  prets: {},           // lettre -> nombre
+  totalPrets: 0,
+  qIdEcoute: null,     // qId dont on écoute réponses + prêts
+  selId: null,         // question sélectionnée, prête à lancer
+  posOrdre: 0,         // avancement dans l'ordre conseillé
+  qNumLance: 0,        // combien de questions déjà lancées
+  dejaJouees: {},      // id -> true
+  alerte60: null,      // coin déjà signalé prêt (par question)
+  refRep: null, refPret: null,
+  tic: null
+};
+var QUESTIONS = null;
+
+/* ---------- journal ---------- */
+function journal(txt){
+  var ul = el('journal');
+  if (ul.dataset.vierge !== "1"){ ul.innerHTML = ''; ul.dataset.vierge = "1"; }
+  var li = document.createElement('li');
+  var h = new Date();
+  li.innerHTML = '<b>' + String(h.getHours()).padStart(2,'0') + ':' +
+    String(h.getMinutes()).padStart(2,'0') + '</b> · ';
+  li.appendChild(document.createTextNode(txt));
+  ul.prepend(li);
+  while (ul.children.length > 8) ul.lastChild.remove();
+}
+function setEtat(txt){ el('etat').textContent = txt; }
+function montre(id){
+  ['eEntree','ePilotage'].forEach(function(x){
+    el(x).classList.toggle('actif', x === id);
+  });
+}
+
+/* ---------- questions ---------- */
+function chargeQuestions(){
+  return fetch('kod-questions.json')
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){ QUESTIONS = j.questions; })
+    .catch(function(){
+      KOD.bandeau("⚠️ kod-questions.json introuvable — la page doit être servie par un site (GitHub Pages), pas ouverte en fichier local.");
+    });
+}
+function question(id){
+  if(!QUESTIONS) return null;
+  for (var i=0;i<QUESTIONS.length;i++) if (QUESTIONS[i].id === id) return QUESTIONS[i];
+  return null;
+}
+function prochaineConseillee(){
+  while (S.posOrdre < ORDRE.length && S.dejaJouees[ORDRE[S.posOrdre]]) S.posOrdre++;
+  if (S.posOrdre < ORDRE.length) return ORDRE[S.posOrdre];
+  for (var i=0;i<(QUESTIONS||[]).length;i++) if(!S.dejaJouees[QUESTIONS[i].id]) return QUESTIONS[i].id;
+  return null;
+}
+function afficheSelection(){
+  var q = question(S.selId);
+  if (!q){
+    el('qNum').textContent = 'aucune question sélectionnée';
+    el('qTexte').textContent = 'Choisis une question dans la liste.';
+    el('qChoix').innerHTML = '';
+    el('bLancer').disabled = true;
+    return;
+  }
+  el('qNum').textContent = 'à lancer · fiche n°' + q.id + (q.drole ? ' · drôle' : '');
+  el('qTexte').textContent = q.texte;
+  el('qChoix').innerHTML = q.choix.map(function(ch){
+    return '<li><b style="color:' + COINS[ch.coin].c + '">' + ch.coin + '</b> ' +
+      ch.texte.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</li>';
+  }).join('');
+  el('bLancer').disabled = !K || !S.code;
+  el('bLancer').textContent = S.qNumLance ? 'Lancer la question suivante' : 'Lancer la question';
+}
+function ouvrePanneau(){
+  var box = el('listeQ'); box.innerHTML = '';
+  (QUESTIONS||[]).forEach(function(q){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'item-q' + (S.dejaJouees[q.id] ? ' deja' : '');
+    b.innerHTML = '<small>n°' + q.id + (q.drole ? ' · drôle 😄' : ' · acte ' + q.acte) +
+      (S.dejaJouees[q.id] ? ' · déjà jouée' : '') + '</small>';
+    b.appendChild(document.createTextNode(q.texte));
+    b.addEventListener('click', function(){
+      S.selId = q.id;
+      el('panneauQ').classList.remove('actif');
+      afficheSelection();
+    });
+    box.appendChild(b);
+  });
+  el('panneauQ').classList.add('actif');
+}
+
+/* ---------- barres coins + prêts ---------- */
+function dessineCoins(){
+  var box = el('lesCoins');
+  if (!box.children.length){
+    LET.forEach(function(l,i){
+      var d = document.createElement('div');
+      d.className = 'coin';
+      d.innerHTML = '<span class="l" style="color:' + COINS[l].c + '">' + l + '</span>' +
+        '<span class="piste"><i id="p' + i + '" style="width:0%;background:' + COINS[l].c + '"></i></span>' +
+        '<span class="n" id="n' + i + '">0</span>';
+      box.appendChild(d);
+    });
+  }
+  var tot = S.recu || 1;
+  LET.forEach(function(l,i){
+    var v = S.reps[l] || 0;
+    el('p'+i).style.width = (v/tot*100) + '%';
+    el('n'+i).textContent = v ? (v + ' · ' + Math.round(v/tot*100) + '%') : '0';
+  });
+  verifieEquilibre();
+}
+function verifieEquilibre(){
+  var a = el('avert');
+  var base = Math.max(S.connectes, S.recu);
+  if (S.recu < Math.max(10, base*0.5)){ a.classList.remove('on'); return; }
+  var vals = LET.map(function(l){ return S.reps[l]||0; });
+  var max = Math.max.apply(null, vals), min = Math.min.apply(null, vals);
+  var iMax = vals.indexOf(max), iMin = vals.indexOf(min);
+  if (S.recu && max/S.recu > 0.40){
+    a.textContent = 'Le coin ' + LET[iMax] + ' prend ' + Math.round(max/S.recu*100) +
+      ' % de la salle. Prévois de le couper en deux.';
+    a.classList.add('on');
+  } else if (min < 8){
+    a.textContent = 'Le coin ' + LET[iMin] + " n'a que " + min + ' personne' + (min>1?'s':'') +
+      '. Va les voir toi-même.';
+    a.classList.add('on');
+  } else a.classList.remove('on');
+}
+function dessinePrets(){
+  var box = el('lesPrets');
+  if (!box.children.length){
+    LET.forEach(function(l,i){
+      var d = document.createElement('div');
+      d.className = 'pret'; d.id = 'pr'+i;
+      d.innerHTML = '<span class="l" style="color:' + COINS[l].c + '">' + l + '</span>' +
+        '<span class="piste"><i id="pi' + i + '" style="width:0%;background:' + COINS[l].c + '"></i>' +
+        '<u style="left:' + (KOD.SEUIL_PRET*100) + '%"></u></span>' +
+        '<span class="n" id="pn' + i + '">—</span>';
+      box.appendChild(d);
+    });
+  }
+  var coinPret = null;
+  LET.forEach(function(l,i){
+    var dans = S.reps[l]||0, p = S.prets[l]||0;
+    var pc = dans ? p/dans : 0;
+    el('pi'+i).style.width = (pc*100) + '%';
+    el('pn'+i).textContent = dans ? (p + '/' + dans) : '—';
+    var ok = pc >= KOD.SEUIL_PRET && dans >= 3;
+    el('pr'+i).classList.toggle('ok', ok);
+    if (ok && coinPret === null) coinPret = l;
+  });
+  var note = el('pretNote'), pe = el('pretEtat');
+  var phase = S.etat && S.etat.phase;
+  if (phase !== 'migration' && phase !== 'resultats' && !S.totalPrets){
+    pe.textContent = '';
+    note.classList.remove('chaud');
+    note.textContent = 'Le bouton « prêt » se grise 3 minutes sur chaque téléphone à l\u2019arrivée dans le coin, puis s\u2019active.';
+    return;
+  }
+  pe.textContent = S.totalPrets + ' prêt' + (S.totalPrets>1?'s':'');
+  if (coinPret !== null){
+    note.classList.add('chaud');
+    note.textContent = 'Le coin ' + coinPret + ' a passé les 60 %. Tu peux enchaîner — ou laisser courir, c\u2019est toi qui décides.';
+    if (S.alerte60 === null){ S.alerte60 = coinPret; journal('Coin ' + coinPret + ' prêt à 60 %.'); }
+  } else {
+    note.classList.remove('chaud');
+    note.textContent = 'Aucun coin n\u2019a encore atteint 60 % de prêts.';
+  }
+}
+
+/* ---------- bandeau haut ---------- */
+function majBandeau(){
+  el('bCo').textContent = S.connectes;
+  el('bRep').textContent = S.recu + '/' + S.connectes;
+  var e = S.etat;
+  if (e && e.phase === 'question' && e.phaseAt && e.dureeMs){
+    var reste = (e.phaseAt + e.dureeMs - K.now())/1000;
+    el('bTemps').textContent = reste > 0 ? Math.ceil(reste) + 's' : 'fini';
+  } else if (e && e.phase === 'migration' && e.phaseAt && e.dureeMs){
+    var r2 = (e.phaseAt + e.dureeMs - K.now())/1000;
+    el('bTemps').textContent = r2 > 0 ? KOD.mmss(r2) : 'libre';
+  } else el('bTemps').textContent = e && e.phase === 'resultats' ? 'libre' : '—';
+}
+
+/* ---------- branchement Firebase ---------- */
+function refSession(){ return K.db.ref('sessions/' + S.code); }
+
+function attache(code){
+  S.code = code;
+  try { localStorage.setItem('kodConsole', code); } catch(e){}
+  el('codeSession').textContent = code;
+  el('codeSession').style.display = 'inline-block';
+  montre('ePilotage');
+  dessineCoins(); dessinePrets();
+  afficheSelection(); /* le bouton « Lancer » devient actif */
+
+  refSession().child('state').on('value', function(snap){
+    S.etat = snap.val() || {};
+    surEtat();
+  });
+  refSession().child('participants').on('value', function(snap){
+    var n = 0;
+    snap.forEach(function(c){ if (c.child('online').val() === true) n++; });
+    S.connectes = n;
+    majBandeau(); verifieEquilibre();
+  });
+  clearInterval(S.tic);
+  S.tic = setInterval(majBandeau, 500);
+}
+
+function surEtat(){
+  var e = S.etat;
+  var phase = e.phase || 'attente';
+  var libelles = { attente:'salle en attente', question:'question en cours',
+    resultats:'résultats à l\u2019écran', migration:'discussion dans les coins', fin:'soirée terminée' };
+  setEtat(libelles[phase] || phase);
+
+  ['bPlus'].forEach(function(b){ el(b).disabled = phase !== 'question'; });
+  el('bResultats').disabled = !(phase === 'question');
+  el('bMigration').disabled = !(phase === 'question' || phase === 'resultats');
+  el('bAttente').disabled = (phase === 'attente');
+
+  if (e.qId != null && e.qId !== S.qIdEcoute) ecouteQuestion(e.qId);
+  if (e.qId != null && e.q){
+    S.dejaJouees[e.qId] = true;
+    /* si la question en cours est celle qu'on avait sélectionnée, proposer la suivante
+       (prochaineConseillee saute d'elle-même les questions déjà jouées) */
+    if (S.selId === e.qId){ S.selId = prochaineConseillee(); afficheSelection(); }
+    el('qNum').textContent = 'en cours · question ' + (e.qNum||'?') + ' · fiche n°' + e.qId;
+    el('qTexte').textContent = e.q.texte || '';
+    el('qChoix').innerHTML = (e.q.choix||[]).map(function(ch){
+      return '<li><b style="color:' + (COINS[ch.coin]||{}).c + '">' + ch.coin + '</b> ' +
+        String(ch.texte||'').replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</li>';
+    }).join('');
+  }
+  majBandeau(); dessinePrets();
+}
+
+function ecouteQuestion(qId){
+  if (S.refRep) S.refRep.off();
+  if (S.refPret) S.refPret.off();
+  S.qIdEcoute = qId;
+  S.reps = {}; S.recu = 0; S.prets = {}; S.totalPrets = 0; S.alerte60 = null;
+  S.qNumLance = Math.max(S.qNumLance, (S.etat && S.etat.qNum) || 0);
+
+  S.refRep = refSession().child('reponses/' + qId);
+  S.refRep.on('value', function(snap){
+    var reps = {}, n = 0;
+    snap.forEach(function(c){
+      var coin = c.child('coin').val();
+      if (COINS[coin]){ reps[coin] = (reps[coin]||0) + 1; n++; }
+    });
+    S.reps = reps; S.recu = n;
+    dessineCoins(); majBandeau(); dessinePrets();
+  });
+  S.refPret = refSession().child('prets/' + qId);
+  S.refPret.on('value', function(snap){
+    /* le coin d'un badge = sa réponse à la question EN COURS, rien d'autre :
+       on relit les réponses de cette question pour ventiler les prêts par coin */
+    refSession().child('reponses/' + qId).once('value').then(function(rs){
+      var parCoin = {}, tot = 0;
+      snap.forEach(function(c){
+        if (c.val() !== true) return;
+        var coin = rs.child(c.key + '/coin').val();
+        if (COINS[coin]) parCoin[coin] = (parCoin[coin]||0) + 1;
+        tot++;
+      });
+      S.prets = parCoin; S.totalPrets = tot;
+      dessinePrets();
+    });
+  });
+}
+
+/* ---------- actions organisateur (rien n'est automatique) ---------- */
+function creerSoiree(){
+  if (!K) return;
+  var code = KOD.codeAleatoire();
+  refFor(code).child('state').set({
+    phase: 'attente',
+    qId: null, qNum: 0, q: null,
+    phaseAt: K.TS, dureeMs: null,
+    msgEcran: null,
+    createdAt: K.TS
+  }).then(function(){
+    attache(code);
+    journal('Soirée créée. Code : ' + code);
+  }).catch(function(e){
+    el('entreeAide').textContent = 'Écriture refusée : ' + e.message;
+    el('entreeAide').className = 'aide alerte';
+  });
+}
+function refFor(code){ return K.db.ref('sessions/' + code); }
+
+function reprendre(code){
+  if (!K) return;
+  code = (code||'').toUpperCase().trim();
+  if (!/^[A-Z]{4}$/.test(code)){
+    el('entreeAide').textContent = 'Le code fait quatre lettres.';
+    el('entreeAide').className = 'aide alerte';
+    return;
+  }
+  refFor(code).child('state').once('value').then(function(snap){
+    if (!snap.exists()){
+      el('entreeAide').textContent = 'Aucune soirée avec le code ' + code + '.';
+      el('entreeAide').className = 'aide alerte';
+      return;
+    }
+    attache(code);
+    journal('Console rebranchée sur la soirée ' + code + '.');
+  });
+}
+
+function lancerQuestion(){
+  var q = question(S.selId);
+  if (!q || !S.code) return;
+  var num = ((S.etat && S.etat.qNum) || 0) + 1;
+  refSession().child('state').update({
+    phase: 'question',
+    qId: q.id,
+    qNum: num,
+    q: { id: q.id, texte: q.texte, choix: q.choix },
+    phaseAt: K.TS,
+    dureeMs: KOD.DUREES.QUESTION * 1000
+  });
+  journal('Question lancée : « ' + q.texte + ' »');
+}
+function plusDeuxMinutes(){
+  var e = S.etat;
+  if (!e || !e.phaseAt) return;
+  var ecoule = K.now() - e.phaseAt;
+  var nouvelle = Math.max(e.dureeMs || 0, ecoule) + 120000;
+  refSession().child('state').update({ dureeMs: nouvelle });
+  journal('Prolongation de 2 minutes.');
+}
+function afficherResultats(){
+  refSession().child('state').update({ phase: 'resultats', phaseAt: K.TS, dureeMs: null });
+  journal('Résultats affichés sur l\u2019écran géant.');
+}
+function lancerMigration(){
+  refSession().child('state').update({
+    phase: 'migration', phaseAt: K.TS, dureeMs: KOD.DUREES.MIGRATION * 1000
+  });
+  var resume = LET.map(function(l){ return l + ' ' + (S.reps[l]||0); }).join(' · ');
+  journal('Migration lancée : ' + resume);
+}
+function ecranAttente(){
+  refSession().child('state').update({ phase: 'attente', phaseAt: K.TS, dureeMs: null });
+  journal('Écran remis en attente.');
+}
+function envoyerMessage(){
+  var t = el('msgTexte').value.trim();
+  if (!t || !S.code) return;
+  refSession().child('state/msgEcran').set({ texte: t, at: K.TS });
+  journal('Message à l\u2019écran : « ' + t + ' »');
+  el('msgTexte').value = '';
+}
+function effacerMessage(){
+  if (!S.code) return;
+  refSession().child('state/msgEcran').set(null);
+  journal('Écran géant effacé.');
+}
+
+/* ---------- branchements ---------- */
+el('bCreer').addEventListener('click', creerSoiree);
+el('bReprendre').addEventListener('click', function(){ reprendre(el('codeEntree').value); });
+el('codeEntree').addEventListener('keydown', function(ev){
+  if (ev.key === 'Enter') reprendre(el('codeEntree').value);
+});
+el('bLancer').addEventListener('click', lancerQuestion);
+el('bPlus').addEventListener('click', plusDeuxMinutes);
+el('bResultats').addEventListener('click', afficherResultats);
+el('bMigration').addEventListener('click', lancerMigration);
+el('bAttente').addEventListener('click', ecranAttente);
+el('bEnvoyer').addEventListener('click', envoyerMessage);
+el('bEffacer').addEventListener('click', effacerMessage);
+el('bChoisir').addEventListener('click', ouvrePanneau);
+el('bFermerPanneau').addEventListener('click', function(){
+  el('panneauQ').classList.remove('actif');
+});
+
+/* ---------- démarrage ---------- */
+chargeQuestions().then(function(){
+  S.selId = prochaineConseillee();
+  afficheSelection();
+  if (!K){
+    el('bCreer').disabled = true;
+    el('bReprendre').disabled = true;
+    return;
+  }
+  /* la console reprend sa soirée si l'onglet a été fermé */
+  var sauve = null;
+  try { sauve = localStorage.getItem('kodConsole'); } catch(e){}
+  if (sauve && /^[A-Z]{4}$/.test(sauve)){
+    el('codeEntree').value = sauve;
+    el('entreeAide').textContent = 'Dernière soirée : ' + sauve + ' — « Reprendre » pour la retrouver.';
+    el('entreeAide').className = 'aide';
+  }
+});
+})();
+</script>
+</body>
+</html>

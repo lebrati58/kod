@@ -1,0 +1,70 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "sessions": {
+      "$code": {
+        ".read": true,
+        ".write": true,
+        ".validate": "$code.matches(/^[A-Z]{4}$/)",
+
+        "state": {
+          "phase": { ".validate": "newData.isString() && newData.val().matches(/^(attente|question|resultats|migration|fin)$/)" },
+          "qId": { ".validate": "newData.isNumber()" },
+          "qNum": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99" },
+          "phaseAt": { ".validate": "newData.isNumber()" },
+          "dureeMs": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3600000" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "msgEcran": {
+            "texte": { ".validate": "newData.isString() && newData.val().length <= 120" },
+            "at": { ".validate": "newData.isNumber()" },
+            "$autre": { ".validate": false }
+          },
+          "q": {
+            "id": { ".validate": "newData.isNumber()" },
+            "texte": { ".validate": "newData.isString() && newData.val().length <= 300" },
+            "choix": {
+              "$i": {
+                "texte": { ".validate": "newData.isString() && newData.val().length <= 200" },
+                "coin": { ".validate": "newData.isString() && (newData.val() == 'א' || newData.val() == 'ב' || newData.val() == 'ג' || newData.val() == 'ד')" },
+                "$autre": { ".validate": false }
+              }
+            },
+            "$autre": { ".validate": false }
+          },
+          "$autre": { ".validate": false }
+        },
+
+        "participants": {
+          "$badge": {
+            ".validate": "$badge.matches(/^[0-9]{1,4}$/)",
+            "genre": { ".validate": "newData.isString() && newData.val().matches(/^(f|h)$/)" },
+            "lastSeen": { ".validate": "newData.isNumber()" },
+            "online": { ".validate": "newData.isBoolean()" },
+            "$autre": { ".validate": false }
+          }
+        },
+
+        "reponses": {
+          "$qId": {
+            "$badge": {
+              ".validate": "$badge.matches(/^[0-9]{1,4}$/)",
+              "coin": { ".validate": "newData.isString() && (newData.val() == 'א' || newData.val() == 'ב' || newData.val() == 'ג' || newData.val() == 'ד')" },
+              "at": { ".validate": "newData.isNumber()" },
+              "$autre": { ".validate": false }
+            }
+          }
+        },
+
+        "prets": {
+          "$qId": {
+            "$badge": { ".validate": "$badge.matches(/^[0-9]{1,4}$/) && newData.isBoolean()" }
+          }
+        },
+
+        "$autre": { ".validate": false }
+      }
+    }
+  }
+}

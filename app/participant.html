@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>❤️ Kod</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Frank+Ruhl+Libre:wght@400;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Design repris tel quel de la maquette validée kod-participant.html */
+:root{
+  --fond:#FBF7F0; --carte:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.2);
+  --encre:#191428; --second:#453B62; --sourd:#5E5280;
+  --accent:#8A2B4A; --accent-doux:#FDEDF1; --or:#8A6410;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;padding:0 16px calc(28px + env(safe-area-inset-bottom));
+  transition:background .5s}
+body.encoin{background:var(--teinte,var(--fond))}
+.enveloppe{max-width:420px;margin:0 auto}
+
+.entete{padding:18px 2px 14px;display:flex;align-items:center;gap:10px}
+.badge{font-family:var(--data);font-size:12px;font-weight:700;color:var(--accent);
+  border:2px solid var(--bord-fin);border-radius:99px;padding:7px 12px;background:var(--carte)}
+.code-pill{margin-left:auto;font-family:var(--data);font-size:11px;font-weight:700;
+  letter-spacing:.16em;color:var(--sourd);border:2px solid var(--bord-fin);
+  border-radius:99px;padding:7px 12px;background:var(--carte)}
+
+.ecran{display:none}
+.ecran.actif{display:block;animation:monte .4s cubic-bezier(.2,.7,.3,1) both}
+@keyframes monte{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:none}}
+
+.sur-titre{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:9px}
+.chrono{margin-left:auto;font-family:var(--data);font-size:15px;font-weight:700;color:var(--encre)}
+.chrono.chaud{color:var(--accent)}
+h1{font-family:var(--display);font-weight:300;font-size:30px;line-height:1.17;margin-bottom:22px}
+.chapeau{color:var(--second);font-size:15px;line-height:1.55;margin-bottom:24px;margin-top:-12px}
+
+/* ---------- rejoindre ---------- */
+label{display:block;font-size:14px;font-weight:700;margin-bottom:9px}
+.champ-bloc{margin-bottom:20px}
+input{width:100%;font-family:var(--corps);font-size:16.5px;font-weight:500;color:var(--encre);
+  background:var(--carte);border:2px solid var(--bord);border-radius:14px;
+  padding:16px 15px;min-height:58px;appearance:none}
+input:focus{outline:3px solid var(--accent);outline-offset:2px}
+input::placeholder{color:var(--sourd)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.grande-saisie{font-family:var(--data);font-size:44px;font-weight:700;text-align:center;
+  letter-spacing:.14em;color:var(--accent);padding:20px 15px;min-height:96px;text-transform:uppercase}
+.genre-rangee{display:flex;gap:10px}
+.genre-rangee button{flex:1;font-family:var(--corps);font-size:16.5px;font-weight:600;color:var(--encre);
+  background:var(--carte);border:2px solid var(--bord-fin);border-radius:15px;padding:18px 10px;
+  min-height:64px;cursor:pointer}
+.genre-rangee button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-doux)}
+.primaire{width:100%;font-family:var(--corps);font-size:17px;font-weight:700;color:#fff;
+  background:var(--accent);border:0;border-radius:15px;padding:20px;min-height:62px;cursor:pointer;margin-top:6px}
+.primaire:disabled{background:var(--bord-fin);color:var(--sourd);cursor:not-allowed}
+.primaire:not(:disabled):active{transform:scale(.985)}
+.aide{font-size:13.5px;color:var(--sourd);text-align:center;margin-top:14px;min-height:20px;line-height:1.5}
+.aide.alerte{color:var(--accent);font-weight:700}
+
+/* ---------- question ---------- */
+.choix{display:flex;flex-direction:column;gap:10px}
+.choix button{width:100%;text-align:left;font-family:var(--corps);font-size:16.5px;font-weight:600;
+  color:var(--encre);background:var(--carte);border:2px solid var(--bord-fin);border-radius:15px;
+  padding:18px 16px;min-height:64px;cursor:pointer;transition:.15s}
+.choix button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-doux)}
+.choix button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.choix button:disabled{opacity:.55;cursor:not-allowed}
+.attente{text-align:center;color:var(--sourd);font-size:14.5px;line-height:1.55;margin-top:22px}
+
+/* ---------- le coin ---------- */
+.coin-tete{text-align:center;padding:16px 0 6px}
+.coin-lettre{font-family:var(--hebreu);font-weight:600;font-size:112px;line-height:1;direction:rtl;
+  color:var(--coin,var(--accent));animation:tombe .7s cubic-bezier(.2,.8,.3,1) both}
+@keyframes tombe{from{opacity:0;transform:scale(.6) translateY(-14px)}to{opacity:1;transform:none}}
+.coin-nom{font-family:var(--data);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:700;color:var(--coin,var(--accent));margin-top:8px}
+.coin-phrase{font-family:var(--display);font-weight:300;font-size:24px;line-height:1.3;
+  text-align:center;margin:20px 8px 0;animation:monte .6s .25s both}
+.coin-phrase b{font-family:var(--hebreu);font-weight:600}
+
+.pret{width:100%;font-family:var(--corps);font-size:17px;font-weight:700;border-radius:15px;
+  padding:19px;min-height:64px;margin-top:26px;border:2px solid transparent;cursor:pointer;transition:.2s}
+.pret:disabled{background:var(--carte);border-color:var(--bord-fin);color:var(--sourd);cursor:not-allowed}
+.pret:not(:disabled){background:var(--accent);color:#fff}
+.pret:not(:disabled):active{transform:scale(.985)}
+.pret[data-etat="envoye"]{background:var(--carte);border-color:var(--accent);color:var(--accent)}
+.pret-note{font-size:13px;color:var(--sourd);text-align:center;margin-top:12px;line-height:1.5}
+
+.quitter{margin-top:34px;padding-top:18px;border-top:1.5px solid var(--bord-fin);text-align:center}
+.quitter button{font-family:var(--corps);font-size:12.5px;font-weight:600;background:none;
+  border:1.5px solid var(--bord-fin);border-radius:11px;padding:9px 13px;cursor:pointer;color:var(--sourd)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <header class="entete" id="entete" style="display:none">
+    <span class="badge" id="monBadge"></span>
+    <span class="code-pill" id="monCode"></span>
+  </header>
+
+  <!-- ============ REJOINDRE ============ -->
+  <section class="ecran actif" id="eRejoindre">
+    <div style="padding-top:22px">
+      <p class="sur-titre">Bienvenue</p>
+      <h1>Deux chiffres, et c'est parti.</h1>
+      <p class="chapeau">Le code de la soirée est affiché sur l'écran géant.
+         Ton numéro, c'est celui de ton badge.</p>
+
+      <div class="champ-bloc">
+        <label for="inCode">Le code de la soirée</label>
+        <input id="inCode" class="grande-saisie" maxlength="4" autocomplete="off"
+               autocapitalize="characters" spellcheck="false" placeholder="ABCD">
+      </div>
+      <div class="champ-bloc">
+        <label for="inBadge">Ton numéro de badge</label>
+        <input id="inBadge" class="grande-saisie" type="number" inputmode="numeric"
+               min="1" max="999" placeholder="34">
+      </div>
+      <div class="champ-bloc" id="blocGenre" style="display:none">
+        <label>Tu es…</label>
+        <div class="genre-rangee">
+          <button type="button" id="bFemme" aria-pressed="false">Femme</button>
+          <button type="button" id="bHomme" aria-pressed="false">Homme</button>
+        </div>
+      </div>
+      <button class="primaire" id="bRejoindre">C'est parti</button>
+      <p class="aide" id="rejAide"></p>
+    </div>
+  </section>
+
+  <!-- ============ SALLE EN ATTENTE ============ -->
+  <section class="ecran" id="eSalleAttente">
+    <p class="sur-titre">Tu es dans la soirée</p>
+    <h1>Garde ton téléphone en main.</h1>
+    <p class="attente">La première question arrive sur cet écran. Regarde l'écran géant en attendant.</p>
+    <div class="quitter"><button id="bQuitter1">Ce n'est pas mon badge</button></div>
+  </section>
+
+  <!-- ============ LA QUESTION ============ -->
+  <section class="ecran" id="eQuestion">
+    <p class="sur-titre"><span id="qNum">Question</span> <span class="chrono" id="chrono"></span></p>
+    <h1 id="qTexte"></h1>
+    <div class="choix" id="qChoix"></div>
+  </section>
+
+  <!-- ============ C'EST ENVOYÉ ============ -->
+  <section class="ecran" id="eEnvoye">
+    <p class="sur-titre">C'est envoyé</p>
+    <h1>Garde ton téléphone en main.</h1>
+    <p class="attente">On attend les derniers. Dans quelques secondes, tu sauras où aller.</p>
+  </section>
+
+  <!-- ============ LE COIN ============ -->
+  <section class="ecran" id="eCoin">
+    <div class="coin-tete">
+      <div class="coin-lettre" id="cLettre"></div>
+      <div class="coin-nom" id="cNom"></div>
+    </div>
+    <p class="coin-phrase" id="cPhrase"></p>
+    <button class="pret" id="bPret" disabled>Prêt à continuer</button>
+    <p class="pret-note" id="pretNote"></p>
+  </section>
+
+  <!-- ============ FIN ============ -->
+  <section class="ecran" id="eFin">
+    <p class="sur-titre">C'est la fin</p>
+    <h1>Merci d'avoir joué.</h1>
+    <p class="attente">Tu peux ranger ton téléphone. La suite se passe dans la salle.</p>
+  </section>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="config.js"></script>
+<script src="commun.js"></script>
+<script>
+(function(){
+"use strict";
+/* ============================================================
+   ❤️ Kod — l'écran du participant (étape 1)
+   - Le coin vient UNIQUEMENT de la réponse à la question en cours.
+   - Le chronomètre vient du serveur (phaseAt + dureeMs) via
+     l'offset .info/serverTimeOffset. Jamais de décompte local libre.
+   - Reprise de session : localStorage (code + badge) → on
+     retrouve l'écran exact, réponse et « prêt » compris.
+   - Aucune statistique n'est visible ici. Jamais.
+   ============================================================ */
+var K = KOD.init();
+var el = function(id){ return document.getElementById(id); };
+var COINS = KOD.COINS;
+
+var MOI = { code: null, badge: null, genre: null };
+var S = {
+  etat: null,          // state de la session
+  qId: null,           // question affichée
+  maReponse: null,     // {coin, at} pour la question en cours
+  pretEnvoye: false,
+  tic: null,           // chrono de la question
+  tic2: null,          // décompte du bouton prêt
+  refEtat: null
+};
+
+var ECRANS = ['eRejoindre','eSalleAttente','eQuestion','eEnvoye','eCoin','eFin'];
+function montre(id){
+  ECRANS.forEach(function(x){ el(x).classList.toggle('actif', x === id); });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function refSession(){ return K.db.ref('sessions/' + MOI.code); }
+
+/* ---------- genre : par l'URL des deux QR (?g=f / ?g=h) ---------- */
+var params = KOD.litParamsURL();
+if (params.g === 'f' || params.g === 'h') MOI.genre = params.g;
+if (params.code && /^[A-Za-z]{4}$/.test(params.code)) el('inCode').value = params.code.toUpperCase();
+
+var genreChoisi = null;
+function majGenreBoutons(){
+  el('bFemme').setAttribute('aria-pressed', genreChoisi === 'f' ? 'true' : 'false');
+  el('bHomme').setAttribute('aria-pressed', genreChoisi === 'h' ? 'true' : 'false');
+}
+el('bFemme').addEventListener('click', function(){ genreChoisi = 'f'; majGenreBoutons(); });
+el('bHomme').addEventListener('click', function(){ genreChoisi = 'h'; majGenreBoutons(); });
+
+/* ---------- rejoindre / reprendre ---------- */
+function sauve(){
+  try { localStorage.setItem('kodMoi', JSON.stringify(MOI)); } catch(e){}
+}
+function oublie(){
+  try { localStorage.removeItem('kodMoi'); } catch(e){}
+  location.reload();
+}
+el('bQuitter1').addEventListener('click', oublie);
+
+function rejoindre(){
+  var aide = el('rejAide');
+  var code = el('inCode').value.toUpperCase().trim();
+  var badge = parseInt(el('inBadge').value, 10);
+  var genre = MOI.genre || genreChoisi;
+  aide.className = 'aide alerte';
+  if (!/^[A-Z]{4}$/.test(code)){ aide.textContent = 'Le code fait quatre lettres — il est sur l\u2019écran géant.'; return; }
+  if (!(badge >= 1 && badge <= 999)){ aide.textContent = 'Ton numéro de badge, entre 1 et 999.'; return; }
+  if (genre !== 'f' && genre !== 'h'){ aide.textContent = 'Choisis « Femme » ou « Homme ».'; return; }
+  aide.className = 'aide'; aide.textContent = 'Connexion…';
+  el('bRejoindre').disabled = true;
+
+  K.db.ref('sessions/' + code + '/state').once('value').then(function(snap){
+    if (!snap.exists()){
+      aide.className = 'aide alerte';
+      aide.textContent = 'Aucune soirée avec le code ' + code + '. Vérifie sur l\u2019écran géant.';
+      el('bRejoindre').disabled = false;
+      return;
+    }
+    MOI.code = code; MOI.badge = badge; MOI.genre = genre;
+    sauve();
+    branche();
+  }).catch(function(e){
+    aide.className = 'aide alerte';
+    aide.textContent = 'Connexion impossible : ' + e.message;
+    el('bRejoindre').disabled = false;
+  });
+}
+el('bRejoindre').addEventListener('click', rejoindre);
+
+/* ---------- branchement temps réel ---------- */
+function branche(){
+  el('monBadge').textContent = 'n° ' + MOI.badge;
+  el('monCode').textContent = MOI.code;
+  el('entete').style.display = 'flex';
+
+  /* présence : badge = seule identité (anonymat total) */
+  var moiRef = refSession().child('participants/' + MOI.badge);
+  moiRef.update({ genre: MOI.genre, lastSeen: K.TS, online: true });
+  K.db.ref('.info/connected').on('value', function(s){
+    if (s.val() !== true) return;
+    moiRef.onDisconnect().update({ online: false, lastSeen: K.TS });
+    moiRef.update({ online: true, lastSeen: K.TS });
+  });
+
+  S.refEtat = refSession().child('state');
+  S.refEtat.on('value', function(snap){
+    S.etat = snap.val() || {};
+    surEtat();
+  });
+}
+
+/* ---------- l'état pilote tout l'affichage ---------- */
+function surEtat(){
+  var e = S.etat, phase = e.phase || 'attente';
+
+  /* nouvelle question ? on repart de zéro (aucune mémoire des réponses passées) */
+  if (e.qId != null && e.qId !== S.qId){
+    S.qId = e.qId;
+    S.maReponse = null;
+    S.pretEnvoye = false;
+    enleveCoin();
+    /* reprise de session : ai-je déjà répondu à CETTE question ? */
+    Promise.all([
+      refSession().child('reponses/' + S.qId + '/' + MOI.badge).once('value'),
+      refSession().child('prets/' + S.qId + '/' + MOI.badge).once('value')
+    ]).then(function(r){
+      var rep = r[0].val();
+      if (rep && COINS[rep.coin]) S.maReponse = rep;
+      S.pretEnvoye = r[1].val() === true;
+      dessine();
+    });
+    return; /* dessine() viendra après la relecture */
+  }
+  if (e.qId == null){ S.qId = null; S.maReponse = null; S.pretEnvoye = false; enleveCoin(); }
+  dessine();
+}
+
+function dessine(){
+  var e = S.etat || {}, phase = e.phase || 'attente';
+  clearInterval(S.tic);
+
+  if (phase === 'fin'){ enleveCoin(); montre('eFin'); return; }
+
+  if (phase === 'attente' || !e.q || e.qId == null){
+    enleveCoin(); montre('eSalleAttente'); return;
+  }
+
+  /* j'ai répondu → mon coin (et rien d'autre : pas de stats ici) */
+  if (S.maReponse){ dessineCoin(); return; }
+
+  /* je n'ai pas répondu */
+  if (phase === 'question'){ dessineQuestion(); return; }
+
+  /* résultats ou migration sans réponse de ma part : on attend, sobrement */
+  enleveCoin();
+  montre('eEnvoye');
+  el('eEnvoye').querySelector('h1').textContent = 'Regarde l\u2019écran géant.';
+  el('eEnvoye').querySelector('.attente').textContent =
+    'La prochaine question arrivera ici. Garde ton téléphone en main.';
+}
+
+/* ---------- écran question ---------- */
+function dessineQuestion(){
+  var e = S.etat, q = e.q;
+  el('qNum').textContent = 'Question ' + (e.qNum || '');
+  el('qTexte').textContent = q.texte || '';
+
+  var box = el('qChoix');
+  /* on ne reconstruit pas les boutons si la même question est déjà affichée
+     (un message envoyé à l'écran géant passe par le même état) */
+  if (box.dataset.qid !== String(e.qId)){
+    box.dataset.qid = String(e.qId);
+    box.innerHTML = '';
+    /* ordre mélangé, mais stable pour ce badge et cette question :
+       après une reconnexion, on revoit le même ordre */
+    var choix = KOD.melange(q.choix || [], (MOI.badge * 1000 + (e.qId || 0)));
+    choix.forEach(function(ch){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', 'false');
+      b.textContent = ch.texte;
+      b.addEventListener('click', function(){
+        Array.prototype.forEach.call(box.children, function(x){
+          x.setAttribute('aria-pressed', 'false'); x.disabled = true;
+        });
+        b.disabled = false;
+        b.setAttribute('aria-pressed', 'true');
+        envoieReponse(ch.coin);
+      });
+      box.appendChild(b);
+    });
+  }
+
+  /* chronomètre : finPrévue - maintenant(serveur), jamais un décompte local */
+  function tick(){
+    var fin = (e.phaseAt || 0) + (e.dureeMs || 0);
+    var reste = (fin - K.now()) / 1000;
+    el('chrono').textContent = KOD.mmss(reste);
+    el('chrono').classList.toggle('chaud', reste <= 10);
+  }
+  tick();
+  S.tic = setInterval(tick, 250);
+  montre('eQuestion');
+}
+
+function envoieReponse(coin){
+  var qId = S.qId;
+  refSession().child('reponses/' + qId + '/' + MOI.badge)
+    .set({ coin: coin, at: K.TS })
+    .then(function(){
+      return refSession().child('reponses/' + qId + '/' + MOI.badge).once('value');
+    })
+    .then(function(snap){
+      if (S.qId !== qId) return; /* la soirée a déjà avancé */
+      S.maReponse = snap.val();  /* on relit pour avoir le vrai timestamp serveur */
+      clearInterval(S.tic);
+      montre('eEnvoye');
+      el('eEnvoye').querySelector('h1').textContent = 'Garde ton téléphone en main.';
+      el('eEnvoye').querySelector('.attente').textContent =
+        'On attend les derniers. Dans quelques secondes, tu sauras où aller.';
+      setTimeout(function(){ if (S.qId === qId && S.maReponse) dessineCoin(); }, 2200);
+    })
+    .catch(function(){
+      /* écriture refusée ou réseau coupé : on laisse réessayer */
+      Array.prototype.forEach.call(el('qChoix').children, function(x){
+        x.disabled = false; x.setAttribute('aria-pressed', 'false');
+      });
+    });
+}
+
+/* ---------- écran coin ---------- */
+function dessineCoin(){
+  var coin = S.maReponse.coin, c = COINS[coin];
+  document.body.className = 'encoin';
+  document.body.style.setProperty('--teinte', c.doux);
+  el('cLettre').style.setProperty('--coin', c.c);
+  el('cNom').style.setProperty('--coin', c.c);
+  el('cLettre').textContent = coin;
+  el('cNom').textContent = c.nom;
+  el('cPhrase').innerHTML = 'Vous êtes tous en <b>' + coin + '</b>. Trouvez pourquoi.';
+  dessinePret();
+  montre('eCoin');
+}
+function enleveCoin(){
+  document.body.className = '';
+  clearInterval(S.tic2);
+}
+
+/* ---------- bouton « prêt » : grisé 180 s (heure serveur), puis actif ---------- */
+function dessinePret(){
+  var b = el('bPret'), n = el('pretNote');
+  clearInterval(S.tic2);
+
+  if (S.pretEnvoye){
+    b.disabled = true;
+    b.setAttribute('data-etat', 'envoye');
+    b.textContent = '✓ Tu es prêt';
+    n.textContent = 'C\u2019est noté. Continue à parler en attendant les autres.';
+    return;
+  }
+  b.removeAttribute('data-etat');
+
+  var actifA = (S.maReponse.at || 0) + KOD.DUREES.PRET_PLANCHER * 1000;
+  function tick(){
+    var reste = (actifA - K.now()) / 1000;
+    if (reste > 0){
+      b.disabled = true;
+      b.textContent = 'Prêt à continuer · ' + KOD.mmss(reste);
+      n.textContent = 'Le bouton s\u2019activera dans un moment. Profites-en.';
+    } else {
+      clearInterval(S.tic2);
+      b.disabled = false;
+      b.textContent = 'Prêt à continuer';
+      n.textContent = 'Quand assez de monde ici sera prêt, on passera à la suite.';
+    }
+  }
+  tick();
+  S.tic2 = setInterval(tick, 500);
+
+  b.onclick = function(){
+    if (b.disabled) return;
+    b.disabled = true;
+    refSession().child('prets/' + S.qId + '/' + MOI.badge).set(true).then(function(){
+      S.pretEnvoye = true;
+      dessinePret();
+    }).catch(function(){ b.disabled = false; });
+  };
+}
+
+/* ---------- démarrage : reprise de session obligatoire ---------- */
+if (K){
+  var connu = null;
+  try { connu = JSON.parse(localStorage.getItem('kodMoi') || 'null'); } catch(e){}
+  if (connu && /^[A-Z]{4}$/.test(connu.code || '') &&
+      connu.badge >= 1 && connu.badge <= 999 &&
+      (connu.genre === 'f' || connu.genre === 'h')){
+    MOI = connu;
+    branche(); /* on retrouve l'état exact, sans rien redemander */
+  } else if (!MOI.genre){
+    el('blocGenre').style.display = 'block'; /* pas passé par un QR : on demande */
+  }
+} else {
+  el('bRejoindre').disabled = true;
+  if (!MOI.genre) el('blocGenre').style.display = 'block';
+}
+})();
+</script>
+</body>
+</html>

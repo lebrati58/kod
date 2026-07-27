@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>❤️ Kod — test de charge</title>
+<style>
+:root{
+  --fond:#100C1E; --carte:#1D1733; --bord-fin:rgba(245,212,143,.4);
+  --encre:#FFFCF7; --second:#DCD2F0; --sourd:#B8ACD8;
+  --accent:#FF7D91; --or:#F5D48F; --ok:#7FE0B0; --alerte:#FFB4A8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--fond);color:var(--encre);font-family:system-ui,sans-serif;
+  padding:24px 16px;-webkit-font-smoothing:antialiased}
+.enveloppe{max-width:560px;margin:0 auto}
+h1{font-size:24px;font-weight:600;margin-bottom:6px}
+p.chapeau{color:var(--second);font-size:14.5px;line-height:1.55;margin-bottom:22px}
+.carte{background:var(--carte);border:2px solid var(--bord-fin);border-radius:14px;
+  padding:16px;margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:7px;color:var(--second)}
+input{width:100%;font-size:18px;font-family:ui-monospace,monospace;font-weight:700;color:var(--or);
+  background:#2A2145;border:2px solid var(--bord-fin);border-radius:10px;padding:12px;margin-bottom:14px}
+input:focus{outline:3px solid var(--accent);outline-offset:1px}
+button{font-size:16px;font-weight:700;border-radius:12px;padding:15px 18px;min-height:54px;
+  border:2px solid var(--bord-fin);background:var(--carte);color:var(--encre);cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+.plein{background:var(--accent);border-color:var(--accent);color:#2A0A13;width:100%}
+.rangee{display:flex;gap:10px;margin-top:4px}
+.rangee button{flex:1}
+.compteurs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.compteurs div{background:var(--carte);border:2px solid var(--bord-fin);border-radius:12px;
+  padding:12px 6px;text-align:center}
+.compteurs span{display:block;font-family:ui-monospace,monospace;font-size:26px;font-weight:700;line-height:1.1}
+.compteurs small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sourd);margin-top:4px;font-weight:700}
+.compteurs .ok{color:var(--ok)} .compteurs .err{color:var(--alerte)}
+#journal{font-family:ui-monospace,monospace;font-size:12px;color:var(--second);line-height:1.8;
+  max-height:260px;overflow-y:auto}
+.note{font-size:12.5px;color:var(--sourd);line-height:1.55;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+  <h1>🧪 Test de charge</h1>
+  <p class="chapeau">Ouvre N participants simulés, chacun avec sa <b>propre connexion Firebase</b>
+    (une app nommée par simulé). Ils rejoignent la soirée, répondent aux questions avec des délais
+    réalistes, et se disent « prêts ». La console et l'écran géant les voient comme de vrais téléphones.</p>
+
+  <div class="carte">
+    <label for="inCode">Code de la soirée (créée depuis la console)</label>
+    <input id="inCode" maxlength="4" autocapitalize="characters" spellcheck="false" placeholder="ABCD">
+    <label for="inN">Nombre de participants simulés</label>
+    <input id="inN" type="number" min="1" max="300" value="100">
+    <button class="plein" id="bLancer">Lancer la simulation</button>
+    <div class="rangee">
+      <button id="bStop" disabled>Tout déconnecter</button>
+    </div>
+  </div>
+
+  <div class="compteurs">
+    <div><span class="ok" id="cCo">0</span><small>connectés</small></div>
+    <div><span id="cRep">0</span><small>réponses</small></div>
+    <div><span id="cPret">0</span><small>prêts</small></div>
+    <div><span class="err" id="cErr">0</span><small>erreurs</small></div>
+  </div>
+
+  <div class="carte">
+    <div id="journal">En attente.</div>
+  </div>
+
+  <p class="note">Badges utilisés : 501 et plus, pour ne jamais entrer en collision avec les vrais
+    badges de la salle. Un onglet avec 100 connexions consomme pas mal de mémoire : ferme-le après le test.
+    Le plan gratuit de Firebase accepte 100 connexions simultanées sans problème.</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="config.js"></script>
+<script src="commun.js"></script>
+<script>
+(function(){
+"use strict";
+var K = KOD.init(); // vérifie la config + bandeau si manquante
+var el = function(id){ return document.getElementById(id); };
+var COINS_LST = KOD.LETTRES;
+
+var SIM = { actifs: [], co: 0, rep: 0, pret: 0, err: 0, enCours: false };
+
+function log(txt){
+  var j = el('journal');
+  if (j.dataset.vierge !== '1'){ j.innerHTML = ''; j.dataset.vierge = '1'; }
+  var d = document.createElement('div');
+  var h = new Date();
+  d.textContent = String(h.getHours()).padStart(2,'0') + ':' +
+    String(h.getMinutes()).padStart(2,'0') + ':' + String(h.getSeconds()).padStart(2,'0') + ' · ' + txt;
+  j.prepend(d);
+  while (j.children.length > 60) j.lastChild.remove();
+}
+function maj(){
+  el('cCo').textContent = SIM.co;
+  el('cRep').textContent = SIM.rep;
+  el('cPret').textContent = SIM.pret;
+  el('cErr').textContent = SIM.err;
+}
+
+/* un participant simulé = une vraie app Firebase séparée (sa propre connexion) */
+function creeSimule(i, code){
+  var badge = 500 + i; /* jamais les badges réels */
+  var app;
+  try {
+    app = firebase.initializeApp(window.KOD_FIREBASE_CONFIG, 'sim' + i + '_' + Date.now());
+  } catch(e){
+    SIM.err++; maj(); log('sim ' + badge + ' : ' + e.message);
+    return null;
+  }
+  var db = app.database();
+  var s = { app: app, db: db, badge: badge, qId: null, aRepondu: false, timers: [] };
+  var base = db.ref('sessions/' + code);
+
+  base.child('participants/' + badge).update({
+    genre: Math.random() < 0.5 ? 'f' : 'h',
+    lastSeen: firebase.database.ServerValue.TIMESTAMP,
+    online: true
+  }).then(function(){
+    SIM.co++; maj();
+  }).catch(function(e){
+    SIM.err++; maj(); log('badge ' + badge + ' refusé : ' + e.message);
+  });
+  base.child('participants/' + badge).onDisconnect()
+    .update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+
+  /* il suit l'état de la soirée comme un vrai téléphone */
+  s.ecoute = base.child('state').on('value', function(snap){
+    var e = snap.val() || {};
+    if (e.qId != null && e.qId !== s.qId){
+      s.qId = e.qId; s.aRepondu = false;
+      if (e.phase === 'question' && e.q && e.q.choix){
+        /* délai réaliste : entre 2 et 30 secondes */
+        var delai = 2000 + Math.random() * 28000;
+        s.timers.push(setTimeout(function(){
+          if (s.aRepondu || s.qId !== e.qId) return;
+          var ch = e.q.choix[Math.floor(Math.random() * e.q.choix.length)];
+          base.child('reponses/' + e.qId + '/' + badge)
+            .set({ coin: ch.coin, at: firebase.database.ServerValue.TIMESTAMP })
+            .then(function(){
+              s.aRepondu = true; SIM.rep++; maj();
+              /* « prêt » : après le plancher de 3 min + un délai humain */
+              var apres = KOD.DUREES.PRET_PLANCHER * 1000 + 3000 + Math.random() * 60000;
+              s.timers.push(setTimeout(function(){
+                if (s.qId !== e.qId) return;
+                base.child('prets/' + e.qId + '/' + badge).set(true)
+                  .then(function(){ SIM.pret++; maj(); })
+                  .catch(function(){ SIM.err++; maj(); });
+              }, apres));
+            })
+            .catch(function(er){ SIM.err++; maj(); log('réponse ' + badge + ' : ' + er.message); });
+        }, delai));
+      }
+    }
+  });
+  return s;
+}
+
+function lancer(){
+  var code = el('inCode').value.toUpperCase().trim();
+  var n = Math.min(300, Math.max(1, parseInt(el('inN').value, 10) || 100));
+  if (!/^[A-Z]{4}$/.test(code)){ log('Le code fait quatre lettres.'); return; }
+  if (SIM.enCours){ log('Déconnecte d\u2019abord la simulation en cours.'); return; }
+
+  /* la soirée existe ? */
+  K.db.ref('sessions/' + code + '/state').once('value').then(function(snap){
+    if (!snap.exists()){ log('Aucune soirée avec le code ' + code + '.'); return; }
+    SIM.enCours = true;
+    SIM.co = 0; SIM.rep = 0; SIM.pret = 0; SIM.err = 0; maj();
+    el('bLancer').disabled = true; el('bStop').disabled = false;
+    log('Lancement de ' + n + ' participants simulés sur ' + code + '…');
+
+    /* on ouvre les connexions par petites vagues pour rester réaliste */
+    var i = 0;
+    (function vague(){
+      var fin = Math.min(i + 10, n);
+      for (; i < fin; i++){
+        var s = creeSimule(i + 1, code);
+        if (s) SIM.actifs.push(s);
+      }
+      if (i < n) setTimeout(vague, 300);
+      else log(n + ' simulés lancés. Regarde le compteur « connectés » sur la console.');
+    })();
+  });
+}
+
+function arreter(){
+  log('Déconnexion de ' + SIM.actifs.length + ' simulés…');
+  SIM.actifs.forEach(function(s){
+    s.timers.forEach(clearTimeout);
+    try { s.db.goOffline(); } catch(e){}
+    try { s.app.delete(); } catch(e){}
+  });
+  SIM.actifs = [];
+  SIM.enCours = false; SIM.co = 0; maj();
+  el('bLancer').disabled = false; el('bStop').disabled = true;
+  log('Tout est déconnecté. Sur la console, « connectés » doit redescendre.');
+}
+
+el('bLancer').addEventListener('click', lancer);
+el('bStop').addEventListener('click', arreter);
+if (!K){ el('bLancer').disabled = true; }
+})();
+</script>
+</body>
+</html>
