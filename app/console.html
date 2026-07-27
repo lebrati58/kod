@@ -62,6 +62,9 @@ body{background:var(--fond);color:var(--encre);font-family:var(--corps);
   text-transform:uppercase;color:var(--sourd);margin-top:4px;font-weight:700}
 .bandeau .gros{color:var(--accent)}
 
+.nouveaux{display:none;background:var(--carte);border:2px solid var(--bord-fin);border-radius:14px;
+  padding:11px 13px;margin:-4px 0 12px;font-size:13.5px;line-height:1.45;color:var(--or);font-weight:600}
+
 .question{background:var(--carte);border:2px solid var(--bord);border-radius:16px;padding:16px;margin-bottom:12px}
 .question .num{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--or);font-weight:700;margin-bottom:8px;display:flex;gap:8px;align-items:center}
@@ -163,6 +166,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
       <div><span class="gros" id="bRep">0/0</span><small>réponses</small></div>
       <div><span id="bTemps">—</span><small>temps</small></div>
     </div>
+
+    <div class="nouveaux" id="nouveaux" role="status"></div>
 
     <div class="question">
       <div class="num"><span id="qNum">aucune question lancée</span>
@@ -269,6 +274,9 @@ var S = {
   qNumLance: 0,        // combien de questions déjà lancées
   dejaJouees: {},      // id -> true
   alerte60: null,      // coin déjà signalé prêt (par question)
+  arrivees: {},        // badge -> arriveA (première arrivée, horodatée côté participant)
+  arrivesVus: {},      // badges déjà annoncés dans le journal
+  arriveesInit: false, // premier instantané reçu (on n'annonce pas le passé)
   refRep: null, refPret: null,
   refRepCb: null, refPretCb: null,
   tic: null
@@ -431,6 +439,33 @@ function dessinePrets(){
   }
 }
 
+/* ---------- les nouveaux depuis la dernière question ----------
+   Un participant écrit arriveA à sa PREMIÈRE connexion (jamais réécrit).
+   Nouveau = arrivé après le lancement du dernier tour (state/tourLanceA).
+   Remise à zéro automatique au lancement de la question suivante. */
+function majNouveaux(premierPassage){
+  var t = S.etat && S.etat.tourLanceA;
+  var n = 0;
+  if (typeof t === 'number'){
+    Object.keys(S.arrivees).forEach(function(b){
+      if (S.arrivees[b] <= t) return;
+      n++;
+      if (!S.arrivesVus[b]){
+        S.arrivesVus[b] = true;
+        if (!premierPassage) journal('Le badge ' + b + ' a rejoint la soirée.');
+      }
+    });
+  }
+  var d = el('nouveaux');
+  if (n > 0){
+    d.textContent = '🔔 ' + n + ' nouveau' + (n > 1 ? 'x' : '') +
+      ' depuis la dernière question — ' +
+      (n > 1 ? 'ils recevront leurs numéros' : 'il recevra ses numéros') +
+      ' à la prochaine migration.';
+    d.style.display = 'block';
+  } else d.style.display = 'none';
+}
+
 /* ---------- bandeau haut ---------- */
 function majBandeau(){
   el('bCo').textContent = S.connectes;
@@ -462,9 +497,16 @@ function attache(code){
     surEtat();
   });
   refSession().child('participants').on('value', function(snap){
-    var n = 0;
-    snap.forEach(function(c){ if (c.child('online').val() === true) n++; });
+    var n = 0, arrivees = {};
+    snap.forEach(function(c){
+      if (c.child('online').val() === true) n++;
+      var a = c.child('arriveA').val();
+      if (typeof a === 'number') arrivees[c.key] = a;
+    });
     S.connectes = n;
+    S.arrivees = arrivees;
+    majNouveaux(!S.arriveesInit);
+    S.arriveesInit = true;
     majBandeau(); verifieEquilibre();
   });
   clearInterval(S.tic);
@@ -515,7 +557,7 @@ function surEtat(){
         String(ch.texte||'').replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</li>';
     }).join('');
   }
-  majBandeau(); dessinePrets();
+  majBandeau(); dessinePrets(); majNouveaux(false);
 }
 
 function ecouteQuestion(qId){
@@ -649,7 +691,8 @@ function lancerQuestion(){
     q: { id: q.id, texte: q.texte, choix: q.choix },
     migration: null,
     phaseAt: K.TS,
-    dureeMs: KOD.DUREES.QUESTION * 1000
+    dureeMs: KOD.DUREES.QUESTION * 1000,
+    tourLanceA: K.TS  /* remet à zéro le compteur de nouveaux */
   });
   journal('Question lancée : « ' + q.texte + ' »');
 }
@@ -662,7 +705,8 @@ function lancerMigrationMazal(){
     migration: 'mazal',
     qId: 0, qNum: 0, q: null,
     phaseAt: K.TS,
-    dureeMs: KOD.DUREES.MIGRATION * 1000
+    dureeMs: KOD.DUREES.MIGRATION * 1000,
+    tourLanceA: K.TS  /* les arrivées d'avant la soirée ne comptent pas comme « nouvelles » */
   });
   journal('Première migration lancée : chacun rejoint le coin de son mazal.');
   calculeSuggestions(0);

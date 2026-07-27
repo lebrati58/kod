@@ -556,6 +556,9 @@ function branche(){
   /* reprise de l'accueil : déjà complété → on ne le refait JAMAIS */
   mr.once('value').then(function(snap){
     var p = snap.val() || {};
+    /* première arrivée de ce badge : on la date (la console compte
+       les nouveaux depuis la dernière question) — jamais réécrite */
+    if (!p.arriveA) mr.child('arriveA').set(K.TS);
     if (typeof p.mazal === 'number' && p.cherche){
       MOI.mazal = p.mazal; MOI.cherche = p.cherche;
       if (typeof p.age === 'number') MOI.age = p.age;
@@ -749,6 +752,20 @@ function modeMazal(){
 }
 function qKeyCourante(){ return modeMazal() ? 0 : S.qId; }
 
+/* temps restant de la phase en cours, sur l'heure SERVEUR */
+function tempsRestant(){
+  var e = S.etat || {};
+  if (!e.phaseAt || !e.dureeMs) return 0;
+  return (e.phaseAt + e.dureeMs - K.now()) / 1000;
+}
+
+function montreSalleAttente(enCours){
+  el('eSalleAttente').querySelector('.attente').textContent = enCours
+    ? 'La prochaine question arrive sur cet écran. Regarde l\u2019écran géant en attendant.'
+    : 'La première question arrive sur cet écran. Regarde l\u2019écran géant en attendant.';
+  montre('eSalleAttente');
+}
+
 function surEtat(){
   if (!S.etat) return;
   var e = S.etat;
@@ -785,7 +802,13 @@ function dessine(){
   if (!S.accueilOk) return;
 
   if (phase === 'attente' || e.qId == null){
-    enleveCoin(); montre('eSalleAttente'); return;
+    /* arrivée (ou reprise) pendant une pause EN COURS de soirée :
+       on l'installe dans le coin de son mazal, chaleureusement,
+       plutôt que de lui promettre « la première question » */
+    if (e.qId != null && !S.maReponse && KOD_SUGG.coinDuMazal(MOI.mazal)){
+      dessineCoin('bienvenue'); return;
+    }
+    enleveCoin(); montreSalleAttente(e.qId != null || (e.qNum || 0) > 0); return;
   }
 
   /* première migration : par le mazal — l'écran dit juste le coin */
@@ -801,15 +824,19 @@ function dessine(){
     return;
   }
 
-  if (!e.q){ enleveCoin(); montre('eSalleAttente'); return; }
+  if (!e.q){ enleveCoin(); montreSalleAttente(true); return; }
 
   /* j'ai répondu → mon coin (et rien d'autre : pas de stats ici) */
   if (S.maReponse){ dessineCoin('question'); return; }
 
-  /* je n'ai pas répondu */
-  if (phase === 'question'){ dessineQuestion(); return; }
+  /* je n'ai pas répondu et la question est encore ouverte : je peux répondre */
+  if (phase === 'question' && tempsRestant() > 0){ dessineQuestion(); return; }
 
-  /* résultats ou migration sans réponse de ma part : on attend, sobrement */
+  /* je débarque en cours de route (résultats, migration, temps écoulé) :
+     bienvenue — on m'installe dans le coin de mon mazal, sans l'expliquer */
+  if (KOD_SUGG.coinDuMazal(MOI.mazal)){ dessineCoin('bienvenue'); return; }
+
+  /* dégradé propre : mazal inconnu → on patiente, jamais d'écran cassé */
   enleveCoin();
   montre('eEnvoye');
   el('eEnvoye').querySelector('h1').textContent = 'Regarde l\u2019écran géant.';
@@ -882,11 +909,15 @@ function envoieReponse(coin){
     });
 }
 
-/* ---------- écran coin (+ les cinq numéros) ---------- */
+/* ---------- écran coin (+ les cinq numéros) ----------
+   mode 'question'  : coin = ma réponse à la question en cours
+   mode 'mazal'     : première migration, coin du mazal
+   mode 'bienvenue' : retardataire / arrivé entre deux questions →
+                      coin du mazal, sans bouton « prêt » ni liste */
 function dessineCoin(mode){
-  var coin = mode === 'mazal'
-    ? KOD_SUGG.coinDuMazal(MOI.mazal)
-    : S.maReponse.coin;
+  var coin = mode === 'question'
+    ? S.maReponse.coin
+    : KOD_SUGG.coinDuMazal(MOI.mazal);
   var c = COINS[coin];
   S.coinAffiche = mode;
   document.body.className = 'encoin';
@@ -896,8 +927,12 @@ function dessineCoin(mode){
   el('lTitre').style.setProperty('--coin', c.c);
   el('cLettre').textContent = coin;
   el('cNom').textContent = c.nom;
+  var tardif = mode === 'bienvenue';
+  el('bPret').style.display = tardif ? 'none' : '';
+  el('pretNote').style.display = tardif ? 'none' : '';
   dessineNumeros();
-  dessinePret();
+  if (tardif) clearInterval(S.tic2);
+  else dessinePret();
   montre('eCoin');
 }
 function enleveCoin(){
@@ -918,7 +953,9 @@ var MOTS_MZ = ['','Un numéro à trouver dans ce coin','Deux numéros à trouver
 function dessineNumeros(){
   if (!S.coinAffiche) return;
   var mode = S.coinAffiche;
-  var coin = mode === 'mazal' ? KOD_SUGG.coinDuMazal(MOI.mazal) : (S.maReponse && S.maReponse.coin);
+  var coin = mode === 'question'
+    ? (S.maReponse && S.maReponse.coin)
+    : KOD_SUGG.coinDuMazal(MOI.mazal);
   if (!coin) return;
 
   var liste = null;
@@ -930,14 +967,16 @@ function dessineNumeros(){
   if (!liste){
     tete.style.display = 'none'; nums.style.display = 'none'; note.style.display = 'none';
     phrase.style.display = '';
-    phrase.innerHTML = 'Vous êtes tous en <b>' + coin + '</b>. Trouvez pourquoi.';
+    phrase.innerHTML = mode === 'bienvenue'
+      ? 'Bienvenue ! Installe-toi au coin <b>' + coin + '</b> — la prochaine question arrivera sur ce téléphone.'
+      : 'Vous êtes tous en <b>' + coin + '</b>. Trouvez pourquoi.';
     return;
   }
   phrase.style.display = 'none';
   tete.style.display = ''; nums.style.display = 'flex'; note.style.display = '';
 
   var n = Math.min(liste.length, 5);
-  el('lSur').textContent = (mode === 'mazal' ? MOTS_MZ[n] : MOTS[n]) || '';
+  el('lSur').textContent = (mode === 'question' ? MOTS[n] : MOTS_MZ[n]) || '';
 
   nums.innerHTML = '';
   var z = MAZAL[MOI.mazal] || null;
@@ -950,7 +989,7 @@ function dessineNumeros(){
     if (sug.mz && z){
       info = '<b>Même mazal que toi</b>Vous êtes tous les deux ' + z.fr + '.';
     } else {
-      info = mode === 'mazal' ? 'Va te présenter.' : 'A répondu comme toi.';
+      info = mode === 'question' ? 'A répondu comme toi.' : 'Va te présenter.';
     }
     b.innerHTML =
       '<span class="chiffre">' + String(sug.n).padStart(2,'0') + '</span>' +
