@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>❤️ Kod — éditeur de questions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300&family=Frank+Ruhl+Libre:wght@600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#FBF7F0; --carte:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.2);
+  --encre:#191428; --second:#453B62; --sourd:#5E5280;
+  --accent:#8A2B4A; --accent-doux:#FDEDF1; --or:#8A6410;
+  --alerte:#B3261E; --alerte-doux:#FDECEA; --ok:#1F6B45; --ok-doux:#E9F5EE;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;padding:0 16px 60px}
+.enveloppe{max-width:800px;margin:0 auto}
+
+.entete{position:sticky;top:0;z-index:30;background:var(--fond);padding:16px 0 12px;
+  border-bottom:2px solid var(--bord-fin);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.marque{font-family:var(--display);font-size:20px}
+.marque .c{color:var(--accent)}
+.etat{font-family:var(--data);font-size:11px;font-weight:700;color:var(--sourd);margin-left:auto}
+.etat.modif{color:var(--accent)}
+
+.barre{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+button{font-family:var(--corps);font-size:14.5px;font-weight:700;cursor:pointer;border-radius:12px;
+  padding:12px 15px;min-height:46px;border:2px solid var(--bord-fin);background:var(--carte);color:var(--encre)}
+button:active{transform:scale(.98)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.plein{background:var(--accent);color:#fff;border-color:var(--accent)}
+.danger{color:var(--alerte);border-color:rgba(179,38,30,.4)}
+
+.filtres{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.filtres input[type=search]{flex:1;min-width:180px;font-family:var(--corps);font-size:15px;
+  padding:12px 14px;min-height:46px;border:2px solid var(--bord-fin);border-radius:12px;background:var(--carte);color:var(--encre)}
+.filtres button{font-size:13px;padding:10px 13px;min-height:42px}
+.filtres button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.compteurs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.compteurs div{background:var(--carte);border:2px solid var(--bord-fin);border-radius:11px;
+  padding:9px 13px;font-family:var(--data);font-size:12.5px;font-weight:700}
+.compteurs b{color:var(--accent)}
+.compteurs .desequilibre{background:var(--alerte-doux);border-color:rgba(179,38,30,.4);color:var(--alerte)}
+
+.q{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:15px;margin-bottom:11px}
+.q.rire{border-color:rgba(138,43,74,.45)}
+.q-tete{display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+.q-num{font-family:var(--data);font-size:11px;font-weight:700;color:var(--sourd)}
+.etiq{font-family:var(--data);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:99px;padding:4px 9px;font-weight:700;cursor:pointer;border:1.5px solid transparent}
+.etiq.rire{background:var(--accent-doux);color:var(--accent)}
+.etiq.off{background:none;color:var(--sourd);border-color:var(--bord-fin)}
+.q-outils{margin-left:auto;display:flex;gap:5px}
+.q-outils button{min-height:34px;padding:6px 10px;font-size:13px;border-radius:9px}
+
+textarea,input[type=text]{width:100%;font-family:var(--corps);font-size:16px;color:var(--encre);
+  background:var(--fond);border:2px solid var(--bord-fin);border-radius:11px;padding:12px;resize:vertical}
+textarea:focus,input:focus{outline:3px solid var(--accent);outline-offset:1px}
+.q-texte{font-family:var(--display);font-size:19px;font-weight:300;min-height:54px;margin-bottom:11px}
+
+.rep{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.rep select{font-family:var(--hebreu);font-size:21px;font-weight:600;width:62px;flex:0 0 62px;
+  text-align:center;border:2px solid;border-radius:11px;padding:9px 4px;min-height:48px;
+  background:var(--carte);cursor:pointer;appearance:none}
+.rep input{flex:1;min-height:48px}
+
+.vide{text-align:center;color:var(--sourd);padding:40px 20px;font-size:15px;line-height:1.6}
+
+.aide{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:18px;
+  margin-bottom:18px;font-size:14.5px;line-height:1.6;color:var(--second)}
+.aide h2{font-family:var(--display);font-size:19px;font-weight:300;color:var(--encre);margin-bottom:10px}
+.aide b{color:var(--accent)}
+.aide ol{margin:8px 0 0 20px}
+.aide li{margin-bottom:6px}
+.aide code{font-family:var(--data);font-size:12.5px;background:var(--fond);padding:2px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <header class="entete">
+    <div class="marque"><span class="c">❤️</span> Kod · éditeur</div>
+    <div class="etat" id="etat">aucune modification</div>
+  </header>
+
+  <div class="aide">
+    <h2>Travailler à plusieurs, sans serveur</h2>
+    <p>Cet éditeur fonctionne <b>entièrement hors ligne</b>. Rien n'est envoyé nulle part.</p>
+    <ol>
+      <li>Chacun ouvre ce fichier et clique <b>Importer</b> pour charger la dernière version de <code>kod-questions.json</code></li>
+      <li>Il modifie ce qu'il veut, puis clique <b>Exporter JSON</b></li>
+      <li>Il remet le fichier dans le dossier partagé (ou le commit sur le dépôt)</li>
+    </ol>
+    <p style="margin-top:10px"><b>Une règle pour éviter les collisions :</b> une seule personne édite à la fois, ou chacun sur des questions différentes. Sans serveur, le dernier qui exporte écrase les autres.</p>
+  </div>
+
+  <div class="barre">
+    <button class="plein" id="bAjouter">+ Nouvelle question</button>
+    <button id="bImporter">Importer</button>
+    <button id="bJson">Exporter JSON</button>
+    <button id="bMd">Exporter Markdown</button>
+    <button id="bPrompt">Copier le prompt IA</button>
+    <input type="file" id="fichier" accept=".json" hidden>
+  </div>
+
+  <div class="compteurs" id="compteurs"></div>
+
+  <div class="filtres">
+    <input type="search" id="recherche" placeholder="Chercher dans les questions et les réponses…">
+    <button id="fTout" aria-pressed="true">Toutes</button>
+    <button id="fRire" aria-pressed="false">Qui font rire</button>
+    <button id="fFond" aria-pressed="false">De fond</button>
+  </div>
+
+  <div id="liste"></div>
+</div>
+
+<script>
+const COINS=[
+ {l:"א",nom:"Rouge",c:"#C22E2E"},
+ {l:"ב",nom:"Bleu", c:"#2C6FD1"},
+ {l:"ג",nom:"Jaune",c:"#A8760C"},
+ {l:"ד",nom:"Vert", c:"#1D7A52"}
+];
+const COUL=Object.fromEntries(COINS.map(c=>[c.l,c.c]));
+
+let DATA = {"app": "Kod", "regles": {"cumul": false, "tri": "le coin d'une personne = sa reponse a la question en cours, rien d'autre", "melanger_ordre_reponses": true, "temps_reponse_secondes": 45, "coins": "la lettre identifie le coin ; la couleur n'est qu'un renfort visuel", "affectation": "reponse -> coin modifiable question par question le soir meme", "questions_droles": "acte 0 — a intercaler entre les questions de fond, une sur trois"}, "questions": [{"id": 1, "acte": 1, "texte": "Un dimanche parfait, c'est quoi ?", "choix": [{"texte": "Une rando, partie tôt et sans plan", "coin": "א"}, {"texte": "Un brunch qui s'éternise à trois", "coin": "ג"}, {"texte": "Rideaux fermés, série, personne", "coin": "ב"}, {"texte": "J'avance sur un truc à moi", "coin": "ד"}]}, {"id": 2, "acte": 1, "texte": "Tu arrives à une soirée où tu ne connais personne.", "choix": [{"texte": "Je vais vers le groupe le plus bruyant", "coin": "א"}, {"texte": "Je prends un verre et j'observe", "coin": "ב"}, {"texte": "Je repère quelqu'un de seul et je vais lui parler", "coin": "ג"}, {"texte": "Je cherche celui qui organise", "coin": "ד"}]}, {"id": 3, "acte": 1, "texte": "Ton rapport au retard.", "choix": [{"texte": "Le temps est un concept", "coin": "א"}, {"texte": "Pile à l'heure", "coin": "ב"}, {"texte": "Un quart d'heure, c'est de la politesse", "coin": "ג"}, {"texte": "En avance, toujours", "coin": "ד"}]}, {"id": 4, "acte": 1, "texte": "On t'offre un billet pour demain matin, destination inconnue.", "choix": [{"texte": "Je fais mon sac ce soir", "coin": "א"}, {"texte": "Je décline, ma semaine était prévue", "coin": "ב"}, {"texte": "Je pars si quelqu'un vient avec moi", "coin": "ג"}, {"texte": "Je demande d'abord où", "coin": "ד"}]}, {"id": 5, "acte": 1, "texte": "Le meilleur moment d'un repas de Shabbat.", "choix": [{"texte": "Les chants", "coin": "א"}, {"texte": "La dvar Torah", "coin": "ב"}, {"texte": "Quand tout le monde parle en même temps", "coin": "ג"}, {"texte": "Quand on refait le monde jusqu'à 2h", "coin": "ד"}]}, {"id": 6, "acte": 2, "texte": "Une décision importante, tu la prends…", "choix": [{"texte": "Au feeling, tout de suite", "coin": "א"}, {"texte": "Après avoir dormi dessus", "coin": "ב"}, {"texte": "Après en avoir parlé à trois personnes", "coin": "ג"}, {"texte": "Après avoir fait un tableau", "coin": "ד"}]}, {"id": 7, "acte": 2, "texte": "Ton argent, tu préfères…", "choix": [{"texte": "Le dépenser en voyages", "coin": "א"}, {"texte": "Le garder de côté, ça rassure", "coin": "ב"}, {"texte": "L'offrir aux gens que j'aime", "coin": "ג"}, {"texte": "L'investir", "coin": "ד"}]}, {"id": 8, "acte": 2, "texte": "Ce qui te fatigue le plus.", "choix": [{"texte": "Ne rien faire", "coin": "א"}, {"texte": "Le bruit", "coin": "ב"}, {"texte": "Les gens faux", "coin": "ג"}, {"texte": "Perdre mon temps", "coin": "ד"}]}, {"id": 9, "acte": 2, "texte": "Tu pars vivre ailleurs demain. Une seule chose dans la valise.", "choix": [{"texte": "Ma guitare, mon appareil photo", "coin": "א"}, {"texte": "Mes livres", "coin": "ב"}, {"texte": "Les photos de famille", "coin": "ג"}, {"texte": "Mon ordinateur", "coin": "ד"}]}, {"id": 10, "acte": 2, "texte": "Dans un groupe, tu es plutôt…", "choix": [{"texte": "Celui qui propose", "coin": "א"}, {"texte": "Celui qui écoute", "coin": "ב"}, {"texte": "Celui qui fait rire", "coin": "ג"}, {"texte": "Celui qui organise", "coin": "ד"}]}, {"id": 11, "acte": 2, "texte": "Ta relation à Shabbat.", "choix": [{"texte": "C'est social avant tout", "coin": "א"}, {"texte": "Je déconnecte vraiment", "coin": "ב"}, {"texte": "C'est le repas et la famille", "coin": "ג"}, {"texte": "J'en profite pour réfléchir à ma semaine", "coin": "ד"}]}, {"id": 12, "acte": 2, "texte": "On dit de toi que tu es…", "choix": [{"texte": "Imprévisible", "coin": "א"}, {"texte": "Loyal", "coin": "ב"}, {"texte": "Attachant", "coin": "ג"}, {"texte": "Déterminé", "coin": "ד"}]}, {"id": 13, "acte": 2, "texte": "Ta plus grande crainte.", "choix": [{"texte": "M'ennuyer", "coin": "א"}, {"texte": "Perdre ceux que j'aime", "coin": "ב"}, {"texte": "Décevoir", "coin": "ג"}, {"texte": "Passer à côté de ma vie", "coin": "ד"}]}, {"id": 14, "acte": 3, "texte": "Le vrai signe que c'est la bonne personne.", "choix": [{"texte": "On ne s'ennuie jamais", "coin": "א"}, {"texte": "Les mêmes valeurs", "coin": "ב"}, {"texte": "Je me sens enfin moi-même", "coin": "ג"}, {"texte": "Ça me tire vers le haut", "coin": "ד"}]}, {"id": 15, "acte": 3, "texte": "Ton premier geste quand quelqu'un te plaît.", "choix": [{"texte": "Je fonce", "coin": "א"}, {"texte": "J'attends que l'autre ose", "coin": "ב"}, {"texte": "J'envoie un ami en éclaireur", "coin": "ג"}, {"texte": "Je me renseigne d'abord", "coin": "ד"}]}, {"id": 16, "acte": 3, "texte": "Le coup de foudre.", "choix": [{"texte": "Je ne fonctionne qu'à ça", "coin": "א"}, {"texte": "Ça existe, mais ça ne suffit pas", "coin": "ב"}, {"texte": "Ça m'est arrivé", "coin": "ג"}, {"texte": "Je n'y crois pas une seconde", "coin": "ד"}]}, {"id": 17, "acte": 3, "texte": "Un premier rendez-vous réussi, ça finit…", "choix": [{"texte": "À 3h du matin sans voir le temps passer", "coin": "א"}, {"texte": "Par un silence gênant assumé", "coin": "ב"}, {"texte": "Par un fou rire", "coin": "ג"}, {"texte": "Par un deuxième déjà calé", "coin": "ד"}]}, {"id": 18, "acte": 3, "texte": "Tu tombes amoureux…", "choix": [{"texte": "En une soirée", "coin": "א"}, {"texte": "Au bout de quelques mois d'amitié", "coin": "ב"}, {"texte": "Quand on me surprend", "coin": "ג"}, {"texte": "Quand je vois comment la personne traite les autres", "coin": "ד"}]}, {"id": 19, "acte": 3, "texte": "Ce qui te toucherait le plus venant de quelqu'un.", "choix": [{"texte": "Un week-end surprise", "coin": "א"}, {"texte": "Qu'il soit là un jour difficile", "coin": "ב"}, {"texte": "Une lettre", "coin": "ג"}, {"texte": "Qu'il croie à mon projet", "coin": "ד"}]}, {"id": 20, "acte": 3, "texte": "La rencontre idéale.", "choix": [{"texte": "Dans un bar, par hasard", "coin": "א"}, {"texte": "On se connaît depuis toujours et un jour ça bascule", "coin": "ב"}, {"texte": "Par des amis communs", "coin": "ג"}, {"texte": "Un shidduch bien pensé", "coin": "ד"}]}, {"id": 21, "acte": 3, "texte": "Dans un couple, tu as besoin de…", "choix": [{"texte": "Bouger ensemble", "coin": "א"}, {"texte": "Calme", "coin": "ב"}, {"texte": "Beaucoup se parler", "coin": "ג"}, {"texte": "Construire quelque chose", "coin": "ד"}]}, {"id": 22, "acte": 3, "texte": "Le Yanuka, pour toi, c'est…", "choix": [{"texte": "Un rappeur", "coin": "א"}, {"texte": "Un rav", "coin": "ב"}, {"texte": "Un bébé", "coin": "ג"}, {"texte": "Un whisky japonais", "coin": "ד"}]}, {"id": 23, "acte": 4, "texte": "Ce que tu cherches vraiment ce soir.", "choix": [{"texte": "Une bande, des amis", "coin": "א"}, {"texte": "Je ne sais pas, je suis venu voir", "coin": "ב"}, {"texte": "Rencontrer quelqu'un", "coin": "ג"}, {"texte": "Un partenaire de projet ou de voyage", "coin": "ד"}]}, {"id": 24, "acte": 4, "texte": "La émouna, pour toi, c'est…", "choix": [{"texte": "Une question ouverte", "coin": "א"}, {"texte": "Une certitude", "coin": "ב"}, {"texte": "Un sentiment", "coin": "ג"}, {"texte": "Un combat", "coin": "ד"}]}, {"id": 25, "acte": 4, "texte": "Dans dix ans, tu te vois…", "choix": [{"texte": "Ailleurs, je ne sais pas encore où", "coin": "א"}, {"texte": "À peu près ici, mais plus serein", "coin": "ב"}, {"texte": "Avec une famille", "coin": "ג"}, {"texte": "Avec quelque chose que j'ai construit", "coin": "ד"}]}, {"id": 26, "acte": 4, "texte": "Ce qui te définit le mieux.", "choix": [{"texte": "Mes voyages", "coin": "א"}, {"texte": "Mon histoire", "coin": "ב"}, {"texte": "Mes rencontres", "coin": "ג"}, {"texte": "Mes projets", "coin": "ד"}]}, {"id": 27, "acte": 4, "texte": "Le pardon.", "choix": [{"texte": "Je coupe", "coin": "א"}, {"texte": "J'ai besoin de temps", "coin": "ב"}, {"texte": "Je pardonne vite", "coin": "ג"}, {"texte": "Je pardonne, je n'oublie pas", "coin": "ד"}]}, {"id": 28, "acte": 4, "texte": "S'il te restait un an.", "choix": [{"texte": "Je pars", "coin": "א"}, {"texte": "Je vis exactement pareil", "coin": "ב"}, {"texte": "Je rassemble tous ceux que j'aime", "coin": "ג"}, {"texte": "Je finis ce que j'ai commencé", "coin": "ד"}]}, {"id": 29, "acte": 0, "drole": true, "texte": "Ta mère t'appelle. Tu n'as pas rappelé depuis trois jours.", "choix": [{"texte": "Je décroche, j'assume, je prends", "coin": "א"}, {"texte": "Je laisse sonner et je culpabilise", "coin": "ב"}, {"texte": "Je rappelle dans dix minutes, promis", "coin": "ג"}, {"texte": "J'envoie un message : « en réunion »", "coin": "ד"}]}, {"id": 30, "acte": 0, "drole": true, "texte": "Le vrai test d'un couple.", "choix": [{"texte": "Monter un meuble ensemble", "coin": "א"}, {"texte": "Choisir un film", "coin": "ב"}, {"texte": "Un GPS et un rond-point", "coin": "ג"}, {"texte": "Partir en vacances avec les beaux-parents", "coin": "ד"}]}, {"id": 31, "acte": 0, "drole": true, "texte": "Combien de temps tiens-tu sans regarder ton téléphone ?", "choix": [{"texte": "Trente secondes", "coin": "א"}, {"texte": "Cinq minutes", "coin": "ב"}, {"texte": "Une heure, je suis fort", "coin": "ג"}, {"texte": "C'est quoi un téléphone", "coin": "ד"}]}, {"id": 32, "acte": 0, "drole": true, "texte": "Ton niveau réel en cuisine.", "choix": [{"texte": "Je reçois vingt personnes sans stresser", "coin": "א"}, {"texte": "Je sais ouvrir des pâtes", "coin": "ב"}, {"texte": "Les pompiers ont mon numéro", "coin": "ג"}, {"texte": "Wolt est mon chef personnel", "coin": "ד"}]}, {"id": 33, "acte": 0, "drole": true, "texte": "On te dit « on mange à 20h ». Tu arrives à…", "choix": [{"texte": "20h05, je suis quelqu'un de bien", "coin": "א"}, {"texte": "20h45, c'est ça 20h", "coin": "ב"}, {"texte": "19h50, et je fais le tour du quartier", "coin": "ג"}, {"texte": "22h, et je m'étonne qu'il ne reste rien", "coin": "ד"}]}, {"id": 34, "acte": 0, "drole": true, "texte": "Le pire moment d'un mariage.", "choix": [{"texte": "Le plan de table", "coin": "א"}, {"texte": "Le discours de l'oncle", "coin": "ב"}, {"texte": "La photo de groupe qui dure quarante minutes", "coin": "ג"}, {"texte": "L'addition", "coin": "ד"}]}, {"id": 35, "acte": 0, "drole": true, "texte": "Quelqu'un te plaît ce soir. Tu fais quoi ?", "choix": [{"texte": "Je vais lui parler, direct", "coin": "א"}, {"texte": "J'attends un signe du destin", "coin": "ב"}, {"texte": "J'envoie un ami en éclaireur", "coin": "ג"}, {"texte": "Je rentre chez moi et je regrette", "coin": "ד"}]}, {"id": 36, "acte": 0, "drole": true, "texte": "Ton drapeau rouge, celui que tu assumes complètement.", "choix": [{"texte": "Je réponds aux messages trois jours après", "coin": "א"}, {"texte": "Je suis toujours en retard", "coin": "ב"}, {"texte": "Je parle beaucoup. Beaucoup.", "coin": "ג"}, {"texte": "Je ne sais pas perdre", "coin": "ד"}]}, {"id": 37, "acte": 0, "drole": true, "texte": "Le truc qui te fait craquer instantanément.", "choix": [{"texte": "Quelqu'un qui me fait rire", "coin": "א"}, {"texte": "Quelqu'un qui écoute vraiment", "coin": "ב"}, {"texte": "Quelqu'un qui sait ce qu'il veut", "coin": "ג"}, {"texte": "Quelqu'un qui cuisine", "coin": "ד"}]}, {"id": 38, "acte": 0, "drole": true, "texte": "Il reste une part. Tu…", "choix": [{"texte": "Je la prends, la vie est courte", "coin": "א"}, {"texte": "Je propose, j'espère qu'on refuse", "coin": "ב"}, {"texte": "Je la coupe en deux", "coin": "ג"}, {"texte": "Je l'ai déjà prise, on en parle plus", "coin": "ד"}]}, {"id": 39, "acte": 0, "drole": true, "texte": "Ta mère rencontre la personne. Elle dit quoi en premier ?", "choix": [{"texte": "« Il est trop maigre, il faut le nourrir »", "coin": "א"}, {"texte": "« Et il fait quoi dans la vie ? »", "coin": "ב"}, {"texte": "« Enfin quelqu'un de bien »", "coin": "ג"}, {"texte": "« On en reparle tous les deux »", "coin": "ד"}]}, {"id": 40, "acte": 0, "drole": true, "texte": "Sur le groupe WhatsApp de la famille, tu es…", "choix": [{"texte": "Celui qui envoie tout", "coin": "א"}, {"texte": "Celui qui a coupé les notifications", "coin": "ב"}, {"texte": "Celui qui met un pouce et disparaît", "coin": "ג"}, {"texte": "Celui qui répond six mois après", "coin": "ד"}]}], "coins": [{"lettre": "א", "couleur": "Rouge"}, {"lettre": "ב", "couleur": "Bleu"}, {"lettre": "ג", "couleur": "Jaune"}, {"lettre": "ד", "couleur": "Vert"}]};
+let filtre='tout', recherche='', modifie=false;
+
+const el=id=>document.getElementById(id);
+function touche(){ modifie=true; el('etat').textContent='modifications non exportées'; el('etat').classList.add('modif'); }
+
+function compteurs(){
+  const q=DATA.questions;
+  const rire=q.filter(x=>x.drole).length;
+  const parCoin={"א":0,"ב":0,"ג":0,"ד":0};
+  q.forEach(x=>x.choix.forEach(c=>parCoin[c.coin]!==undefined&&parCoin[c.coin]++));
+  const vals=Object.values(parCoin), max=Math.max(...vals), min=Math.min(...vals);
+  const desequilibre = max-min > q.length*0.35;
+  el('compteurs').innerHTML=
+    `<div><b>${q.length}</b> questions</div>`+
+    `<div><b>${rire}</b> qui font rire</div>`+
+    `<div class="${desequilibre?'desequilibre':''}">`+
+      COINS.map(c=>`<span style="color:${c.c}">${c.l}</span> ${parCoin[c.l]}`).join(' &nbsp; ')+
+    `</div>`+
+    (desequilibre?`<div class="desequilibre">réponses mal réparties entre les coins</div>`:'');
+}
+
+function dessine(){
+  const box=el('liste');
+  const r=recherche.toLowerCase().trim();
+  const vus=DATA.questions.filter(q=>{
+    if(filtre==='rire' && !q.drole) return false;
+    if(filtre==='fond' && q.drole) return false;
+    if(!r) return true;
+    return (q.texte+' '+q.choix.map(c=>c.texte).join(' ')).toLowerCase().includes(r);
+  });
+  compteurs();
+  if(!vus.length){ box.innerHTML='<p class="vide">Rien ne correspond.</p>'; return; }
+  box.innerHTML='';
+  vus.forEach(q=>{
+    const i=DATA.questions.indexOf(q);
+    const d=document.createElement('div');
+    d.className='q'+(q.drole?' rire':'');
+    d.innerHTML=`
+      <div class="q-tete">
+        <span class="q-num">${String(q.id).padStart(2,'0')}</span>
+        <button class="etiq ${q.drole?'rire':'off'}" data-a="drole">${q.drole?'fait rire':'de fond'}</button>
+        <span class="q-outils">
+          <button data-a="haut" title="monter">↑</button>
+          <button data-a="bas" title="descendre">↓</button>
+          <button data-a="copier" title="dupliquer">⧉</button>
+          <button class="danger" data-a="suppr" title="supprimer">✕</button>
+        </span>
+      </div>
+      <textarea class="q-texte" data-a="texte" rows="2">${q.texte}</textarea>
+      ${q.choix.map((c,k)=>`
+        <div class="rep">
+          <select data-a="coin" data-k="${k}" style="color:${COUL[c.coin]};border-color:${COUL[c.coin]}">
+            ${COINS.map(x=>`<option value="${x.l}"${x.l===c.coin?' selected':''}>${x.l}</option>`).join('')}
+          </select>
+          <input type="text" data-a="rep" data-k="${k}" value="${c.texte.replace(/"/g,'&quot;')}">
+        </div>`).join('')}`;
+
+    d.addEventListener('input',e=>{
+      const a=e.target.dataset.a, k=+e.target.dataset.k;
+      if(a==='texte') q.texte=e.target.value;
+      if(a==='rep') q.choix[k].texte=e.target.value;
+      if(a==='coin'){ q.choix[k].coin=e.target.value;
+        e.target.style.color=COUL[e.target.value];
+        e.target.style.borderColor=COUL[e.target.value]; compteurs(); }
+      touche();
+    });
+    d.addEventListener('click',e=>{
+      const a=e.target.dataset.a;
+      if(!a) return;
+      if(a==='drole'){ q.drole=!q.drole; touche(); dessine(); }
+      if(a==='haut' && i>0){ [DATA.questions[i-1],DATA.questions[i]]=[DATA.questions[i],DATA.questions[i-1]]; touche(); dessine(); }
+      if(a==='bas' && i<DATA.questions.length-1){ [DATA.questions[i+1],DATA.questions[i]]=[DATA.questions[i],DATA.questions[i+1]]; touche(); dessine(); }
+      if(a==='copier'){ DATA.questions.splice(i+1,0,JSON.parse(JSON.stringify({...q,id:Math.max(...DATA.questions.map(x=>x.id))+1}))); touche(); dessine(); }
+      if(a==='suppr'){ if(confirm('Supprimer cette question ?')){ DATA.questions.splice(i,1); touche(); dessine(); } }
+    });
+    box.appendChild(d);
+  });
+}
+
+el('bAjouter').addEventListener('click',()=>{
+  DATA.questions.unshift({id:Math.max(0,...DATA.questions.map(x=>x.id))+1,texte:"",drole:false,
+    choix:COINS.map(c=>({texte:"",coin:c.l}))});
+  touche(); dessine(); window.scrollTo({top:0,behavior:'smooth'});
+});
+
+['fTout','fRire','fFond'].forEach(id=>el(id).addEventListener('click',()=>{
+  filtre=id==='fTout'?'tout':id==='fRire'?'rire':'fond';
+  ['fTout','fRire','fFond'].forEach(x=>el(x).setAttribute('aria-pressed',x===id));
+  dessine();
+}));
+el('recherche').addEventListener('input',e=>{recherche=e.target.value;dessine();});
+
+function telecharge(nom,contenu,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([contenu],{type}));
+  a.download=nom; a.click(); URL.revokeObjectURL(a.href);
+  modifie=false; el('etat').textContent='exporté'; el('etat').classList.remove('modif');
+}
+
+el('bJson').addEventListener('click',()=>{
+  DATA.questions.forEach((q,i)=>q.id=i+1);
+  telecharge('kod-questions.json',JSON.stringify(DATA,null,2),'application/json');
+  dessine();
+});
+
+el('bMd').addEventListener('click',()=>{
+  let md='# ❤️ Kod — les questions\n\n';
+  md+='| Lettre | Couleur |\n|---|---|\n'+COINS.map(c=>`| **${c.l}** | ${c.nom} |`).join('\n')+'\n\n---\n\n';
+  DATA.questions.forEach((q,i)=>{
+    md+=`**${i+1}. ${q.texte}**${q.drole?' — *fait rire*':''}\n`;
+    q.choix.forEach(c=>md+=`- ${c.texte} — **${c.coin}**\n`);
+    md+='\n';
+  });
+  telecharge('kod-questions.md',md,'text/markdown');
+});
+
+el('bImporter').addEventListener('click',()=>el('fichier').click());
+el('fichier').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const j=JSON.parse(r.result);
+      if(!j.questions||!Array.isArray(j.questions)) throw new Error('pas de liste de questions');
+      DATA=j; if(!DATA.coins) DATA.coins=COINS.map(c=>({lettre:c.l,couleur:c.nom}));
+      modifie=false; el('etat').textContent=`importé · ${DATA.questions.length} questions`;
+      el('etat').classList.remove('modif'); dessine();
+    }catch(err){ alert("Fichier illisible : "+err.message); }
+  };
+  r.readAsText(f); e.target.value='';
+});
+
+el('bPrompt').addEventListener('click',()=>{
+  const t=PROMPT_IA.replace('__QUESTIONS__',JSON.stringify(DATA.questions,null,2));
+  navigator.clipboard.writeText(t).then(
+    ()=>{ el('bPrompt').textContent='✓ copié'; setTimeout(()=>el('bPrompt').textContent='Copier le prompt IA',1800); },
+    ()=>{ const w=window.open(); w.document.write('<pre>'+t.replace(/</g,'&lt;')+'</pre>'); });
+});
+
+const PROMPT_IA=`Tu m'aides à améliorer les questions d'une soirée qui s'appelle Kod.
+
+LE CONTEXTE
+Une centaine de personnes de la communauté franco-israélienne, dans un bar à Tel Aviv. Chacun répond à une question sur son téléphone, et sa réponse l'envoie physiquement dans un des quatre coins de la salle, identifiés par les lettres hébraïques א, ב, ג, ד. Les gens ne savent pas comment le tri fonctionne — c'est ce flou qui les pousse à se parler. Ce n'est pas strictement une soirée de rencontres : certains cherchent l'amour, d'autres des amis ou des partenaires de voyage.
+
+LES RÈGLES ABSOLUES
+1. Aucune réponse n'est meilleure qu'une autre. S'il existe une bonne réponse, la question trie en "sait / sait pas" au lieu de trier par affinité — et le jeu "trouvez pourquoi vous êtes ensemble" devient insoluble. C'est la règle la plus importante.
+2. Exactement quatre réponses par question, une par coin.
+3. Chaque réponse doit être choisie par une part réelle de la salle. Une réponse que personne ne coche vide un coin ; une réponse trop consensuelle en sature un.
+4. Les réponses doivent être courtes — lisibles d'un coup d'œil sur un téléphone, dans un bar sombre et bruyant.
+5. Rien qui puisse humilier, ni faire passer quelqu'un pour un ignorant, un pauvre ou un mauvais croyant.
+6. Le ton peut être drôle, et il doit l'être souvent. Le rire vient de la reconnaissance ("c'est exactement moi") beaucoup plus que de la blague.
+
+CE QUE JE TE DEMANDE
+Pour chaque question ci-dessous :
+- dis-moi si elle respecte les règles, et sinon pourquoi
+- réécris-la si elle peut être plus vivante, plus drôle ou plus discriminante
+- vérifie que les quatre réponses sont vraiment distinctes et vraiment équilibrées
+- signale celles qui sont ennuyeuses, trop attendues, ou qui ne feront bouger personne
+
+Ajoute ensuite des questions nouvelles dans le même esprit, en variant les axes : rythme de vie, rapport aux autres, goûts, valeurs, amour, famille, argent, tradition.
+
+Rends-moi le résultat dans exactement ce format JSON :
+[{"texte":"...","drole":true,"choix":[{"texte":"...","coin":"א"},{"texte":"...","coin":"ב"},{"texte":"...","coin":"ג"},{"texte":"...","coin":"ד"}]}]
+
+VOICI LES QUESTIONS ACTUELLES
+__QUESTIONS__`;
+
+dessine();
+window.addEventListener('beforeunload',e=>{ if(modifie){ e.preventDefault(); e.returnValue=''; } });
+</script>
+</body>
+</html>

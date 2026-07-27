@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>❤️ Kod — écran géant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Frank+Ruhl+Libre:wght@700&family=Manrope:wght@400;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --encre:#0D0918; --texte:#FFFCF7; --sourd:#A99BC9;
+  --a:#E0453F; --b:#4A8BEE; --g:#D9A32B; --d:#2E9E6B;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',monospace; --he:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--encre);color:var(--texte);font-family:var(--corps);cursor:none}
+body.souris{cursor:default}
+
+.vue{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:4vh 4vw;text-align:center}
+.vue.on{display:flex;animation:entre .5s cubic-bezier(.2,.8,.3,1) both}
+@keyframes entre{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+
+/* attente */
+.logo{font-family:var(--display);font-weight:300;font-size:11vw;line-height:1}
+.logo b{color:var(--a);font-weight:300}
+.attente-sous{font-family:var(--data);font-size:1.6vw;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--sourd);margin-top:3vh}
+
+/* phrase */
+.phrase{font-family:var(--display);font-weight:300;font-size:6.4vw;line-height:1.22;max-width:88vw}
+.phrase em{font-style:normal;color:var(--g)}
+
+/* question */
+.q-titre{font-family:var(--display);font-weight:300;font-size:5.4vw;line-height:1.18;max-width:92vw;margin-bottom:5vh}
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:2vh 2vw;width:92vw}
+.case{display:flex;align-items:center;gap:2vw;padding:2.6vh 2vw;border-radius:1.6vw;
+  border:.35vw solid;background:rgba(255,255,255,.04)}
+.case .l{font-family:var(--he);font-weight:700;font-size:6.4vw;line-height:1;flex:0 0 auto}
+.case .t{font-size:2.5vw;font-weight:600;text-align:left;line-height:1.28}
+.ca{border-color:var(--a)} .ca .l{color:var(--a)}
+.cb{border-color:var(--b)} .cb .l{color:var(--b)}
+.cg{border-color:var(--g)} .cg .l{color:var(--g)}
+.cd{border-color:var(--d)} .cd .l{color:var(--d)}
+
+/* migration : les 4 lettres en plein écran */
+.quatre{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  position:fixed;inset:0;gap:0}
+.quart{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  animation:pulse 2.6s ease-in-out infinite}
+.quart:nth-child(1){animation-delay:0s} .quart:nth-child(2){animation-delay:.2s}
+.quart:nth-child(3){animation-delay:.4s} .quart:nth-child(4){animation-delay:.6s}
+@keyframes pulse{0%,100%{opacity:.9}50%{opacity:1}}
+.quart .l{font-family:var(--he);font-weight:700;font-size:22vh;line-height:.9;color:#fff}
+.quart .n{font-family:var(--data);font-size:1.5vh;letter-spacing:.3em;color:rgba(255,255,255,.85);margin-top:1vh}
+.quart .s{font-size:2.4vh;font-weight:700;color:#fff;margin-top:1.6vh;padding:0 2vw;line-height:1.3;max-width:44vw}
+.qa{background:var(--a)} .qb{background:var(--b)} .qg{background:var(--g)} .qd{background:var(--d)}
+
+/* décompte */
+.deco{font-family:var(--data);font-size:34vh;line-height:1;font-weight:700}
+.deco.chaud{color:var(--a)}
+.deco-sous{font-family:var(--data);font-size:2vw;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--sourd);margin-top:2vh}
+
+/* message libre */
+.msg{font-family:var(--display);font-weight:300;font-size:7vw;line-height:1.2;max-width:90vw}
+
+/* aide */
+.aide{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,.82);padding:14px 18px;
+  font-family:var(--data);font-size:12px;color:#B9AEDA;display:none;line-height:1.9;z-index:99}
+.aide.on{display:block}
+.aide b{color:var(--g)}
+.aide kbd{background:#2A2140;border-radius:4px;padding:2px 7px;color:#fff;font-family:var(--data)}
+</style>
+</head>
+<body>
+
+<div class="vue on" id="vAttente">
+  <div class="logo"><b>❤</b> Kod</div>
+  <div class="attente-sous">la soirée va commencer</div>
+</div>
+
+<div class="vue" id="vPhrase"><div class="phrase" id="phraseTxt"></div></div>
+
+<div class="vue" id="vQuestion">
+  <div class="q-titre" id="qTitre"></div>
+  <div class="grille">
+    <div class="case ca"><span class="l">א</span><span class="t" id="qa"></span></div>
+    <div class="case cb"><span class="l">ב</span><span class="t" id="qb"></span></div>
+    <div class="case cg"><span class="l">ג</span><span class="t" id="qg"></span></div>
+    <div class="case cd"><span class="l">ד</span><span class="t" id="qd"></span></div>
+  </div>
+</div>
+
+<div class="vue" id="vMigration">
+  <div class="quatre">
+    <div class="quart qa"><span class="l">א</span><span class="n">ROUGE</span><span class="s" id="ma"></span></div>
+    <div class="quart qb"><span class="l">ב</span><span class="n">BLEU</span><span class="s" id="mb"></span></div>
+    <div class="quart qg"><span class="l">ג</span><span class="n">JAUNE</span><span class="s" id="mg"></span></div>
+    <div class="quart qd"><span class="l">ד</span><span class="n">VERT</span><span class="s" id="md"></span></div>
+  </div>
+</div>
+
+<div class="vue" id="vDeco">
+  <div class="deco" id="decoTxt">60</div>
+  <div class="deco-sous">rejoignez votre coin</div>
+</div>
+
+<div class="vue" id="vMsg"><div class="msg" id="msgTxt"></div></div>
+
+<div class="aide" id="aide">
+  <b>ESPACE</b> passer à la suite &nbsp;·&nbsp; <b>M</b> migration &nbsp;·&nbsp; <b>D</b> décompte 60 s &nbsp;·&nbsp;
+  <b>←→</b> changer de question &nbsp;·&nbsp; <b>1</b> la blague &nbsp;·&nbsp; <b>2</b> « on sait déjà » &nbsp;·&nbsp;
+  <b>3</b> « trouvez avec qui » &nbsp;·&nbsp; <b>T</b> écrire un message &nbsp;·&nbsp; <b>0</b> écran d'attente &nbsp;·&nbsp;
+  <b>F</b> plein écran &nbsp;·&nbsp; <b>H</b> cacher cette aide
+</div>
+
+<script>
+const QS = [{"t": "Le Yanuka, pour toi, c'est…", "a": "Un rappeur", "b": "Un rav", "g": "Un bébé", "d": "Un whisky japonais"}, {"t": "Le vrai test d'un couple.", "a": "Monter un meuble ensemble", "b": "Choisir un film", "g": "Un GPS et un rond-point", "d": "Partir en vacances avec les beaux-parents"}, {"t": "Ce que tu cherches vraiment ce soir.", "a": "Une bande, des amis", "b": "Je ne sais pas, je suis venu voir", "g": "Rencontrer quelqu'un", "d": "Un partenaire de projet ou de voyage"}, {"t": "On t'offre un billet pour demain matin, destination inconnue.", "a": "Je fais mon sac ce soir", "b": "Je décline, ma semaine était prévue", "g": "Je pars si quelqu'un vient avec moi", "d": "Je demande d'abord où"}, {"t": "Ton drapeau rouge, celui que tu assumes complètement.", "a": "Je réponds aux messages trois jours après", "b": "Je suis toujours en retard", "g": "Je parle beaucoup. Beaucoup.", "d": "Je ne sais pas perdre"}, {"t": "Une décision importante, tu la prends…", "a": "Au feeling, tout de suite", "b": "Après avoir dormi dessus", "g": "Après en avoir parlé à trois personnes", "d": "Après avoir fait un tableau"}, {"t": "Ta plus grande crainte.", "a": "M'ennuyer", "b": "Perdre ceux que j'aime", "g": "Décevoir", "d": "Passer à côté de ma vie"}, {"t": "Sur le groupe WhatsApp de la famille, tu es…", "a": "Celui qui envoie tout", "b": "Celui qui a coupé les notifications", "g": "Celui qui met un pouce et disparaît", "d": "Celui qui répond six mois après"}, {"t": "Un dimanche parfait, c'est quoi ?", "a": "Une rando, partie tôt et sans plan", "b": "Rideaux fermés, série, personne", "g": "Un brunch qui s'éternise à trois", "d": "J'avance sur un truc à moi"}, {"t": "Ton niveau réel en cuisine.", "a": "Je reçois vingt personnes sans stresser", "b": "Je sais ouvrir des pâtes", "g": "Les pompiers ont mon numéro", "d": "Wolt est mon chef personnel"}, {"t": "Ce qui te définit le mieux.", "a": "Mes voyages", "b": "Mon histoire", "g": "Mes rencontres", "d": "Mes projets"}, {"t": "Combien de temps tiens-tu sans regarder ton téléphone ?", "a": "Trente secondes", "b": "Cinq minutes", "g": "Une heure, je suis fort", "d": "C'est quoi un téléphone"}, {"t": "Tu arrives à une soirée où tu ne connais personne.", "a": "Je vais vers le groupe le plus bruyant", "b": "Je prends un verre et j'observe", "g": "Je repère quelqu'un de seul et je vais lui parler", "d": "Je cherche celui qui organise"}, {"t": "Ton rapport au retard.", "a": "Le temps est un concept", "b": "Pile à l'heure", "g": "Un quart d'heure, c'est de la politesse", "d": "En avance, toujours"}];
+
+const MAZAL = {
+  a:"Hama · Levana", b:"Tzedek · Nogah", g:"Maadim · Chabtaï", d:"Kokhav"
+};
+
+const PHRASES = {
+  1:"Ce soir, on vous a déjà donné <em>votre mazal</em>.<br><br>Ce n'est pas celui que vous êtes venus chercher.",
+  2:"Vous n'avez rien répondu.<br><br><em>On sait déjà où vous allez.</em>",
+  3:"Cinq personnes ici ont répondu comme vous.<br><br><em>Trouvez avec qui ça vaut le coup.</em>"
+};
+
+let i = 0, tic = null;
+const el = id => document.getElementById(id);
+const vues = ['vAttente','vPhrase','vQuestion','vMigration','vDeco','vMsg'];
+function montre(v){ vues.forEach(x => el(x).classList.toggle('on', x === v)); }
+
+function question(n){
+  i = (n + QS.length) % QS.length;
+  const q = QS[i];
+  el('qTitre').textContent = q.t;
+  el('qa').textContent = q.a; el('qb').textContent = q.b;
+  el('qg').textContent = q.g; el('qd').textContent = q.d;
+  montre('vQuestion');
+}
+
+function migration(parMazal){
+  const q = QS[i];
+  el('ma').textContent = parMazal ? MAZAL.a : q.a;
+  el('mb').textContent = parMazal ? MAZAL.b : q.b;
+  el('mg').textContent = parMazal ? MAZAL.g : q.g;
+  el('md').textContent = parMazal ? MAZAL.d : q.d;
+  montre('vMigration');
+}
+
+function decompte(){
+  let s = 60;
+  montre('vDeco');
+  el('decoTxt').textContent = s;
+  clearInterval(tic);
+  tic = setInterval(() => {
+    s--;
+    el('decoTxt').textContent = s;
+    el('decoTxt').classList.toggle('chaud', s <= 10);
+    if(s <= 0){ clearInterval(tic); migration(false); }
+  }, 1000);
+}
+
+function phrase(n){
+  el('phraseTxt').innerHTML = PHRASES[n];
+  montre('vPhrase');
+}
+
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if(k === ' '){ e.preventDefault(); question(i + 1); return; }
+  if(k === 'arrowright'){ question(i + 1); return; }
+  if(k === 'arrowleft'){ question(i - 1); return; }
+  if(k === 'm'){ migration(el('vAttente').classList.contains('on') || el('vPhrase').classList.contains('on')); return; }
+  if(k === 'd'){ decompte(); return; }
+  if(k === '1' || k === '2' || k === '3'){ phrase(+k); return; }
+  if(k === '0'){ clearInterval(tic); montre('vAttente'); return; }
+  if(k === 'h'){ el('aide').classList.toggle('on'); return; }
+  if(k === 'f'){
+    if(document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+    return;
+  }
+  if(k === 't'){
+    const t = prompt('Message à afficher en grand :');
+    if(t){ el('msgTxt').textContent = t; montre('vMsg'); }
+    return;
+  }
+});
+
+document.addEventListener('click', () => question(i + 1));
+let bouge;
+document.addEventListener('mousemove', () => {
+  document.body.classList.add('souris');
+  clearTimeout(bouge);
+  bouge = setTimeout(() => document.body.classList.remove('souris'), 2500);
+});
+el('aide').classList.add('on');
+setTimeout(() => el('aide').classList.remove('on'), 9000);
+</script>
+</body>
+</html>
