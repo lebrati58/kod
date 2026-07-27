@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Atelier de relecture</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Écran : lien invalide -->
+  <div id="ecran-invalide" class="ecran cache">
+    <div class="boite-centre">
+      <h1>Atelier de relecture</h1>
+      <p>Ce lien ne mène nulle part. Vérifie que tu as bien copié
+         l'adresse complète reçue sur WhatsApp, puis réessaie.</p>
+    </div>
+  </div>
+
+  <!-- Écran : prénom -->
+  <div id="ecran-prenom" class="ecran cache">
+    <div class="boite-centre">
+      <h1>Atelier de relecture</h1>
+      <p>On relit les 40 questions de la soirée, à cinq maximum.
+         Tout le monde voit tout, en direct.</p>
+      <form id="form-prenom">
+        <label for="champ-prenom">Ton prénom</label>
+        <input id="champ-prenom" type="text" maxlength="20" autocomplete="given-name"
+               placeholder="ex. Sarah" required>
+        <button type="submit" class="btn-principal">Entrer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Écran : chargement -->
+  <div id="ecran-chargement" class="ecran">
+    <div class="boite-centre"><p>Chargement…</p></div>
+  </div>
+
+  <!-- Écran principal -->
+  <div id="ecran-liste" class="ecran cache">
+    <header id="entete">
+      <div class="entete-ligne">
+        <span class="titre">Atelier de relecture</span>
+        <span id="badge-moi"></span>
+      </div>
+      <nav id="filtres" aria-label="Filtres">
+        <button class="filtre actif" data-filtre="toutes">Toutes</button>
+        <button class="filtre" data-filtre="avoter">À voter par moi</button>
+        <button class="filtre" data-filtre="probleme">Posent problème</button>
+        <button class="filtre" data-filtre="rire">Font rire</button>
+      </nav>
+    </header>
+
+    <div id="bandeau-hors-ligne" class="cache">Hors ligne — reconnexion en cours, tes actions seront enregistrées.</div>
+
+    <div id="barre-admin" class="cache">
+      <span class="admin-titre">Admin</span>
+      <button id="btn-export-json" class="btn-admin">Exporter le JSON</button>
+      <button id="btn-export-synthese" class="btn-admin">Exporter la synthèse</button>
+    </div>
+
+    <main id="liste-questions"></main>
+
+    <footer id="pied">
+      <span id="pied-relecteurs"></span>
+    </footer>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
