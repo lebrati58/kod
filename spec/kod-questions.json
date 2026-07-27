@@ -1,0 +1,964 @@
+{
+  "app": "Kod",
+  "regles": {
+    "cumul": false,
+    "tri": "le coin d'une personne = sa reponse a la question en cours, rien d'autre",
+    "melanger_ordre_reponses": true,
+    "temps_reponse_secondes": 45,
+    "coins": "la lettre identifie le coin ; la couleur n'est qu'un renfort visuel",
+    "affectation": "reponse -> coin modifiable question par question le soir meme",
+    "questions_droles": "acte 0 — a intercaler entre les questions de fond, une sur trois"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "acte": 1,
+      "texte": "Un dimanche parfait, c'est quoi ?",
+      "choix": [
+        {
+          "texte": "Une rando, partie tôt et sans plan",
+          "coin": "א"
+        },
+        {
+          "texte": "Un brunch qui s'éternise à trois",
+          "coin": "ג"
+        },
+        {
+          "texte": "Rideaux fermés, série, personne",
+          "coin": "ב"
+        },
+        {
+          "texte": "J'avance sur un truc à moi",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "acte": 1,
+      "texte": "Tu arrives à une soirée où tu ne connais personne.",
+      "choix": [
+        {
+          "texte": "Je vais vers le groupe le plus bruyant",
+          "coin": "א"
+        },
+        {
+          "texte": "Je prends un verre et j'observe",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je repère quelqu'un de seul et je vais lui parler",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je cherche celui qui organise",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "acte": 1,
+      "texte": "Ton rapport au retard.",
+      "choix": [
+        {
+          "texte": "Le temps est un concept",
+          "coin": "א"
+        },
+        {
+          "texte": "Pile à l'heure",
+          "coin": "ב"
+        },
+        {
+          "texte": "Un quart d'heure, c'est de la politesse",
+          "coin": "ג"
+        },
+        {
+          "texte": "En avance, toujours",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "acte": 1,
+      "texte": "On t'offre un billet pour demain matin, destination inconnue.",
+      "choix": [
+        {
+          "texte": "Je fais mon sac ce soir",
+          "coin": "א"
+        },
+        {
+          "texte": "Je décline, ma semaine était prévue",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je pars si quelqu'un vient avec moi",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je demande d'abord où",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "acte": 1,
+      "texte": "Le meilleur moment d'un repas de Shabbat.",
+      "choix": [
+        {
+          "texte": "Les chants",
+          "coin": "א"
+        },
+        {
+          "texte": "La dvar Torah",
+          "coin": "ב"
+        },
+        {
+          "texte": "Quand tout le monde parle en même temps",
+          "coin": "ג"
+        },
+        {
+          "texte": "Quand on refait le monde jusqu'à 2h",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "acte": 2,
+      "texte": "Une décision importante, tu la prends…",
+      "choix": [
+        {
+          "texte": "Au feeling, tout de suite",
+          "coin": "א"
+        },
+        {
+          "texte": "Après avoir dormi dessus",
+          "coin": "ב"
+        },
+        {
+          "texte": "Après en avoir parlé à trois personnes",
+          "coin": "ג"
+        },
+        {
+          "texte": "Après avoir fait un tableau",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "acte": 2,
+      "texte": "Ton argent, tu préfères…",
+      "choix": [
+        {
+          "texte": "Le dépenser en voyages",
+          "coin": "א"
+        },
+        {
+          "texte": "Le garder de côté, ça rassure",
+          "coin": "ב"
+        },
+        {
+          "texte": "L'offrir aux gens que j'aime",
+          "coin": "ג"
+        },
+        {
+          "texte": "L'investir",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "acte": 2,
+      "texte": "Ce qui te fatigue le plus.",
+      "choix": [
+        {
+          "texte": "Ne rien faire",
+          "coin": "א"
+        },
+        {
+          "texte": "Le bruit",
+          "coin": "ב"
+        },
+        {
+          "texte": "Les gens faux",
+          "coin": "ג"
+        },
+        {
+          "texte": "Perdre mon temps",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "acte": 2,
+      "texte": "Tu pars vivre ailleurs demain. Une seule chose dans la valise.",
+      "choix": [
+        {
+          "texte": "Ma guitare, mon appareil photo",
+          "coin": "א"
+        },
+        {
+          "texte": "Mes livres",
+          "coin": "ב"
+        },
+        {
+          "texte": "Les photos de famille",
+          "coin": "ג"
+        },
+        {
+          "texte": "Mon ordinateur",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "acte": 2,
+      "texte": "Dans un groupe, tu es plutôt…",
+      "choix": [
+        {
+          "texte": "Celui qui propose",
+          "coin": "א"
+        },
+        {
+          "texte": "Celui qui écoute",
+          "coin": "ב"
+        },
+        {
+          "texte": "Celui qui fait rire",
+          "coin": "ג"
+        },
+        {
+          "texte": "Celui qui organise",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "acte": 2,
+      "texte": "Ta relation à Shabbat.",
+      "choix": [
+        {
+          "texte": "C'est social avant tout",
+          "coin": "א"
+        },
+        {
+          "texte": "Je déconnecte vraiment",
+          "coin": "ב"
+        },
+        {
+          "texte": "C'est le repas et la famille",
+          "coin": "ג"
+        },
+        {
+          "texte": "J'en profite pour réfléchir à ma semaine",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "acte": 2,
+      "texte": "On dit de toi que tu es…",
+      "choix": [
+        {
+          "texte": "Imprévisible",
+          "coin": "א"
+        },
+        {
+          "texte": "Loyal",
+          "coin": "ב"
+        },
+        {
+          "texte": "Attachant",
+          "coin": "ג"
+        },
+        {
+          "texte": "Déterminé",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "acte": 2,
+      "texte": "Ta plus grande crainte.",
+      "choix": [
+        {
+          "texte": "M'ennuyer",
+          "coin": "א"
+        },
+        {
+          "texte": "Perdre ceux que j'aime",
+          "coin": "ב"
+        },
+        {
+          "texte": "Décevoir",
+          "coin": "ג"
+        },
+        {
+          "texte": "Passer à côté de ma vie",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "acte": 3,
+      "texte": "Le vrai signe que c'est la bonne personne.",
+      "choix": [
+        {
+          "texte": "On ne s'ennuie jamais",
+          "coin": "א"
+        },
+        {
+          "texte": "Les mêmes valeurs",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je me sens enfin moi-même",
+          "coin": "ג"
+        },
+        {
+          "texte": "Ça me tire vers le haut",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "acte": 3,
+      "texte": "Ton premier geste quand quelqu'un te plaît.",
+      "choix": [
+        {
+          "texte": "Je fonce",
+          "coin": "א"
+        },
+        {
+          "texte": "J'attends que l'autre ose",
+          "coin": "ב"
+        },
+        {
+          "texte": "J'envoie un ami en éclaireur",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je me renseigne d'abord",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "acte": 3,
+      "texte": "Le coup de foudre.",
+      "choix": [
+        {
+          "texte": "Je ne fonctionne qu'à ça",
+          "coin": "א"
+        },
+        {
+          "texte": "Ça existe, mais ça ne suffit pas",
+          "coin": "ב"
+        },
+        {
+          "texte": "Ça m'est arrivé",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je n'y crois pas une seconde",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "acte": 3,
+      "texte": "Un premier rendez-vous réussi, ça finit…",
+      "choix": [
+        {
+          "texte": "À 3h du matin sans voir le temps passer",
+          "coin": "א"
+        },
+        {
+          "texte": "Par un silence gênant assumé",
+          "coin": "ב"
+        },
+        {
+          "texte": "Par un fou rire",
+          "coin": "ג"
+        },
+        {
+          "texte": "Par un deuxième déjà calé",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "acte": 3,
+      "texte": "Tu tombes amoureux…",
+      "choix": [
+        {
+          "texte": "En une soirée",
+          "coin": "א"
+        },
+        {
+          "texte": "Au bout de quelques mois d'amitié",
+          "coin": "ב"
+        },
+        {
+          "texte": "Quand on me surprend",
+          "coin": "ג"
+        },
+        {
+          "texte": "Quand je vois comment la personne traite les autres",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "acte": 3,
+      "texte": "Ce qui te toucherait le plus venant de quelqu'un.",
+      "choix": [
+        {
+          "texte": "Un week-end surprise",
+          "coin": "א"
+        },
+        {
+          "texte": "Qu'il soit là un jour difficile",
+          "coin": "ב"
+        },
+        {
+          "texte": "Une lettre",
+          "coin": "ג"
+        },
+        {
+          "texte": "Qu'il croie à mon projet",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "acte": 3,
+      "texte": "La rencontre idéale.",
+      "choix": [
+        {
+          "texte": "Dans un bar, par hasard",
+          "coin": "א"
+        },
+        {
+          "texte": "On se connaît depuis toujours et un jour ça bascule",
+          "coin": "ב"
+        },
+        {
+          "texte": "Par des amis communs",
+          "coin": "ג"
+        },
+        {
+          "texte": "Un shidduch bien pensé",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "acte": 3,
+      "texte": "Dans un couple, tu as besoin de…",
+      "choix": [
+        {
+          "texte": "Bouger ensemble",
+          "coin": "א"
+        },
+        {
+          "texte": "Calme",
+          "coin": "ב"
+        },
+        {
+          "texte": "Beaucoup se parler",
+          "coin": "ג"
+        },
+        {
+          "texte": "Construire quelque chose",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "acte": 3,
+      "texte": "Le Yanuka, pour toi, c'est…",
+      "choix": [
+        {
+          "texte": "Un rappeur",
+          "coin": "א"
+        },
+        {
+          "texte": "Un rav",
+          "coin": "ב"
+        },
+        {
+          "texte": "Un bébé",
+          "coin": "ג"
+        },
+        {
+          "texte": "Un whisky japonais",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "acte": 4,
+      "texte": "Ce que tu cherches vraiment ce soir.",
+      "choix": [
+        {
+          "texte": "Une bande, des amis",
+          "coin": "א"
+        },
+        {
+          "texte": "Je ne sais pas, je suis venu voir",
+          "coin": "ב"
+        },
+        {
+          "texte": "Rencontrer quelqu'un",
+          "coin": "ג"
+        },
+        {
+          "texte": "Un partenaire de projet ou de voyage",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "acte": 4,
+      "texte": "La émouna, pour toi, c'est…",
+      "choix": [
+        {
+          "texte": "Une question ouverte",
+          "coin": "א"
+        },
+        {
+          "texte": "Une certitude",
+          "coin": "ב"
+        },
+        {
+          "texte": "Un sentiment",
+          "coin": "ג"
+        },
+        {
+          "texte": "Un combat",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "acte": 4,
+      "texte": "Dans dix ans, tu te vois…",
+      "choix": [
+        {
+          "texte": "Ailleurs, je ne sais pas encore où",
+          "coin": "א"
+        },
+        {
+          "texte": "À peu près ici, mais plus serein",
+          "coin": "ב"
+        },
+        {
+          "texte": "Avec une famille",
+          "coin": "ג"
+        },
+        {
+          "texte": "Avec quelque chose que j'ai construit",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "acte": 4,
+      "texte": "Ce qui te définit le mieux.",
+      "choix": [
+        {
+          "texte": "Mes voyages",
+          "coin": "א"
+        },
+        {
+          "texte": "Mon histoire",
+          "coin": "ב"
+        },
+        {
+          "texte": "Mes rencontres",
+          "coin": "ג"
+        },
+        {
+          "texte": "Mes projets",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "acte": 4,
+      "texte": "Le pardon.",
+      "choix": [
+        {
+          "texte": "Je coupe",
+          "coin": "א"
+        },
+        {
+          "texte": "J'ai besoin de temps",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je pardonne vite",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je pardonne, je n'oublie pas",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "acte": 4,
+      "texte": "S'il te restait un an.",
+      "choix": [
+        {
+          "texte": "Je pars",
+          "coin": "א"
+        },
+        {
+          "texte": "Je vis exactement pareil",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je rassemble tous ceux que j'aime",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je finis ce que j'ai commencé",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "acte": 0,
+      "drole": true,
+      "texte": "Ta mère t'appelle. Tu n'as pas rappelé depuis trois jours.",
+      "choix": [
+        {
+          "texte": "Je décroche, j'assume, je prends",
+          "coin": "א"
+        },
+        {
+          "texte": "Je laisse sonner et je culpabilise",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je rappelle dans dix minutes, promis",
+          "coin": "ג"
+        },
+        {
+          "texte": "J'envoie un message : « en réunion »",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "acte": 0,
+      "drole": true,
+      "texte": "Le vrai test d'un couple.",
+      "choix": [
+        {
+          "texte": "Monter un meuble ensemble",
+          "coin": "א"
+        },
+        {
+          "texte": "Choisir un film",
+          "coin": "ב"
+        },
+        {
+          "texte": "Un GPS et un rond-point",
+          "coin": "ג"
+        },
+        {
+          "texte": "Partir en vacances avec les beaux-parents",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "acte": 0,
+      "drole": true,
+      "texte": "Combien de temps tiens-tu sans regarder ton téléphone ?",
+      "choix": [
+        {
+          "texte": "Trente secondes",
+          "coin": "א"
+        },
+        {
+          "texte": "Cinq minutes",
+          "coin": "ב"
+        },
+        {
+          "texte": "Une heure, je suis fort",
+          "coin": "ג"
+        },
+        {
+          "texte": "C'est quoi un téléphone",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "acte": 0,
+      "drole": true,
+      "texte": "Ton niveau réel en cuisine.",
+      "choix": [
+        {
+          "texte": "Je reçois vingt personnes sans stresser",
+          "coin": "א"
+        },
+        {
+          "texte": "Je sais ouvrir des pâtes",
+          "coin": "ב"
+        },
+        {
+          "texte": "Les pompiers ont mon numéro",
+          "coin": "ג"
+        },
+        {
+          "texte": "Wolt est mon chef personnel",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "acte": 0,
+      "drole": true,
+      "texte": "On te dit « on mange à 20h ». Tu arrives à…",
+      "choix": [
+        {
+          "texte": "20h05, je suis quelqu'un de bien",
+          "coin": "א"
+        },
+        {
+          "texte": "20h45, c'est ça 20h",
+          "coin": "ב"
+        },
+        {
+          "texte": "19h50, et je fais le tour du quartier",
+          "coin": "ג"
+        },
+        {
+          "texte": "22h, et je m'étonne qu'il ne reste rien",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "acte": 0,
+      "drole": true,
+      "texte": "Le pire moment d'un mariage.",
+      "choix": [
+        {
+          "texte": "Le plan de table",
+          "coin": "א"
+        },
+        {
+          "texte": "Le discours de l'oncle",
+          "coin": "ב"
+        },
+        {
+          "texte": "La photo de groupe qui dure quarante minutes",
+          "coin": "ג"
+        },
+        {
+          "texte": "L'addition",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "acte": 0,
+      "drole": true,
+      "texte": "Quelqu'un te plaît ce soir. Tu fais quoi ?",
+      "choix": [
+        {
+          "texte": "Je vais lui parler, direct",
+          "coin": "א"
+        },
+        {
+          "texte": "J'attends un signe du destin",
+          "coin": "ב"
+        },
+        {
+          "texte": "J'envoie un ami en éclaireur",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je rentre chez moi et je regrette",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "acte": 0,
+      "drole": true,
+      "texte": "Ton drapeau rouge, celui que tu assumes complètement.",
+      "choix": [
+        {
+          "texte": "Je réponds aux messages trois jours après",
+          "coin": "א"
+        },
+        {
+          "texte": "Je suis toujours en retard",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je parle beaucoup. Beaucoup.",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je ne sais pas perdre",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "acte": 0,
+      "drole": true,
+      "texte": "Le truc qui te fait craquer instantanément.",
+      "choix": [
+        {
+          "texte": "Quelqu'un qui me fait rire",
+          "coin": "א"
+        },
+        {
+          "texte": "Quelqu'un qui écoute vraiment",
+          "coin": "ב"
+        },
+        {
+          "texte": "Quelqu'un qui sait ce qu'il veut",
+          "coin": "ג"
+        },
+        {
+          "texte": "Quelqu'un qui cuisine",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "acte": 0,
+      "drole": true,
+      "texte": "Il reste une part. Tu…",
+      "choix": [
+        {
+          "texte": "Je la prends, la vie est courte",
+          "coin": "א"
+        },
+        {
+          "texte": "Je propose, j'espère qu'on refuse",
+          "coin": "ב"
+        },
+        {
+          "texte": "Je la coupe en deux",
+          "coin": "ג"
+        },
+        {
+          "texte": "Je l'ai déjà prise, on en parle plus",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "acte": 0,
+      "drole": true,
+      "texte": "Ta mère rencontre la personne. Elle dit quoi en premier ?",
+      "choix": [
+        {
+          "texte": "« Il est trop maigre, il faut le nourrir »",
+          "coin": "א"
+        },
+        {
+          "texte": "« Et il fait quoi dans la vie ? »",
+          "coin": "ב"
+        },
+        {
+          "texte": "« Enfin quelqu'un de bien »",
+          "coin": "ג"
+        },
+        {
+          "texte": "« On en reparle tous les deux »",
+          "coin": "ד"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "acte": 0,
+      "drole": true,
+      "texte": "Sur le groupe WhatsApp de la famille, tu es…",
+      "choix": [
+        {
+          "texte": "Celui qui envoie tout",
+          "coin": "א"
+        },
+        {
+          "texte": "Celui qui a coupé les notifications",
+          "coin": "ב"
+        },
+        {
+          "texte": "Celui qui met un pouce et disparaît",
+          "coin": "ג"
+        },
+        {
+          "texte": "Celui qui répond six mois après",
+          "coin": "ד"
+        }
+      ]
+    }
+  ],
+  "coins": [
+    {
+      "lettre": "א",
+      "couleur": "Rouge"
+    },
+    {
+      "lettre": "ב",
+      "couleur": "Bleu"
+    },
+    {
+      "lettre": "ג",
+      "couleur": "Jaune"
+    },
+    {
+      "lettre": "ד",
+      "couleur": "Vert"
+    }
+  ]
+}

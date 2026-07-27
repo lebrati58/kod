@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>❤️ Kod — console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300&family=Frank+Ruhl+Libre:wght@600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#FBF7F0; --carte:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.22);
+  --encre:#191428; --second:#453B62; --sourd:#5E5280;
+  --accent:#8A2B4A; --accent-doux:#FDEDF1; --or:#8A6410;
+  --alerte:#B3261E; --alerte-doux:#FDECEA; --ok:#1F6B45;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif; --hebreu:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;padding:0 14px calc(24px + env(safe-area-inset-bottom))}
+.enveloppe{max-width:460px;margin:0 auto}
+
+.entete{position:sticky;top:0;z-index:20;background:var(--fond);padding:16px 2px 12px;
+  display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--bord-fin)}
+.marque{font-family:var(--display);font-size:19px}
+.marque .c{color:var(--accent)}
+.pastille-etat{margin-left:auto;font-family:var(--data);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:99px;
+  background:var(--accent-doux);color:var(--accent)}
+
+.bandeau{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.bandeau div{background:var(--carte);border:2px solid var(--bord-fin);border-radius:14px;padding:12px 8px;text-align:center}
+.bandeau span{display:block;font-family:var(--data);font-size:25px;font-weight:700;line-height:1.1}
+.bandeau small{display:block;font-family:var(--data);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--sourd);margin-top:4px;font-weight:700}
+.bandeau .gros{color:var(--accent)}
+
+.question{background:var(--carte);border:2px solid var(--bord);border-radius:16px;padding:16px;margin-bottom:12px}
+.question .num{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--or);font-weight:700;margin-bottom:8px}
+.question h1{font-family:var(--display);font-weight:300;font-size:23px;line-height:1.2}
+.question ol{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.question li{display:flex;align-items:center;gap:9px;font-size:14.5px;color:var(--second)}
+.question li b{font-family:var(--hebreu);font-size:19px;color:var(--accent);width:20px;text-align:center;flex:0 0 20px}
+
+.coins{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:14px;margin-bottom:12px}
+.coins h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;margin-bottom:12px}
+.coin{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.coin .l{font-family:var(--hebreu);font-size:22px;width:22px;text-align:center;flex:0 0 22px;color:var(--encre)}
+.coin .piste{flex:1;height:22px;background:#EFEAE0;border-radius:6px;overflow:hidden}
+.coin .piste i{display:block;height:100%;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.coin .n{font-family:var(--data);font-size:14px;font-weight:700;width:52px;text-align:right;flex:0 0 52px}
+.avert{margin-top:4px;font-size:13.5px;line-height:1.45;padding:11px 13px;border-radius:12px;
+  background:var(--alerte-doux);color:var(--alerte);font-weight:600;display:none}
+.avert.on{display:block}
+
+.bloc-pret{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:14px;margin-bottom:12px}
+.bloc-pret h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.bloc-pret h2 b{margin-left:auto;color:var(--accent);font-family:var(--data)}
+.pret{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.pret .l{font-family:var(--hebreu);font-size:20px;width:20px;text-align:center;flex:0 0 20px}
+.pret .piste{flex:1;height:19px;background:#EFEAE0;border-radius:6px;overflow:hidden;position:relative}
+.pret .piste i{display:block;height:100%;transition:width .5s}
+.pret .piste u{position:absolute;top:0;bottom:0;width:2px;background:var(--encre);opacity:.45}
+.pret .n{font-family:var(--data);font-size:13px;font-weight:700;width:62px;text-align:right;flex:0 0 62px}
+.pret.ok .n{color:var(--ok)}
+.pret-note{font-size:13px;line-height:1.5;color:var(--sourd);margin-top:10px}
+.pret-note.chaud{color:var(--ok);font-weight:700}
+.grille{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+button{font-family:var(--corps);font-size:16px;font-weight:700;cursor:pointer;border-radius:14px;
+  padding:18px 10px;min-height:64px;border:2px solid var(--bord);background:var(--carte);color:var(--encre)}
+button:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.plein{background:var(--accent);color:#fff;border-color:var(--accent)}
+.large{grid-column:1/-1}
+.mini-btn{font-size:14px;min-height:52px;padding:14px 8px}
+
+.msg{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:14px;margin-bottom:12px}
+.msg h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;margin-bottom:10px}
+.msg input{width:100%;font-family:var(--corps);font-size:16px;color:var(--encre);background:var(--fond);
+  border:2px solid var(--bord-fin);border-radius:12px;padding:14px;min-height:52px}
+.msg input:focus{outline:3px solid var(--accent);outline-offset:1px}
+.msg .rangee{display:flex;gap:8px;margin-top:9px}
+.msg .rangee button{flex:1;min-height:50px;padding:13px 8px;font-size:14px}
+
+.journal{background:var(--carte);border:2px solid var(--bord-fin);border-radius:16px;padding:14px}
+.journal h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;margin-bottom:10px}
+.journal ul{list-style:none;font-family:var(--data);font-size:12.5px;color:var(--second);line-height:1.9}
+.journal li b{color:var(--or)}
+.note{font-size:12.5px;line-height:1.5;color:var(--sourd);margin-top:14px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <header class="entete">
+    <div class="marque"><span class="c">❤️</span> Kod</div>
+    <div class="pastille-etat" id="etat">salle en attente</div>
+  </header>
+
+  <div class="bandeau">
+    <div><span id="bCo">0</span><small>connectés</small></div>
+    <div><span class="gros" id="bRep">0/0</span><small>réponses</small></div>
+    <div><span id="bTemps">—</span><small>temps</small></div>
+  </div>
+
+  <div class="question">
+    <div class="num" id="qNum">aucune question lancée</div>
+    <h1 id="qTexte">Appuie sur « Lancer » pour démarrer la soirée.</h1>
+    <ol id="qChoix"></ol>
+  </div>
+
+  <div class="coins">
+    <h2>Répartition dans la salle</h2>
+    <div id="lesCoins"></div>
+    <div class="avert" id="avert"></div>
+  </div>
+
+  <div class="bloc-pret" id="blocPret">
+    <h2>Ils se disent prêts <b id="pretPlancher"></b></h2>
+    <div id="lesPrets"></div>
+    <div class="pret-note" id="pretNote">Le bouton « prêt » est grisé sur les téléphones pendant les trois premières minutes.</div>
+  </div>
+
+  <div class="grille">
+    <button class="plein large" id="bAction">Lancer la soirée</button>
+    <button class="mini-btn" id="bPlus" disabled>+ 2 minutes</button>
+    <button class="mini-btn" id="bResultats" disabled>Afficher résultats</button>
+    <button class="mini-btn" id="bMigration" disabled>Forcer la migration</button>
+    <button class="mini-btn" id="bPause" disabled>Pause générale</button>
+  </div>
+
+  <div class="msg">
+    <h2>Message libre sur l'écran géant</h2>
+    <input id="msgTexte" placeholder="Les gars du fond, vous êtes en ב" maxlength="80">
+    <div class="rangee">
+      <button id="bEnvoyer">Envoyer</button>
+      <button id="bEffacer">Effacer l'écran</button>
+    </div>
+  </div>
+
+  <div class="journal">
+    <h2>Journal de la soirée</h2>
+    <ul id="journal"><li>En attente du lancement.</li></ul>
+  </div>
+
+  <p class="note">Démo : les réponses des 94 participants sont simulées. Les commandes et les alertes sont celles du soir J.</p>
+</div>
+
+<script>
+const QUESTIONS = [{"id": 1, "t": "Un dimanche parfait, c'est quoi ?", "c": ["Une rando, partie tôt et sans plan", "Un brunch qui s'éternise à trois", "Rideaux fermés, série, personne", "J'avance sur un truc à moi"]}, {"id": 2, "t": "Tu arrives à une soirée où tu ne connais personne.", "c": ["Je vais vers le groupe le plus bruyant", "Je prends un verre et j'observe", "Je repère quelqu'un de seul et je vais lui parler", "Je cherche celui qui organise"]}, {"id": 3, "t": "Ton rapport au retard.", "c": ["Le temps est un concept", "Pile à l'heure", "Un quart d'heure, c'est de la politesse", "En avance, toujours"]}, {"id": 4, "t": "On t'offre un billet pour demain matin, destination inconnue.", "c": ["Je fais mon sac ce soir", "Je décline, ma semaine était prévue", "Je pars si quelqu'un vient avec moi", "Je demande d'abord où"]}, {"id": 5, "t": "Le meilleur moment d'un repas de Shabbat.", "c": ["Les chants", "La dvar Torah", "Quand tout le monde parle en même temps", "Quand on refait le monde jusqu'à 2h"]}, {"id": 6, "t": "Une décision importante, tu la prends…", "c": ["Au feeling, tout de suite", "Après avoir dormi dessus", "Après en avoir parlé à trois personnes", "Après avoir fait un tableau"]}, {"id": 7, "t": "Ton argent, tu préfères…", "c": ["Le dépenser en voyages", "Le garder de côté, ça rassure", "L'offrir aux gens que j'aime", "L'investir"]}, {"id": 8, "t": "Ce qui te fatigue le plus.", "c": ["Ne rien faire", "Le bruit", "Les gens faux", "Perdre mon temps"]}, {"id": 9, "t": "Tu pars vivre ailleurs demain. Une seule chose dans la valise.", "c": ["Ma guitare, mon appareil photo", "Mes livres", "Les photos de famille", "Mon ordinateur"]}, {"id": 10, "t": "Dans un groupe, tu es plutôt…", "c": ["Celui qui propose", "Celui qui écoute", "Celui qui fait rire", "Celui qui organise"]}, {"id": 11, "t": "Ta relation à Shabbat.", "c": ["C'est social avant tout", "Je déconnecte vraiment", "C'est le repas et la famille", "J'en profite pour réfléchir à ma semaine"]}, {"id": 12, "t": "On dit de toi que tu es…", "c": ["Imprévisible", "Loyal", "Attachant", "Déterminé"]}, {"id": 13, "t": "Ta plus grande crainte.", "c": ["M'ennuyer", "Perdre ceux que j'aime", "Décevoir", "Passer à côté de ma vie"]}, {"id": 14, "t": "Le vrai signe que c'est la bonne personne.", "c": ["On ne s'ennuie jamais", "Les mêmes valeurs", "Je me sens enfin moi-même", "Ça me tire vers le haut"]}, {"id": 15, "t": "Ton premier geste quand quelqu'un te plaît.", "c": ["Je fonce", "J'attends que l'autre ose", "J'envoie un ami en éclaireur", "Je me renseigne d'abord"]}, {"id": 16, "t": "Le coup de foudre.", "c": ["Je ne fonctionne qu'à ça", "Ça existe, mais ça ne suffit pas", "Ça m'est arrivé", "Je n'y crois pas une seconde"]}, {"id": 17, "t": "Un premier rendez-vous réussi, ça finit…", "c": ["À 3h du matin sans voir le temps passer", "Par un silence gênant assumé", "Par un fou rire", "Par un deuxième déjà calé"]}, {"id": 18, "t": "Tu tombes amoureux…", "c": ["En une soirée", "Au bout de quelques mois d'amitié", "Quand on me surprend", "Quand je vois comment la personne traite les autres"]}, {"id": 19, "t": "Ce qui te toucherait le plus venant de quelqu'un.", "c": ["Un week-end surprise", "Qu'il soit là un jour difficile", "Une lettre", "Qu'il croie à mon projet"]}, {"id": 20, "t": "La rencontre idéale.", "c": ["Dans un bar, par hasard", "On se connaît depuis toujours et un jour ça bascule", "Par des amis communs", "Un shidduch bien pensé"]}, {"id": 21, "t": "Dans un couple, tu as besoin de…", "c": ["Bouger ensemble", "Calme", "Beaucoup se parler", "Construire quelque chose"]}, {"id": 22, "t": "Le Yanuka, pour toi, c'est…", "c": ["Un rappeur", "Un rav", "Un bébé", "Un whisky japonais"]}, {"id": 23, "t": "Ce que tu cherches vraiment ce soir.", "c": ["Une bande, des amis", "Je ne sais pas, je suis venu voir", "Rencontrer quelqu'un", "Un partenaire de projet ou de voyage"]}, {"id": 24, "t": "La émouna, pour toi, c'est…", "c": ["Une question ouverte", "Une certitude", "Un sentiment", "Un combat"]}, {"id": 25, "t": "Dans dix ans, tu te vois…", "c": ["Ailleurs, je ne sais pas encore où", "À peu près ici, mais plus serein", "Avec une famille", "Avec quelque chose que j'ai construit"]}, {"id": 26, "t": "Ce qui te définit le mieux.", "c": ["Mes voyages", "Mon histoire", "Mes rencontres", "Mes projets"]}, {"id": 27, "t": "Le pardon.", "c": ["Je coupe", "J'ai besoin de temps", "Je pardonne vite", "Je pardonne, je n'oublie pas"]}, {"id": 28, "t": "S'il te restait un an.", "c": ["Je pars", "Je vis exactement pareil", "Je rassemble tous ceux que j'aime", "Je finis ce que j'ai commencé"]}];
+
+/* Le Yanuka ouvre la soirée, puis on alterne les axes pour que la salle bouge */
+const ORDRE = [22, 30, 23, 4, 36, 6, 13, 40, 1, 32, 26, 31, 2, 3, 19, 38, 9, 21, 33, 24, 28];
+
+const COINS = [
+  {l:"א", nom:"Rouge", c:"#C22E2E"},
+  {l:"ב", nom:"Bleu",  c:"#2C6FD1"},
+  {l:"ג", nom:"Jaune", c:"#A8760C"},
+  {l:"ד", nom:"Vert",  c:"#1D7A52"}
+];
+
+/* vote « prêt » : le bouton reste grisé ce nombre de secondes,
+   puis on passe quand un coin atteint ce pourcentage */
+const PLANCHER = 180, SEUIL = 0.60;
+
+const TOTAL = 94, FENETRE = 45;
+const S = {phase:"attente", i:-1, q:null, reps:[0,0,0,0], recu:0, reste:0, tic:null, file:[], pause:false,
+           prets:[0,0,0,0], plancher:PLANCHER, discussion:false, atteint:null};
+
+const el = id => document.getElementById(id);
+
+function journal(txt){
+  const ul = el('journal');
+  if(ul.dataset.vierge !== "1"){ ul.innerHTML=''; ul.dataset.vierge="1"; }
+  const li = document.createElement('li');
+  const h = new Date();
+  li.innerHTML = `<b>${String(h.getHours()).padStart(2,'0')}:${String(h.getMinutes()).padStart(2,'0')}</b> · ${txt}`;
+  ul.prepend(li);
+  while(ul.children.length > 8) ul.lastChild.remove();
+}
+
+function dessineCoins(){
+  const box = el('lesCoins');
+  if(!box.children.length){
+    COINS.forEach((c,i)=>{
+      const d = document.createElement('div');
+      d.className = 'coin';
+      d.innerHTML = `<span class="l">${c.l}</span>
+        <span class="piste"><i id="p${i}" style="width:0%;background:${c.c}"></i></span>
+        <span class="n" id="n${i}">0</span>`;
+      box.appendChild(d);
+    });
+  }
+  const tot = S.recu || 1;
+  S.reps.forEach((v,i)=>{
+    el('p'+i).style.width = (v/tot*100) + '%';
+    el('n'+i).textContent = v ? `${v} · ${Math.round(v/tot*100)}%` : '0';
+  });
+  verifieEquilibre();
+}
+
+function verifieEquilibre(){
+  const a = el('avert');
+  if(S.recu < TOTAL*0.5){ a.classList.remove('on'); return; }
+  const max = Math.max(...S.reps), min = Math.min(...S.reps);
+  const iMax = S.reps.indexOf(max), iMin = S.reps.indexOf(min);
+  if(max/S.recu > 0.45){
+    a.textContent = `Le coin ${COINS[iMax].l} prend ${Math.round(max/S.recu*100)} % de la salle. Prévois de le couper en deux.`;
+    a.classList.add('on');
+  } else if(min <= 8){
+    a.textContent = `Le coin ${COINS[iMin].l} n'a que ${min} personnes. Va les voir toi-même.`;
+    a.classList.add('on');
+  } else a.classList.remove('on');
+}
+
+function afficheQuestion(q, position){
+  el('qNum').textContent = `question ${position} sur ${ORDRE.length} · fiche n°${q.id}`;
+  el('qTexte').textContent = q.t;
+  el('qChoix').innerHTML = q.c.map((t,i)=>`<li><b>${COINS[i].l}</b> ${t}</li>`).join('');
+}
+
+function dessinePrets(){
+  const box=el('lesPrets');
+  if(!box.children.length){
+    COINS.forEach((c,i)=>{
+      const d=document.createElement('div');
+      d.className='pret'; d.id='pr'+i;
+      d.innerHTML=`<span class="l">${c.l}</span>
+        <span class="piste"><i id="pi${i}" style="width:0%;background:${c.c}"></i><u style="left:${SEUIL*100}%"></u></span>
+        <span class="n" id="pn${i}">0 %</span>`;
+      box.appendChild(d);
+    });
+  }
+  let unCoinPret=null;
+  S.reps.forEach((dans,i)=>{
+    const pc = dans ? S.prets[i]/dans : 0;
+    el('pi'+i).style.width=(pc*100)+'%';
+    el('pn'+i).textContent = dans ? `${S.prets[i]}/${dans}` : '—';
+    const ok = pc>=SEUIL && dans>=3;
+    el('pr'+i).classList.toggle('ok',ok);
+    if(ok && unCoinPret===null) unCoinPret=i;
+  });
+
+  const note=el('pretNote'), pl=el('pretPlancher');
+  if(!S.discussion){ pl.textContent=''; note.classList.remove('chaud');
+    note.textContent="Le bouton « prêt » apparaît sur les téléphones dès la migration."; return; }
+  if(S.plancher>0){
+    pl.textContent=`grisé ${S.plancher}s`;
+    note.classList.remove('chaud');
+    note.textContent="Bouton visible mais grisé — on ne coupe pas une conversation qui vient de démarrer.";
+    return;
+  }
+  pl.textContent='bouton actif';
+  if(unCoinPret!==null){
+    note.classList.add('chaud');
+    note.textContent=`Le coin ${COINS[unCoinPret].l} a passé les 60 %. Tu peux enchaîner — ou laisser courir, c'est toi qui décides.`;
+    if(S.atteint===null){ S.atteint=unCoinPret; journal(`Coin ${COINS[unCoinPret].l} prêt à 60 %.`); }
+  } else {
+    note.classList.remove('chaud');
+    note.textContent="Bouton actif. Aucun coin n'a encore atteint 60 %.";
+  }
+}
+
+function majBandeau(){
+  el('bCo').textContent = TOTAL;
+  el('bRep').textContent = `${S.recu}/${TOTAL}`;
+  el('bTemps').textContent = S.phase==="question" ? S.reste+'s' : (S.phase==="attente" ? '—' : 'libre');
+}
+
+function setEtat(txt){ el('etat').textContent = txt; }
+
+function lanceQuestion(){
+  S.i++;
+  if(S.i >= ORDRE.length){ setEtat('soirée terminée'); journal('Toutes les questions sont passées.'); el('bAction').disabled=true; return; }
+  const q = QUESTIONS.find(x=>x.id===ORDRE[S.i]);
+  S.q=q; S.reps=[0,0,0,0]; S.recu=0; S.reste=FENETRE; S.phase="question";
+  S.discussion=false; S.prets=[0,0,0,0]; S.plancher=PLANCHER; S.atteint=null;
+  afficheQuestion(q, S.i+1);
+  el('avert').classList.remove('on');
+
+  /* les réponses n'arrivent pas régulièrement, et jamais toutes */
+  const p = [0,0,0,0].map(()=>0.4+Math.random()*2.6);
+  const som = p.reduce((a,b)=>a+b,0);
+  const poids = p.map(x=>x/som);
+  const combien = TOTAL - Math.floor(Math.random()*7);
+  S.file = [];
+  for(let i=0;i<combien;i++){
+    let r=Math.random(), acc=0, z=0;
+    for(let j=0;j<4;j++){ acc+=poids[j]; if(r<=acc){ z=j; break; } }
+    S.file.push(z);
+  }
+
+  setEtat('question en cours');
+  el('bAction').textContent = 'Question suivante';
+  ['bPlus','bResultats','bMigration','bPause'].forEach(b=>el(b).disabled=false);
+  journal(`Question lancée : « ${q.t} »`);
+  dessineCoins(); majBandeau(); dessinePrets();
+  clearInterval(S.tic);
+  S.tic = setInterval(battement, 250);
+}
+
+let compteur = 0;
+function battement(){
+  if(S.pause) return;
+  compteur++;
+  if(S.file.length && Math.random() < 0.55){
+    S.reps[S.file.shift()]++; S.recu++;
+    dessineCoins();
+  }
+  if(compteur % 4 === 0 && S.phase === "question"){
+    S.reste--;
+    if(S.reste <= 0){ S.phase="ouvert"; setEtat('temps écoulé'); journal('Fenêtre de réponse fermée.'); }
+  }
+  if(S.discussion){
+    if(compteur % 4 === 0 && S.plancher > 0) S.plancher--;
+    /* une fois le bouton actif, les « prêt » arrivent petit à petit */
+    if(S.plancher === 0 && Math.random() < .12){
+      const ouverts = S.reps.map((d,i)=>({i,reste:d-S.prets[i]})).filter(x=>x.reste>0);
+      if(ouverts.length){ S.prets[ouverts[Math.floor(Math.random()*ouverts.length)].i]++; }
+    }
+    dessinePrets();
+  }
+  majBandeau();
+}
+
+el('bAction').addEventListener('click', lanceQuestion);
+el('bPlus').addEventListener('click', ()=>{ S.reste += 120; S.phase="question"; setEtat('question en cours'); journal('Prolongation de 2 minutes.'); majBandeau(); });
+el('bResultats').addEventListener('click', ()=>{ journal('Résultats affichés sur l\'écran géant.'); setEtat('résultats à l\'écran'); });
+el('bMigration').addEventListener('click', ()=>{
+  S.phase="migration"; setEtat('discussion dans les coins');
+  S.discussion=true; S.plancher=PLANCHER; S.prets=[0,0,0,0]; S.atteint=null;
+  clearInterval(S.tic); S.tic=setInterval(battement,250);
+  dessinePrets();
+  journal(`Migration lancée : ${S.reps.map((v,i)=>COINS[i].l+' '+v).join(' · ')}`);
+  majBandeau();
+});
+el('bPause').addEventListener('click', ()=>{
+  S.pause = !S.pause;
+  el('bPause').textContent = S.pause ? 'Reprendre' : 'Pause générale';
+  setEtat(S.pause ? 'tout est en pause' : 'question en cours');
+  journal(S.pause ? 'Pause générale. Écran neutre.' : 'Reprise.');
+});
+el('bEnvoyer').addEventListener('click', ()=>{
+  const t = el('msgTexte').value.trim();
+  if(!t) return;
+  journal(`Message à l\'écran : « ${t} »`);
+  el('msgTexte').value='';
+});
+el('bEffacer').addEventListener('click', ()=>journal('Écran géant effacé.'));
+
+dessineCoins(); majBandeau(); dessinePrets();
+</script>
+</body>
+</html>

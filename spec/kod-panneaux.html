@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>❤️ Kod — panneaux des quatre coins</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700&family=Manrope:wght@700&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+@page{size:A3 portrait;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;background:#EEE9E0}
+
+.notice{max-width:760px;margin:0 auto;padding:34px 24px;line-height:1.6;color:#191428}
+.notice h1{font-size:26px;margin-bottom:14px}
+.notice p{margin-bottom:12px;font-weight:400}
+.notice ul{margin:0 0 12px 22px;font-weight:400}
+.notice b{color:#8A2B4A}
+.notice button{font-family:inherit;font-size:16px;font-weight:700;background:#8A2B4A;color:#fff;
+  border:0;border-radius:12px;padding:16px 26px;cursor:pointer;margin-top:10px}
+
+.panneau{
+  width:297mm;height:420mm;margin:0 auto 26px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  page-break-after:always;position:relative;color:#fff;
+}
+.panneau .lettre{font-family:'Frank Ruhl Libre',serif;font-weight:700;font-size:300mm;line-height:.78}
+.panneau .nom{font-family:'Space Mono',monospace;font-weight:700;font-size:22mm;
+  letter-spacing:.22em;margin-top:6mm}
+.panneau .marque{position:absolute;bottom:18mm;font-family:'Manrope',sans-serif;
+  font-size:9mm;opacity:.62;letter-spacing:.05em}
+
+.a{background:#C22E2E}
+.b{background:#2C6FD1}
+.g{background:#A8760C}
+.d{background:#1D7A52}
+
+@media print{
+  .notice{display:none}
+  body{background:#fff}
+  .panneau{margin:0}
+}
+</style>
+</head>
+<body>
+
+<div class="notice">
+  <h1>❤️ Kod — les quatre panneaux</h1>
+  <p>Quatre pages A3, une par coin. <b>Imprime en couleur, en pleine page, sans marges</b> (dans la boîte d'impression : « échelle 100 % » ou « taille réelle », surtout pas « ajuster à la page »).</p>
+  <ul>
+    <li><b>Accroche-les haut</b>, au-dessus des têtes. À hauteur d'homme, ils sont masqués dès qu'il y a du monde.</li>
+    <li><b>Fais-en deux jeux</b> si la salle est en longueur, un de chaque côté.</li>
+    <li>Si tu peux, plastifie-les ou colle-les sur du carton — dans un bar, une feuille A3 se froisse en une heure.</li>
+  </ul>
+  <p>La lettre est ce qui compte : elle se lit de loin et s'annonce au micro. La couleur n'est qu'un renfort.</p>
+  <button onclick="window.print()">Imprimer les quatre panneaux</button>
+</div>
+
+<div class="panneau a"><div class="lettre">א</div><div class="nom">ROUGE</div><div class="marque">❤️ Kod</div></div>
+<div class="panneau b"><div class="lettre">ב</div><div class="nom">BLEU</div><div class="marque">❤️ Kod</div></div>
+<div class="panneau g"><div class="lettre">ג</div><div class="nom">JAUNE</div><div class="marque">❤️ Kod</div></div>
+<div class="panneau d"><div class="lettre">ד</div><div class="nom">VERT</div><div class="marque">❤️ Kod</div></div>
+
+</body>
+</html>

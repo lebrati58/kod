@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>❤️ Kod — ton écran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Frank+Ruhl+Libre:wght@400;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fond:#FBF7F0; --carte:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.2);
+  --encre:#191428; --second:#453B62; --sourd:#5E5280;
+  --accent:#8A2B4A; --accent-doux:#FDEDF1; --or:#8A6410;
+  --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
+  --data:'Space Mono',ui-monospace,monospace; --hebreu:'Frank Ruhl Libre',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--encre);font-family:var(--corps);
+  -webkit-font-smoothing:antialiased;padding:0 16px calc(28px + env(safe-area-inset-bottom));
+  transition:background .5s}
+body.encoin{background:var(--teinte,var(--fond))}
+.enveloppe{max-width:420px;margin:0 auto}
+
+.entete{padding:18px 2px 14px;display:flex;align-items:center;gap:10px}
+.badge{font-family:var(--data);font-size:12px;font-weight:700;color:var(--accent);
+  border:2px solid var(--bord-fin);border-radius:99px;padding:7px 12px;background:var(--carte)}
+.monmazal{margin-left:auto;display:flex;align-items:center;gap:7px;background:var(--carte);
+  border:2px solid var(--bord-fin);border-radius:99px;padding:5px 12px 5px 9px}
+.monmazal svg{width:19px;height:19px;color:var(--or)}
+.monmazal span{font-family:var(--hebreu);font-size:16px;font-weight:600}
+
+.ecran{display:none}
+.ecran.actif{display:block;animation:monte .4s cubic-bezier(.2,.7,.3,1) both}
+@keyframes monte{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:none}}
+
+.sur-titre{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:9px}
+.chrono{margin-left:auto;font-family:var(--data);font-size:15px;font-weight:700;color:var(--encre)}
+.chrono.chaud{color:var(--accent)}
+h1{font-family:var(--display);font-weight:300;font-size:30px;line-height:1.17;margin-bottom:22px}
+
+.choix{display:flex;flex-direction:column;gap:10px}
+.choix button{width:100%;text-align:left;font-family:var(--corps);font-size:16.5px;font-weight:600;
+  color:var(--encre);background:var(--carte);border:2px solid var(--bord-fin);border-radius:15px;
+  padding:18px 16px;min-height:64px;cursor:pointer;transition:.15s}
+.choix button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-doux)}
+.choix button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.attente{text-align:center;color:var(--sourd);font-size:14.5px;line-height:1.55;margin-top:22px}
+
+/* ---------- le coin ---------- */
+.coin-tete{text-align:center;padding:16px 0 6px}
+.coin-lettre{font-family:var(--hebreu);font-weight:600;font-size:112px;line-height:1;
+  color:var(--coin,var(--accent));animation:tombe .7s cubic-bezier(.2,.8,.3,1) both}
+@keyframes tombe{from{opacity:0;transform:scale(.6) translateY(-14px)}to{opacity:1;transform:none}}
+.coin-nom{font-family:var(--data);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  font-weight:700;color:var(--coin,var(--accent));margin-top:8px}
+.coin-phrase{font-family:var(--display);font-weight:300;font-size:24px;line-height:1.3;
+  text-align:center;margin:20px 8px 0;animation:monte .6s .25s both}
+
+/* ---------- la mission mazal ---------- */
+.mission{background:var(--carte);border:2px solid var(--or);border-radius:18px;
+  padding:20px 18px;margin-top:26px;text-align:center;animation:monte .6s .5s both}
+.mission .symbole{display:flex;justify-content:center;color:var(--or);margin-bottom:12px}
+.mission .symbole svg{width:40px;height:40px}
+.mission .titre{font-family:var(--display);font-weight:300;font-size:23px;line-height:1.3}
+.mission .titre b{font-weight:600;color:var(--or)}
+.mission .sous{font-size:14.5px;line-height:1.55;color:var(--second);margin-top:11px}
+.mission .geste{margin-top:16px;padding-top:14px;border-top:1.5px solid var(--bord-fin);
+  font-size:13.5px;line-height:1.5;color:var(--sourd)}
+.mission .geste b{color:var(--encre)}
+
+/* ---------- bouton prêt ---------- */
+.pret{width:100%;font-family:var(--corps);font-size:17px;font-weight:700;border-radius:15px;
+  padding:19px;min-height:64px;margin-top:20px;border:2px solid transparent;cursor:pointer;transition:.2s}
+.pret:disabled{background:var(--carte);border-color:var(--bord-fin);color:var(--sourd);cursor:not-allowed}
+.pret:not(:disabled){background:var(--accent);color:#fff}
+.pret:not(:disabled):active{transform:scale(.985)}
+.pret[data-etat="envoye"]{background:var(--carte);border-color:var(--accent);color:var(--accent)}
+.pret-note{font-size:13px;color:var(--sourd);text-align:center;margin-top:12px;line-height:1.5}
+
+.demo{margin-top:30px;padding-top:18px;border-top:1.5px solid var(--bord-fin);text-align:center}
+.demo p{font-family:var(--data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sourd);margin-bottom:10px}
+.demo button{font-family:var(--corps);font-size:13.5px;font-weight:600;background:none;
+  border:1.5px solid var(--bord-fin);border-radius:11px;padding:11px 15px;cursor:pointer;color:var(--second)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="enveloppe">
+
+  <header class="entete">
+    <span class="badge">n° 34</span>
+    <span class="monmazal" id="monMazal"></span>
+  </header>
+
+  <!-- LA QUESTION -->
+  <section class="ecran actif" id="eQuestion">
+    <p class="sur-titre">Question 4 <span class="chrono" id="chrono">0:38</span></p>
+    <h1 id="qTexte">Il reste une part. Tu…</h1>
+    <div class="choix" id="qChoix"></div>
+  </section>
+
+  <!-- EN ATTENTE -->
+  <section class="ecran" id="eAttente">
+    <p class="sur-titre">C'est envoyé</p>
+    <h1>Garde ton téléphone en main.</h1>
+    <p class="attente">On attend les derniers. Dans quelques secondes, tu sauras où aller.</p>
+  </section>
+
+  <!-- LE COIN -->
+  <section class="ecran" id="eCoin">
+    <div class="coin-tete">
+      <div class="coin-lettre" id="cLettre">ג</div>
+      <div class="coin-nom" id="cNom">JAUNE</div>
+    </div>
+    <p class="coin-phrase" id="cPhrase">Vous êtes tous en ג. Trouvez pourquoi.</p>
+
+    <div class="mission" id="mission"></div>
+
+    <button class="pret" id="bPret" disabled>Prêt à continuer</button>
+    <p class="pret-note" id="pretNote"></p>
+
+    <div class="demo">
+      <p>démo</p>
+      <button id="rejouer">Rejouer une question</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ============================================================
+   ❤️ Kod — l'écran du participant
+   Le coin vient de la réponse à la question en cours.
+   Le mazal ne trie rien : il donne une mission une fois arrivé.
+   ============================================================ */
+
+const COINS=[
+  {l:"א",nom:"ROUGE",c:"#C22E2E",doux:"#FDF0F0"},
+  {l:"ב",nom:"BLEU", c:"#2C6FD1",doux:"#EEF4FD"},
+  {l:"ג",nom:"JAUNE",c:"#A8760C",doux:"#FBF3E3"},
+  {l:"ד",nom:"VERT", c:"#1D7A52",doux:"#EBF6F1"}
+];
+
+const LOGO={
+ "'Hama":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/></svg>',
+ "Levana":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15.4 3.2a9.2 9.2 0 1 0 0 17.6 7.4 7.4 0 0 1 0-17.6z"/></svg>',
+ "Maadim":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9.5" cy="14.5" r="6"/><path d="M14.2 9.8 20.5 3.5"/><path d="M15.2 3.5h5.3v5.3"/></svg>',
+ "Kokhav":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="11.5" r="5"/><path d="M8.4 4.6a5 5 0 0 0 7.2 0"/><path d="M12 16.5v5"/><path d="M8.8 19h6.4"/></svg>',
+ "Tzedek":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M14.6 5.5v14"/><path d="M9.5 19.5h9.4"/><path d="M5.2 6.2c0-1.9 1.5-3 3-3 2.1 0 3.3 1.8 3.3 4.2 0 2.6-1.9 4.6-4.4 5.9"/></svg>',
+ "Nogah":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.8" r="5.8"/><path d="M12 14.6v7"/><path d="M8.6 18.4h6.8"/></svg>',
+ "Chabtaï":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 3.2v9.4"/><path d="M4.4 6.6h7.2"/><path d="M8 12.6c1.6-1.6 3.6-1.4 4.9 0 1.5 1.6 1.7 4.3 1 6.6"/><path d="M18.6 20.4c-1.5-.4-2.5-1.4-2.9-2.6"/></svg>'
+};
+const HE={"'Hama":"חמה","Levana":"לבנה","Maadim":"מאדים","Kokhav":"כוכב",
+          "Tzedek":"צדק","Nogah":"נוגה","Chabtaï":"שבתאי"};
+
+/* venu de l'accueil */
+const MOI={badge:34, mazal:"Nogah"};
+
+const QUESTIONS=[
+ {t:"Il reste une part. Tu…",c:["Je la prends, la vie est courte","Je propose, j'espère qu'on refuse","Je la coupe en deux","Je l'ai déjà prise, on en parle plus"]},
+ {t:"On te dit « on mange à 20h ». Tu arrives à…",c:["20h05, je suis quelqu'un de bien","20h45, c'est ça 20h","19h50, et je fais le tour du quartier","22h, et je m'étonne qu'il ne reste rien"]},
+ {t:"Un dimanche parfait, c'est quoi ?",c:["Une rando, partie tôt et sans plan","Rideaux fermés, série, personne","Un brunch qui s'éternise à trois","J'avance sur un truc à moi"]},
+ {t:"Sur le groupe WhatsApp de la famille, tu es…",c:["Celui qui envoie tout","Celui qui a coupé les notifications","Celui qui met un pouce et disparaît","Celui qui répond six mois après"]}
+];
+
+/* trois minutes le soir J ; 12 secondes en démo pour que ce soit testable */
+const PLANCHER = location.hash==='#reel' ? 180 : 12;
+let S={q:0, coin:null, reste:38, tic:null, plancher:PLANCHER, tic2:null};
+const el=id=>document.getElementById(id);
+const mmss=s=>`${Math.floor(s/60)}:${String(Math.max(0,s%60)).padStart(2,'0')}`;
+
+/* bandeau du haut */
+el('monMazal').innerHTML=`${LOGO[MOI.mazal]}<span>${HE[MOI.mazal]}</span>`;
+
+function montre(id){
+  ['eQuestion','eAttente','eCoin'].forEach(x=>el(x).classList.toggle('actif',x===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function poseQuestion(){
+  const q=QUESTIONS[S.q%QUESTIONS.length];
+  el('qTexte').textContent=q.t;
+  document.querySelector('#eQuestion .sur-titre').firstChild.textContent=`Question ${S.q+1} `;
+  const box=el('qChoix'); box.innerHTML='';
+  q.c.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.setAttribute('aria-pressed','false'); b.textContent=t;
+    b.addEventListener('click',()=>{
+      [...box.children].forEach(x=>x.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      setTimeout(()=>repond(i),420);
+    });
+    box.appendChild(b);
+  });
+  S.reste=38; document.body.className='';
+  clearInterval(S.tic);
+  S.tic=setInterval(()=>{
+    S.reste--;
+    el('chrono').textContent=mmss(S.reste);
+    el('chrono').classList.toggle('chaud',S.reste<=10);
+    if(S.reste<=0) clearInterval(S.tic);
+  },1000);
+  montre('eQuestion');
+}
+
+function repond(i){
+  clearInterval(S.tic);
+  montre('eAttente');
+  setTimeout(()=>vaAuCoin(i),2200);
+}
+
+function vaAuCoin(i){
+  const c=COINS[i]; S.coin=c;
+  document.body.className='encoin';
+  document.body.style.setProperty('--teinte',c.doux);
+  el('cLettre').style.setProperty('--coin',c.c);
+  el('cNom').style.setProperty('--coin',c.c);
+  el('cLettre').textContent=c.l;
+  el('cNom').textContent=c.nom;
+  el('cPhrase').textContent=`Vous êtes tous en ${c.l}. Trouvez pourquoi.`;
+
+  /* la mission : combien partagent mon mazal dans ce coin */
+  const dansLeCoin=12+Math.floor(Math.random()*26);
+  let memes=0;
+  for(let k=0;k<dansLeCoin-1;k++) if(Math.random()<1/7) memes++;
+
+  const m=el('mission');
+  if(memes===0){
+    m.innerHTML=`
+      <div class="symbole">${LOGO[MOI.mazal]}</div>
+      <div class="titre">Tu es <b>le seul ${MOI.mazal}</b> de ce coin.</div>
+      <p class="sous">Ça n'arrive presque jamais. Va le dire à quelqu'un — c'est une entrée en matière imbattable.</p>
+      <div class="geste"><b>Montre ton écran.</b> Ton symbole est en haut à droite.</div>`;
+  } else {
+    m.innerHTML=`
+      <div class="symbole">${LOGO[MOI.mazal]}</div>
+      <div class="titre">Il y a <b>${memes} autre${memes>1?'s':''} ${MOI.mazal}</b> dans ce coin.</div>
+      <p class="sous">${memes>1?'Trouve-les':'Trouve-le'}. Personne ne sait qui c'est, pas même ${memes>1?'eux':'lui'}.</p>
+      <div class="geste"><b>Montre ton écran.</b> Ton symbole est en haut à droite — c'est comme ça qu'on se reconnaît.</div>`;
+  }
+
+  /* bouton prêt : grisé, puis actif */
+  S.plancher=PLANCHER;
+  const b=el('bPret'), n=el('pretNote');
+  b.disabled=true; b.removeAttribute('data-etat'); b.textContent='Prêt à continuer';
+  clearInterval(S.tic2);
+  S.tic2=setInterval(()=>{
+    S.plancher--;
+    if(S.plancher>0){
+      b.textContent=`Prêt à continuer · ${mmss(S.plancher)}`;
+      n.textContent="Le bouton s'activera dans un moment. Profites-en.";
+    } else {
+      clearInterval(S.tic2);
+      b.disabled=false; b.textContent='Prêt à continuer';
+      n.textContent="Quand assez de monde ici sera prêt, on passera à la suite.";
+    }
+  },1000);
+  b.onclick=()=>{
+    b.setAttribute('data-etat','envoye');
+    b.textContent='✓ Tu es prêt';
+    b.disabled=true;
+    n.textContent="C'est noté. Continue à parler en attendant les autres.";
+  };
+  montre('eCoin');
+}
+
+el('rejouer').addEventListener('click',()=>{ S.q++; clearInterval(S.tic2); poseQuestion(); });
+
+poseQuestion();
+</script>
+</body>
+</html>
