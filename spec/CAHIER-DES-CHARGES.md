@@ -28,6 +28,8 @@ Les fichiers HTML joints sont des **maquettes fonctionnelles, pas l'application*
 
 6. **Anonymat total.** Ni nom, ni prénom, ni e-mail, ni téléphone. Le numéro de badge est la seule identité.
 
+7. **Les critères d'appariement ne sont jamais affichés.** Ni à l'écran géant, ni sur le téléphone d'un autre participant, ni dans la console. Ils servent à filtrer les suggestions et à rien d'autre. L'âge et le désir d'enfants sont parmi les informations les plus intimes qu'on puisse demander — elles doivent être supprimées après la soirée, et il faut le dire à l'accueil : ça augmente le taux de réponses honnêtes.
+
 ---
 
 ## Ce qui existe déjà, et qui sert de référence
@@ -77,14 +79,97 @@ Ce qu'il faut :
 
 > **Ne construis rien d'autre tant que ça ne tourne pas avec cent connexions simultanées.** Le reste est du confort ; ça, c'est la soirée.
 
+### La première migration se fait par le mazal
+
+**Décision prise après la première version de ce document.**
+
+La toute première migration de la soirée **ne suit aucune question**. Chacun a déjà son mazal, calculé à l'accueil : le système l'envoie directement dans un coin, sans qu'il ait répondu à quoi que ce soit.
+
+Le regroupement des sept mazalot en quatre coins est fixe :
+
+| Coin | Mazalot | (ne jamais l'expliquer au participant) |
+|---|---|---|
+| **א** | חמה Hama · לבנה Levana | les deux lumières |
+| **ב** | צדק Tzedek · נוגה Nogah | les deux bénéfiques |
+| **ג** | מאדים Maadim · שבתאי Chabtaï | les deux sévères |
+| **ד** | כוכב Kokhav | le messager, seul |
+
+> **Le coin ד sera structurellement le plus petit** — un mazal sur sept, donc environ 14 personnes sur 100 contre une trentaine ailleurs. Ce n'est pas un bug. La console doit néanmoins le signaler à l'organisateur comme n'importe quel coin sous-peuplé.
+
+**Toutes les migrations suivantes** se font normalement : le coin d'une personne est sa réponse à la question en cours.
+
 ### Étape 2 — le parcours du participant
 
-- L'accueil (à reprendre de `kod-accueil.html`) : badge, date et lieu, jeu de la date hébraïque, révélation du mazal
-- La boucle de soirée (à reprendre de `kod-participant.html`) : question → attente → coin → mission mazal → bouton « prêt »
+#### L'accueil
+
+À reprendre de `kod-accueil.html` : badge, date et lieu de naissance, jeu de la date hébraïque, révélation du mazal.
+
+**S'y ajoutent les critères d'appariement ci-dessous**, posés avant que la soirée commence. Ils servent à filtrer les cinq numéros suggérés dans les coins.
+
+**D'abord une question d'aiguillage :**
+
+> **Tu cherches quoi, ce soir ?**
+> · Rencontrer quelqu'un · Des amis, du monde · Un partenaire de projet ou de voyage · Je ne sais pas encore
+
+**Si — et seulement si — la réponse est « rencontrer quelqu'un »**, on pose les trois questions suivantes. Sinon on les saute : quelqu'un venu se faire des amis n'a aucune raison de déclarer son désir d'enfants, et le lui demander casse le ton de la soirée.
+
+**1. Ton âge**
+Un seul chiffre. La tranche recherchée n'est **pas** demandée au participant : c'est l'organisateur qui fixe un écart d'âge maximum unique pour toute la soirée, depuis sa console (voir plus bas).
+
+**2. Souhait d'avoir des enfants**
+- Je souhaite avoir des enfants
+- Je ne souhaite pas avoir d'enfants
+- Je suis ouvert à la discussion, ça dépend de la personne
+
+**3. Si la personne a déjà des enfants**
+- J'accepte que la personne ait déjà des enfants
+- Je préfère qu'elle n'en ait pas
+- Sans préférence
+
+Il faut aussi savoir si **la personne elle-même a des enfants** — sans quoi le critère 3 ne peut être appliqué. Une question de plus, à choix simple : oui / non.
+
+Au total, l'accueil pose donc : le badge, la date et le lieu de naissance, la question d'aiguillage, et — pour ceux qui cherchent à rencontrer quelqu'un — l'âge et trois questions sur les enfants.
+
+> **Attention au temps.** L'accueil doit rester sous les trois minutes, debout dans une file. Tout au pouce, aucun champ de texte, aucune saisie libre.
+
+#### Le filtrage des suggestions
+
+Les cinq numéros proposés dans un coin ne sont pas tirés au hasard. L'ordre de priorité est strict :
+
+**1. Les filtres durs — la suggestion n'a jamais lieu si :**
+- l'écart d'âge dépasse **la valeur fixée par l'organisateur dans la console**
+- l'un veut des enfants et l'autre n'en veut pas — « ouvert à la discussion » est compatible avec les deux
+- l'un a des enfants et l'autre a déclaré préférer que non
+
+**2. Puis, parmi ceux qui restent :**
+- priorité absolue aux personnes **jamais encore suggérées** — c'est ce qui fait passer chacun de 33 à 44 rencontres sur la soirée
+- les suggestions sont **réciproques** : si le 47 est sur la liste du 15, le 15 est sur celle du 47. Sans ça, on envoie quelqu'un vers une personne qui ne l'attend pas.
+- un ou deux des cinq partagent le mazal, quand c'est possible — c'est mis en évidence à l'écran
+
+**3. Ceux qui ne cherchent pas à rencontrer quelqu'un** ne sont filtrés sur aucun de ces critères. Ils sont suggérés librement, et les critères des autres ne s'appliquent pas à eux.
+
+#### L'écart d'âge maximum
+
+**Au lancement de la soirée, la console demande à l'organisateur un seul nombre :** l'écart d'âge maximum toléré entre deux personnes suggérées. Par exemple 10 — un participant de 28 ans ne sera alors jamais suggéré à quelqu'un de plus de 38 ans ni de moins de 18.
+
+- Valeur par défaut proposée : **10 ans**
+- Modifiable **à tout moment pendant la soirée**, sans relancer quoi que ce soit
+- Une valeur très haute (99) désactive de fait le filtre
+
+> **Pourquoi côté organisateur et pas côté participant :** c'est deux questions de moins dans une file d'attente, un seul chiffre à régler au lieu de cent tranches à croiser, et surtout un rattrapage possible en direct. Si les listes de suggestions sortent trop maigres au premier tour, l'organisateur élargit et tout se débloque immédiatement.
+
+> **Ne jamais afficher pourquoi deux personnes se sont vu proposer l'une l'autre.** Ni l'âge, ni les enfants, ni aucun critère. L'écran dit seulement « a répondu comme toi ». Le reste ne regarde personne.
+#### La boucle de soirée
+
+À reprendre de `kod-participant.html` : question → attente → coin → **les cinq numéros** → bouton « prêt ».
 
 **Le bouton « prêt »** : visible immédiatement mais **grisé pendant 180 secondes**, avec décompte. Ensuite actif. Quand un coin atteint **60 %** de prêts, la console le signale à l'organisateur — qui décide.
 
-**La mission mazal** : en arrivant dans son coin, le participant voit combien de personnes de ce coin partagent son mazal. Le serveur calcule ce nombre réel. S'il est seul, le message change (voir la maquette). Le mazal ne trie personne : il sert uniquement à donner une raison d'aborder quelqu'un.
+**Les cinq numéros** : en arrivant dans son coin, le participant reçoit cinq numéros de badge de personnes présentes dans ce même coin, calculés selon les règles ci-dessus. Il peut en barrer un quand il l'a rencontré. Ce ne sont que des suggestions — personne n'est obligé.
+
+Cinq est un chiffre calibré, pas arbitraire : à trois numéros chacun ne rencontre que 33 personnes dans la soirée, à cinq il en rencontre 44, et au-delà le gain devient nul pendant que la liste devient illisible dans un bar sombre.
+
+**Le mazal ne trie personne.** Il sert uniquement à mettre en évidence un ou deux numéros de la liste — « même mazal que toi » — pour donner une raison d'aller voir celui-là en premier.
 
 ### Étape 3 — l'écran géant
 

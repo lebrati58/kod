@@ -29,6 +29,30 @@ body{background:var(--fond);color:var(--encre);font-family:var(--corps);
   letter-spacing:.1em;text-transform:uppercase;padding:7px 12px;border-radius:99px;
   background:var(--accent-doux);color:var(--accent)}
 
+.reglage{background:var(--carte);border:2px solid var(--bord);border-radius:18px;padding:18px;margin:14px 0}
+.reglage h2{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--or);font-weight:700;margin-bottom:10px}
+.r-q{font-family:var(--display);font-size:19px;font-weight:300;line-height:1.3;margin-bottom:16px}
+.r-ligne{display:flex;align-items:center;gap:12px;justify-content:center}
+.r-ligne button{width:62px;height:62px;flex:0 0 62px;font-size:28px;font-weight:700;padding:0;
+  border-radius:16px;border:2px solid var(--bord-fin);background:var(--fond);color:var(--encre)}
+.r-val{min-width:110px;text-align:center}
+.r-val span{font-family:var(--data);font-size:46px;font-weight:700;color:var(--accent);line-height:1}
+.r-val small{display:block;font-family:var(--data);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sourd);font-weight:700;margin-top:3px}
+.r-ex{text-align:center;font-size:13.5px;line-height:1.5;color:var(--second);margin-top:14px;min-height:38px}
+.r-raccourcis{display:flex;gap:7px;margin-top:14px}
+.r-raccourcis button{flex:1;font-size:14px;padding:11px 4px;min-height:46px;border-radius:11px;
+  border:2px solid var(--bord-fin);background:var(--fond);color:var(--second);font-weight:700}
+.r-raccourcis button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.r-note{font-size:12.5px;line-height:1.5;color:var(--sourd);margin-top:12px;text-align:center}
+.reglage.replie{padding:12px 16px}
+.reglage.replie .r-q,.reglage.replie .r-ex,.reglage.replie .r-note,.reglage.replie .r-raccourcis{display:none}
+.reglage.replie .r-ligne{justify-content:flex-start;gap:9px}
+.reglage.replie .r-ligne button{width:44px;height:44px;flex:0 0 44px;font-size:20px}
+.reglage.replie .r-val{min-width:0;display:flex;align-items:baseline;gap:6px}
+.reglage.replie .r-val span{font-size:26px}
+.reglage.replie .r-val small{margin:0}
 .bandeau{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
 .bandeau div{background:var(--carte);border:2px solid var(--bord-fin);border-radius:14px;padding:12px 8px;text-align:center}
 .bandeau span{display:block;font-family:var(--data);font-size:25px;font-weight:700;line-height:1.1}
@@ -105,6 +129,22 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <div class="pastille-etat" id="etat">salle en attente</div>
   </header>
 
+  <div class="reglage" id="reglage">
+    <h2>Avant de commencer</h2>
+    <p class="r-q">Écart d'âge maximum entre deux personnes suggérées ?</p>
+    <div class="r-ligne">
+      <button class="r-moins" id="rMoins">−</button>
+      <div class="r-val"><span id="rVal">10</span><small>ans</small></div>
+      <button class="r-plus" id="rPlus">+</button>
+    </div>
+    <p class="r-ex" id="rEx"></p>
+    <div class="r-raccourcis">
+      <button data-v="5">5</button><button data-v="10">10</button>
+      <button data-v="15">15</button><button data-v="99">aucun</button>
+    </div>
+    <p class="r-note">Modifiable à tout moment. Si les listes sortent trop maigres au premier tour, élargis.</p>
+  </div>
+
   <div class="bandeau">
     <div><span id="bCo">0</span><small>connectés</small></div>
     <div><span class="gros" id="bRep">0/0</span><small>réponses</small></div>
@@ -170,6 +210,9 @@ const COINS = [
 /* vote « prêt » : le bouton reste grisé ce nombre de secondes,
    puis on passe quand un coin atteint ce pourcentage */
 const PLANCHER = 180, SEUIL = 0.60;
+
+/* écart d'âge maximum entre deux personnes suggérées — réglé avant de commencer */
+let ECART = 10;
 
 const TOTAL = 94, FENETRE = 45;
 const S = {phase:"attente", i:-1, q:null, reps:[0,0,0,0], recu:0, reste:0, tic:null, file:[], pause:false,
@@ -301,6 +344,10 @@ function lanceQuestion(){
   setEtat('question en cours');
   el('bAction').textContent = 'Question suivante';
   ['bPlus','bResultats','bMigration','bPause'].forEach(b=>el(b).disabled=false);
+  if(!el('reglage').classList.contains('replie')){
+    el('reglage').classList.add('replie');
+    journal(`Écart d'âge maximum : ${ECART>=99?'aucun filtre':ECART+' ans'}`);
+  }
   journal(`Question lancée : « ${q.t} »`);
   dessineCoins(); majBandeau(); dessinePrets();
   clearInterval(S.tic);
@@ -355,6 +402,21 @@ el('bEnvoyer').addEventListener('click', ()=>{
   el('msgTexte').value='';
 });
 el('bEffacer').addEventListener('click', ()=>journal('Écran géant effacé.'));
+
+/* ---------- réglage de l'écart d'âge ---------- */
+function majEcart(){
+  el('rVal').textContent = ECART>=99 ? '∞' : ECART;
+  el('rEx').textContent = ECART>=99
+    ? "Aucun filtre sur l'âge : tout le monde peut être suggéré à tout le monde."
+    : `Quelqu'un de 30 ans pourra être suggéré à des gens de ${30-ECART} à ${30+ECART} ans.`;
+  document.querySelectorAll('.r-raccourcis button').forEach(b=>
+    b.setAttribute('aria-pressed', +b.dataset.v===ECART));
+}
+el('rMoins').onclick=()=>{ ECART=Math.max(1,ECART===99?20:ECART-1); majEcart(); };
+el('rPlus').onclick=()=>{ ECART=ECART>=98?99:ECART+1; majEcart(); };
+document.querySelectorAll('.r-raccourcis button').forEach(b=>
+  b.onclick=()=>{ ECART=+b.dataset.v; majEcart(); });
+majEcart();
 
 dessineCoins(); majBandeau(); dessinePrets();
 </script>
