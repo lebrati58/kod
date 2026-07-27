@@ -193,7 +193,9 @@ function surEtat(){
   if (e.qId != null && e.qId !== S.qIdEcoute) ecouteReponses(e.qId);
 
   if (phase === 'fin'){ scene('sFin'); return; }
-  if (phase === 'attente' || e.qId == null || !e.q){
+  /* la première migration (par le mazal) n'a pas de question : q est nul,
+     mais le compte à rebours plein écran doit tourner quand même */
+  if (phase === 'attente' || e.qId == null || (!e.q && phase !== 'migration')){
     el('grosCode').textContent = S.code;
     scene('sAttente'); return;
   }

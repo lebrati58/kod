@@ -12,6 +12,8 @@
         "state": {
           "phase": { ".validate": "newData.isString() && newData.val().matches(/^(attente|question|resultats|migration|fin)$/)" },
           "qId": { ".validate": "newData.isNumber()" },
+          "migration": { ".validate": "newData.isString() && newData.val() == 'mazal'" },
+          "ecartAge": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99" },
           "qNum": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99" },
           "phaseAt": { ".validate": "newData.isNumber()" },
           "dureeMs": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3600000" },
@@ -42,7 +44,43 @@
             "genre": { ".validate": "newData.isString() && newData.val().matches(/^(f|h)$/)" },
             "lastSeen": { ".validate": "newData.isNumber()" },
             "online": { ".validate": "newData.isBoolean()" },
+            "mazal": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 6" },
+            "cherche": { ".validate": "newData.isString() && newData.val().matches(/^(rencontre|amis|projet|saisPas)$/)" },
+            "accueilFait": { ".validate": "newData.isBoolean()" },
+            "age": { ".validate": "newData.isNumber() && newData.val() >= 18 && newData.val() <= 99" },
+            "enfSouhait": { ".validate": "newData.isString() && newData.val().matches(/^(oui|non|ouvert)$/)" },
+            "enfA": { ".validate": "newData.isString() && newData.val().matches(/^(oui|non)$/)" },
+            "enfAccepte": { ".validate": "newData.isString() && newData.val().matches(/^(oui|non|egal)$/)" },
             "$autre": { ".validate": false }
+          }
+        },
+
+        "suggestions": {
+          "$badge": {
+            ".validate": "$badge.matches(/^[0-9]{1,4}$/)",
+            "qId": { ".validate": "newData.isNumber()" },
+            "liste": {
+              "$i": {
+                "n": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 9999" },
+                "mz": { ".validate": "newData.isBoolean()" },
+                "$autre": { ".validate": false }
+              }
+            },
+            "$autre": { ".validate": false }
+          }
+        },
+
+        "dejaSuggere": {
+          "$badge": {
+            ".validate": "$badge.matches(/^[0-9]{1,4}$/)",
+            "$autre": { ".validate": "$autre.matches(/^[0-9]{1,4}$/) && newData.isBoolean()" }
+          }
+        },
+
+        "rencontres": {
+          "$badge": {
+            ".validate": "$badge.matches(/^[0-9]{1,4}$/)",
+            "$autre": { ".validate": "$autre.matches(/^[0-9]{1,4}$/) && newData.isBoolean()" }
           }
         },
 

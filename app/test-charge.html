@@ -44,8 +44,9 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <div class="enveloppe">
   <h1>🧪 Test de charge</h1>
   <p class="chapeau">Ouvre N participants simulés, chacun avec sa <b>propre connexion Firebase</b>
-    (une app nommée par simulé). Ils rejoignent la soirée, répondent aux questions avec des délais
-    réalistes, et se disent « prêts ». La console et l'écran géant les voient comme de vrais téléphones.</p>
+    (une app nommée par simulé). Ils passent l'accueil (mazal, aiguillage, âge, enfants), rejoignent
+    la soirée, répondent aux questions avec des délais réalistes, suivent la première migration par
+    le mazal et se disent « prêts ». La console et l'écran géant les voient comme de vrais téléphones.</p>
 
   <div class="carte">
     <label for="inCode">Code de la soirée (créée depuis la console)</label>
@@ -118,11 +119,26 @@ function creeSimule(i, code){
   var s = { app: app, db: db, badge: badge, qId: null, aRepondu: false, timers: [] };
   var base = db.ref('sessions/' + code);
 
-  base.child('participants/' + badge).update({
+  /* l'accueil v2 : mazal au hasard (1 jour sur 7), ~70 % « rencontrer
+     quelqu'un », âges 25-45, réponses enfants aléatoires */
+  var cherche = Math.random() < 0.7 ? 'rencontre'
+    : ['amis', 'projet', 'saisPas'][Math.floor(Math.random() * 3)];
+  var accueil = {
     genre: Math.random() < 0.5 ? 'f' : 'h',
+    mazal: Math.floor(Math.random() * 7),
+    cherche: cherche,
+    accueilFait: true,
     lastSeen: firebase.database.ServerValue.TIMESTAMP,
     online: true
-  }).then(function(){
+  };
+  if (cherche === 'rencontre'){
+    accueil.age = 25 + Math.floor(Math.random() * 21);
+    accueil.enfSouhait = ['oui', 'non', 'ouvert'][Math.floor(Math.random() * 3)];
+    accueil.enfA = Math.random() < 0.25 ? 'oui' : 'non';
+    accueil.enfAccepte = ['oui', 'non', 'egal'][Math.floor(Math.random() * 3)];
+  }
+
+  base.child('participants/' + badge).update(accueil).then(function(){
     SIM.co++; maj();
   }).catch(function(e){
     SIM.err++; maj(); log('badge ' + badge + ' refusé : ' + e.message);
@@ -135,6 +151,17 @@ function creeSimule(i, code){
     var e = snap.val() || {};
     if (e.qId != null && e.qId !== s.qId){
       s.qId = e.qId; s.aRepondu = false;
+      /* première migration par le mazal (qId 0) : pas de réponse à donner,
+         il rejoint son coin et se dira « prêt » après le plancher de 3 min */
+      if (e.qId === 0 && e.migration === 'mazal'){
+        var apresMz = KOD.DUREES.PRET_PLANCHER * 1000 + 3000 + Math.random() * 60000;
+        s.timers.push(setTimeout(function(){
+          if (s.qId !== 0) return;
+          base.child('prets/0/' + badge).set(true)
+            .then(function(){ SIM.pret++; maj(); })
+            .catch(function(){ SIM.err++; maj(); });
+        }, apresMz));
+      }
       if (e.phase === 'question' && e.q && e.q.choix){
         /* délai réaliste : entre 2 et 30 secondes */
         var delai = 2000 + Math.random() * 28000;

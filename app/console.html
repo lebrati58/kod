@@ -47,6 +47,8 @@ body{background:var(--fond);color:var(--encre);font-family:var(--corps);
   letter-spacing:.3em;text-transform:uppercase;color:var(--or);background:var(--champ);
   border:2px solid var(--bord);border-radius:14px;padding:16px;min-height:70px;margin-bottom:10px}
 .entree input:focus{outline:3px solid var(--accent);outline-offset:2px}
+.entree label{display:block;font-size:13px;font-weight:700;color:var(--second);margin:14px 0 7px}
+.entree input.petit{font-size:22px;letter-spacing:.1em;min-height:56px;padding:12px;text-transform:none}
 .ou{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--sourd);text-align:center;margin:18px 0;font-weight:700}
 .aide{font-size:13.5px;color:var(--sourd);text-align:center;margin-top:12px;min-height:20px;line-height:1.5}
@@ -142,6 +144,9 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <h1>La console de la soirée.</h1>
     <p>Crée une soirée : un code de quatre lettres apparaît. C'est lui que l'écran géant et la page de
        test utilisent. Les participants, eux, passent par les deux QR codes.</p>
+    <label for="inEcart">Écart d'âge maximum entre deux personnes suggérées (99 = désactivé)</label>
+    <input id="inEcart" class="petit" type="number" inputmode="numeric" min="1" max="99" value="10"
+           aria-label="Écart d'âge maximum">
     <button class="plein large" id="bCreer" style="width:100%">Créer une soirée</button>
     <p class="ou">— ou reprendre une soirée existante —</p>
     <input id="codeEntree" maxlength="4" autocomplete="off" autocapitalize="characters"
@@ -180,11 +185,24 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     </div>
 
     <div class="grille">
+      <button class="large mini-btn" id="bMazal">Première migration — par le mazal</button>
       <button class="plein large" id="bLancer">Lancer la question</button>
       <button class="mini-btn" id="bPlus" disabled>+ 2 minutes</button>
       <button class="mini-btn" id="bResultats" disabled>Afficher résultats</button>
       <button class="mini-btn" id="bMigration" disabled>Lancer la migration</button>
       <button class="mini-btn" id="bAttente" disabled>Écran d'attente</button>
+    </div>
+
+    <div class="msg">
+      <h2>Écart d'âge maximum <b id="ecartVal">10 ans</b></h2>
+      <input id="inEcart2" type="number" inputmode="numeric" min="1" max="99"
+             aria-label="Nouvel écart d'âge maximum" placeholder="10">
+      <div class="rangee">
+        <button id="bEcart">Appliquer</button>
+        <button id="bRecalc" disabled>Recalculer les 5 numéros</button>
+      </div>
+      <div class="pret-note">Modifiable à tout moment. 99 désactive le filtre. Le nouvel écart
+        sert au prochain calcul — « Recalculer » redistribue tout de suite les listes du tour en cours.</div>
     </div>
 
     <div class="msg">
@@ -201,7 +219,12 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
       <ul id="journal"><li>En attente du lancement.</li></ul>
     </div>
 
-    <p class="note">Rien n'est automatique : le système signale, c'est toi qui décides.</p>
+    <div class="grille">
+      <button class="large mini-btn" id="bFin">Terminer la soirée</button>
+    </div>
+
+    <p class="note">Rien n'est automatique : le système signale, c'est toi qui décides.<br>
+      « Terminer » efface de la base l'âge et les réponses sur les enfants de tous les participants.</p>
   </section>
 </div>
 
@@ -218,6 +241,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
 <script src="commun.js"></script>
+<script src="suggestions.js"></script>
 <script>
 (function(){
 "use strict";
@@ -238,12 +262,15 @@ var S = {
   prets: {},           // lettre -> nombre
   totalPrets: 0,
   qIdEcoute: null,     // qId dont on écoute réponses + prêts
+  ecouteMazal: false,  // l'écoute en cours est la migration mazal (qId 0)
+  ecart: 10,           // écart d'âge max (state/ecartAge)
   selId: null,         // question sélectionnée, prête à lancer
   posOrdre: 0,         // avancement dans l'ordre conseillé
   qNumLance: 0,        // combien de questions déjà lancées
   dejaJouees: {},      // id -> true
   alerte60: null,      // coin déjà signalé prêt (par question)
   refRep: null, refPret: null,
+  refRepCb: null, refPretCb: null,
   tic: null
 };
 var QUESTIONS = null;
@@ -444,6 +471,11 @@ function attache(code){
   S.tic = setInterval(majBandeau, 500);
 }
 
+function modeMazal(){
+  var e = S.etat;
+  return !!e && e.qId === 0 && e.migration === 'mazal';
+}
+
 function surEtat(){
   var e = S.etat;
   var phase = e.phase || 'attente';
@@ -455,8 +487,22 @@ function surEtat(){
   el('bResultats').disabled = !(phase === 'question');
   el('bMigration').disabled = !(phase === 'question' || phase === 'resultats');
   el('bAttente').disabled = (phase === 'attente');
+  /* la première migration ne se lance qu'une fois, avant toute question */
+  el('bMazal').disabled = (e.qId != null || phase === 'fin');
+  el('bRecalc').disabled = (phase !== 'migration' || e.qId == null);
+  el('bFin').disabled = (phase === 'fin');
+
+  if (typeof e.ecartAge === 'number' && e.ecartAge !== S.ecart){
+    S.ecart = e.ecartAge;
+  }
+  el('ecartVal').textContent = S.ecart >= 99 ? 'désactivé' : S.ecart + ' ans';
 
   if (e.qId != null && e.qId !== S.qIdEcoute) ecouteQuestion(e.qId);
+  if (modeMazal()){
+    el('qNum').textContent = 'première migration · par le mazal';
+    el('qTexte').textContent = 'Chacun rejoint son coin. Aucune question n\u2019a été posée — le coin ד sera le plus petit, c\u2019est normal.';
+    el('qChoix').innerHTML = '';
+  }
   if (e.qId != null && e.q){
     S.dejaJouees[e.qId] = true;
     /* si la question en cours est celle qu'on avait sélectionnée, proposer la suivante
@@ -473,14 +519,46 @@ function surEtat(){
 }
 
 function ecouteQuestion(qId){
-  if (S.refRep) S.refRep.off();
-  if (S.refPret) S.refPret.off();
+  /* on retire NOS écouteurs seulement : le compteur de connectés
+     écoute lui aussi participants/ et doit survivre */
+  if (S.refRep) S.refRep.off('value', S.refRepCb);
+  if (S.refPret) S.refPret.off('value', S.refPretCb);
   S.qIdEcoute = qId;
   S.reps = {}; S.recu = 0; S.prets = {}; S.totalPrets = 0; S.alerte60 = null;
   S.qNumLance = Math.max(S.qNumLance, (S.etat && S.etat.qNum) || 0);
+  S.ecouteMazal = modeMazal();
+
+  /* première migration : le coin de chacun vient de son mazal, pas d'une réponse */
+  if (S.ecouteMazal){
+    S.refRep = refSession().child('participants');
+    S.refRepCb = S.refRep.on('value', function(snap){
+      var reps = {}, n = 0;
+      snap.forEach(function(c){
+        var coin = KOD_SUGG.coinDuMazal(c.child('mazal').val());
+        if (coin){ reps[coin] = (reps[coin]||0) + 1; n++; }
+      });
+      S.reps = reps; S.recu = n;
+      dessineCoins(); majBandeau(); dessinePrets();
+    });
+    S.refPret = refSession().child('prets/0');
+    S.refPretCb = S.refPret.on('value', function(snap){
+      refSession().child('participants').once('value').then(function(ps){
+        var parCoin = {}, tot = 0;
+        snap.forEach(function(c){
+          if (c.val() !== true) return;
+          var coin = KOD_SUGG.coinDuMazal(ps.child(c.key + '/mazal').val());
+          if (coin) parCoin[coin] = (parCoin[coin]||0) + 1;
+          tot++;
+        });
+        S.prets = parCoin; S.totalPrets = tot;
+        dessinePrets();
+      });
+    });
+    return;
+  }
 
   S.refRep = refSession().child('reponses/' + qId);
-  S.refRep.on('value', function(snap){
+  S.refRepCb = S.refRep.on('value', function(snap){
     var reps = {}, n = 0;
     snap.forEach(function(c){
       var coin = c.child('coin').val();
@@ -490,7 +568,7 @@ function ecouteQuestion(qId){
     dessineCoins(); majBandeau(); dessinePrets();
   });
   S.refPret = refSession().child('prets/' + qId);
-  S.refPret.on('value', function(snap){
+  S.refPretCb = S.refPret.on('value', function(snap){
     /* le coin d'un badge = sa réponse à la question EN COURS, rien d'autre :
        on relit les réponses de cette question pour ventiler les prêts par coin */
     refSession().child('reponses/' + qId).once('value').then(function(rs){
@@ -508,18 +586,32 @@ function ecouteQuestion(qId){
 }
 
 /* ---------- actions organisateur (rien n'est automatique) ---------- */
+function litEcart(id){
+  var v = parseInt(el(id).value, 10);
+  if (!(v >= 1 && v <= 99)) return null;
+  return v;
+}
 function creerSoiree(){
   if (!K) return;
   var code = KOD.codeAleatoire();
+  var ecart = litEcart('inEcart');
+  if (ecart === null){
+    el('entreeAide').textContent = 'L\u2019écart d\u2019âge est un nombre entre 1 et 99 (99 = désactivé).';
+    el('entreeAide').className = 'aide alerte';
+    return;
+  }
+  S.ecart = ecart;
   refFor(code).child('state').set({
     phase: 'attente',
     qId: null, qNum: 0, q: null,
     phaseAt: K.TS, dureeMs: null,
     msgEcran: null,
+    ecartAge: ecart,
     createdAt: K.TS
   }).then(function(){
     attache(code);
-    journal('Soirée créée. Code : ' + code);
+    journal('Soirée créée. Code : ' + code + ' · écart d\u2019âge max ' +
+      (ecart >= 99 ? 'désactivé' : ecart + ' ans') + '.');
   }).catch(function(e){
     el('entreeAide').textContent = 'Écriture refusée : ' + e.message;
     el('entreeAide').className = 'aide alerte';
@@ -555,10 +647,114 @@ function lancerQuestion(){
     qId: q.id,
     qNum: num,
     q: { id: q.id, texte: q.texte, choix: q.choix },
+    migration: null,
     phaseAt: K.TS,
     dureeMs: KOD.DUREES.QUESTION * 1000
   });
   journal('Question lancée : « ' + q.texte + ' »');
+}
+
+/* la toute première migration : par le mazal, aucune question (qId réservé 0) */
+function lancerMigrationMazal(){
+  if (!S.code) return;
+  refSession().child('state').update({
+    phase: 'migration',
+    migration: 'mazal',
+    qId: 0, qNum: 0, q: null,
+    phaseAt: K.TS,
+    dureeMs: KOD.DUREES.MIGRATION * 1000
+  });
+  journal('Première migration lancée : chacun rejoint le coin de son mazal.');
+  calculeSuggestions(0);
+}
+
+/* ------------------------------------------------------------
+   Les cinq numéros — calcul CENTRALISÉ ici, écrit en base.
+   qKey 0 = migration mazal (coins par mazal), sinon coins =
+   réponses à la question en cours. Les critères ne sortent
+   jamais de ce calcul : rien n'est affiché, nulle part.
+   ------------------------------------------------------------ */
+function calculeSuggestions(qKey){
+  Promise.all([
+    refSession().child('participants').once('value'),
+    qKey === 0 ? Promise.resolve(null) : refSession().child('reponses/' + qKey).once('value'),
+    refSession().child('dejaSuggere').once('value')
+  ]).then(function(r){
+    var parts = r[0].val() || {};
+    var coins = {};
+    if (qKey === 0){
+      Object.keys(parts).forEach(function(b){
+        var coin = KOD_SUGG.coinDuMazal(parts[b].mazal);
+        if (coin) coins[b] = coin;
+      });
+    } else {
+      r[1].forEach(function(c){
+        var coin = c.child('coin').val();
+        if (KOD.COINS[coin]) coins[c.key] = coin;
+      });
+    }
+    var res = KOD_SUGG.calcule({
+      coins: coins,
+      participants: parts,
+      dejaSuggere: r[2].val() || {},
+      ecart: S.ecart,
+      k: 5
+    });
+    var maj = {};
+    Object.keys(res.listes).forEach(function(b){
+      maj['suggestions/' + b] = { qId: qKey, liste: res.listes[b] };
+    });
+    res.paires.forEach(function(p){
+      maj['dejaSuggere/' + p[0] + '/' + p[1]] = true;
+      maj['dejaSuggere/' + p[1] + '/' + p[0]] = true;
+    });
+    return refSession().update(maj).then(function(){
+      journal('Cinq numéros distribués : ' + res.paires.length + ' paires, ' +
+        Object.keys(res.listes).length + ' personnes dans les coins.');
+    });
+  }).catch(function(e){
+    journal('⚠️ Calcul des numéros impossible : ' + e.message);
+  });
+}
+
+function appliquerEcart(){
+  var v = litEcart('inEcart2');
+  if (v === null || !S.code) return;
+  S.ecart = v;
+  refSession().child('state/ecartAge').set(v);
+  el('inEcart2').value = '';
+  journal('Écart d\u2019âge max : ' + (v >= 99 ? 'filtre désactivé' : v + ' ans') + '.');
+}
+function recalculer(){
+  var e = S.etat;
+  if (!e || e.phase !== 'migration' || e.qId == null) return;
+  journal('Recalcul des cinq numéros du tour en cours…');
+  calculeSuggestions(e.qId);
+}
+
+/* fin de soirée : on EFFACE de la base l'âge et les réponses
+   sur les enfants de tous les participants (promesse de l'accueil) */
+function terminerSoiree(){
+  if (!S.code) return;
+  if (!confirm('Terminer la soirée ? L\u2019âge et les réponses sur les enfants seront effacés de la base.')) return;
+  refSession().child('participants').once('value').then(function(snap){
+    var maj = {
+      'state/phase': 'fin',
+      'state/phaseAt': K.TS,
+      'state/dureeMs': null,
+      'state/msgEcran': null
+    };
+    snap.forEach(function(c){
+      ['age', 'enfSouhait', 'enfA', 'enfAccepte'].forEach(function(k){
+        maj['participants/' + c.key + '/' + k] = null;
+      });
+    });
+    return refSession().update(maj);
+  }).then(function(){
+    journal('Soirée terminée. Âge et réponses enfants effacés de la base.');
+  }).catch(function(e){
+    journal('⚠️ Fin de soirée : ' + e.message);
+  });
 }
 function plusDeuxMinutes(){
   var e = S.etat;
@@ -574,10 +770,13 @@ function afficherResultats(){
 }
 function lancerMigration(){
   refSession().child('state').update({
-    phase: 'migration', phaseAt: K.TS, dureeMs: KOD.DUREES.MIGRATION * 1000
+    phase: 'migration', migration: null, phaseAt: K.TS, dureeMs: KOD.DUREES.MIGRATION * 1000
   });
   var resume = LET.map(function(l){ return l + ' ' + (S.reps[l]||0); }).join(' · ');
   journal('Migration lancée : ' + resume);
+  /* à chaque migration, la console distribue les cinq numéros */
+  var e = S.etat;
+  if (e && e.qId != null) calculeSuggestions(e.qId);
 }
 function ecranAttente(){
   refSession().child('state').update({ phase: 'attente', phaseAt: K.TS, dureeMs: null });
@@ -607,6 +806,10 @@ el('bPlus').addEventListener('click', plusDeuxMinutes);
 el('bResultats').addEventListener('click', afficherResultats);
 el('bMigration').addEventListener('click', lancerMigration);
 el('bAttente').addEventListener('click', ecranAttente);
+el('bMazal').addEventListener('click', lancerMigrationMazal);
+el('bEcart').addEventListener('click', appliquerEcart);
+el('bRecalc').addEventListener('click', recalculer);
+el('bFin').addEventListener('click', terminerSoiree);
 el('bEnvoyer').addEventListener('click', envoyerMessage);
 el('bEffacer').addEventListener('click', effacerMessage);
 el('bChoisir').addEventListener('click', ouvrePanneau);

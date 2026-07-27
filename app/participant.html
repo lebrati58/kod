@@ -8,9 +8,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600&family=Frank+Ruhl+Libre:wght@400;600&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* Design repris tel quel de la maquette validée kod-participant.html */
+/* Design repris tel quel des maquettes validées
+   kod-participant.html (v2) + kod-accueil.html */
 :root{
-  --fond:#FBF7F0; --carte:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.2);
+  --fond:#FBF7F0; --carte:#FFFFFF; --champ:#FFFFFF; --bord:#2B2440; --bord-fin:rgba(43,36,64,.2);
   --encre:#191428; --second:#453B62; --sourd:#5E5280;
   --accent:#8A2B4A; --accent-doux:#FDEDF1; --or:#8A6410;
   --display:'Fraunces',Georgia,serif; --corps:'Manrope',system-ui,sans-serif;
@@ -26,6 +27,10 @@ body.encoin{background:var(--teinte,var(--fond))}
 .entete{padding:18px 2px 14px;display:flex;align-items:center;gap:10px}
 .badge{font-family:var(--data);font-size:12px;font-weight:700;color:var(--accent);
   border:2px solid var(--bord-fin);border-radius:99px;padding:7px 12px;background:var(--carte)}
+.monmazal{display:none;align-items:center;gap:7px;background:var(--carte);
+  border:2px solid var(--bord-fin);border-radius:99px;padding:5px 12px 5px 9px}
+.monmazal svg{width:19px;height:19px;color:var(--or)}
+.monmazal span{font-family:var(--hebreu);font-size:16px;font-weight:600}
 .code-pill{margin-left:auto;font-family:var(--data);font-size:11px;font-weight:700;
   letter-spacing:.16em;color:var(--sourd);border:2px solid var(--bord-fin);
   border-radius:99px;padding:7px 12px;background:var(--carte)}
@@ -39,15 +44,18 @@ body.encoin{background:var(--teinte,var(--fond))}
 .chrono{margin-left:auto;font-family:var(--data);font-size:15px;font-weight:700;color:var(--encre)}
 .chrono.chaud{color:var(--accent)}
 h1{font-family:var(--display);font-weight:300;font-size:30px;line-height:1.17;margin-bottom:22px}
+h1 em{font-style:normal;color:var(--accent)}
 .chapeau{color:var(--second);font-size:15px;line-height:1.55;margin-bottom:24px;margin-top:-12px}
 
-/* ---------- rejoindre ---------- */
+/* ---------- champs (rejoindre + accueil) ---------- */
 label{display:block;font-size:14px;font-weight:700;margin-bottom:9px}
 .champ-bloc{margin-bottom:20px}
-input{width:100%;font-family:var(--corps);font-size:16.5px;font-weight:500;color:var(--encre);
-  background:var(--carte);border:2px solid var(--bord);border-radius:14px;
+input,select{width:100%;font-family:var(--corps);font-size:16.5px;font-weight:500;color:var(--encre);
+  background:var(--champ);border:2px solid var(--bord);border-radius:14px;
   padding:16px 15px;min-height:58px;appearance:none}
-input:focus{outline:3px solid var(--accent);outline-offset:2px}
+select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='13' height='9'><path d='M1.5 1.5l5 5 5-5' stroke='%238A2B4A' stroke-width='2' fill='none' stroke-linecap='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 16px center;padding-right:42px}
+input:focus,select:focus{outline:3px solid var(--accent);outline-offset:2px}
 input::placeholder{color:var(--sourd)}
 input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
@@ -64,6 +72,61 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .primaire:not(:disabled):active{transform:scale(.985)}
 .aide{font-size:13.5px;color:var(--sourd);text-align:center;margin-top:14px;min-height:20px;line-height:1.5}
 .aide.alerte{color:var(--accent);font-weight:700}
+
+.bascule-ligne{display:flex;align-items:flex-start;gap:12px;margin-top:16px;cursor:pointer;
+  color:var(--encre);font-size:15px;font-weight:500;line-height:1.45}
+.bascule-ligne input{width:auto;min-height:0;padding:0;flex:0 0 auto;border:0}
+.case{width:26px;height:26px;flex:0 0 26px;border-radius:8px;border:2px solid var(--bord);
+  background:var(--champ);display:grid;place-items:center;transition:.16s}
+.bascule-ligne input:checked+.case{background:var(--accent);border-color:var(--accent)}
+.case svg{opacity:0}.bascule-ligne input:checked+.case svg{opacity:1}
+.bascule-ligne input:focus-visible+.case{outline:3px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.mini{font-size:13.5px;color:var(--sourd);line-height:1.5;margin-top:9px;padding-left:38px}
+
+/* ---------- révélation mazal / date hébraïque ---------- */
+.reveal{text-align:center}
+.he-grand{font-family:var(--hebreu);font-weight:600;font-size:80px;line-height:1;color:var(--accent);
+  direction:rtl;margin-top:14px;animation:apparait .8s cubic-bezier(.2,.8,.3,1) both}
+@keyframes apparait{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+.fr-nom{font-family:var(--display);font-weight:300;font-size:36px;margin-top:10px;animation:apparait .8s .25s both}
+.intro-mazal{font-family:var(--data);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--second);font-weight:700;margin-top:6px}
+.logo-mazal{display:flex;justify-content:center;margin-top:18px;color:var(--or);animation:apparait .7s both}
+.logo-mazal svg{width:46px;height:46px}
+.plaque{border:2px solid var(--bord);border-radius:18px;background:var(--carte);
+  padding:4px 20px;margin-top:28px;text-align:left;animation:apparait .8s .8s both}
+.plaque .ligne{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:14px 0}
+.plaque .ligne+.ligne{border-top:1.5px solid var(--bord-fin)}
+.plaque .cle{font-family:var(--data);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--second);font-weight:700}
+.plaque .val{font-family:var(--display);font-size:18px;text-align:right}
+.plaque .val.num{font-family:var(--data);font-size:18px;color:var(--accent);font-weight:700}
+.talmud{margin-top:26px;padding:18px;border-radius:16px;background:var(--accent-doux);
+  animation:apparait .8s .95s both;text-align:left}
+.talmud .he{font-family:var(--hebreu);font-weight:600;font-size:23px;color:var(--accent);direction:rtl;margin-bottom:9px}
+.talmud p{font-size:14px;line-height:1.6;color:var(--second)}
+.cartes{display:flex;flex-direction:column;gap:11px;margin-top:4px}
+.carte{width:100%;text-align:left;cursor:pointer;background:var(--carte);
+  border:2px solid var(--bord-fin);border-radius:16px;padding:19px 17px;transition:.16s;
+  font-family:var(--display);font-weight:300;font-size:23px;color:var(--encre)}
+.carte:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.carte[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-doux)}
+
+/* ---------- critères (tout au pouce) ---------- */
+.prive{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.55;color:var(--sourd);
+  background:var(--carte);border:1.5px solid var(--bord-fin);border-radius:13px;padding:12px 14px;margin-top:20px}
+.age-val{font-family:var(--data);font-size:72px;font-weight:700;color:var(--accent);
+  text-align:center;line-height:1;margin:18px 0 6px}
+.age-sub{font-family:var(--data);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;text-align:center;margin-bottom:22px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:16px;border-radius:99px;
+  background:var(--accent-doux);border:2px solid var(--bord-fin);outline:none;padding:0;min-height:0;margin:8px 0 4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:46px;height:46px;border-radius:50%;
+  background:var(--accent);border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.28);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:46px;height:46px;border-radius:50%;
+  background:var(--accent);border:3px solid #fff;cursor:pointer}
+input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 
 /* ---------- question ---------- */
 .choix{display:flex;flex-direction:column;gap:10px}
@@ -86,6 +149,29 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   text-align:center;margin:20px 8px 0;animation:monte .6s .25s both}
 .coin-phrase b{font-family:var(--hebreu);font-weight:600}
 
+/* ---------- les cinq numéros ---------- */
+.liste-tete{text-align:center;margin-top:24px;animation:monte .6s .45s both}
+.liste-tete .sur{font-family:var(--data);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700}
+.liste-tete .titre{font-family:var(--display);font-weight:300;font-size:25px;line-height:1.3;margin-top:8px}
+.liste-tete .titre b{font-weight:600;color:var(--coin,var(--accent))}
+.numeros{display:flex;flex-direction:column;gap:9px;margin-top:16px;animation:monte .6s .6s both}
+.num{display:flex;align-items:center;gap:13px;background:var(--carte);border:2px solid var(--bord-fin);
+  border-radius:15px;padding:14px 16px;min-height:66px;cursor:pointer;transition:.16s;
+  font-family:var(--corps);width:100%;text-align:left}
+.num .chiffre{font-family:var(--data);font-size:27px;font-weight:700;color:var(--encre);
+  min-width:52px;flex:0 0 auto}
+.num .info{flex:1;font-size:13.5px;line-height:1.4;color:var(--sourd)}
+.num .info b{display:block;color:var(--or);font-weight:700;font-size:13px;margin-bottom:2px}
+.num .mz{color:var(--or);flex:0 0 auto;display:none}
+.num .mz svg{width:24px;height:24px}
+.num.memeMazal{border-color:var(--or);background:#FDF8EE}
+.num.memeMazal .mz{display:block}
+.num.fait{opacity:.5;border-style:dashed}
+.num.fait .chiffre{text-decoration:line-through}
+.num:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.liste-note{font-size:13.5px;line-height:1.55;color:var(--sourd);text-align:center;margin-top:14px}
+
 .pret{width:100%;font-family:var(--corps);font-size:17px;font-weight:700;border-radius:15px;
   padding:19px;min-height:64px;margin-top:26px;border:2px solid transparent;cursor:pointer;transition:.2s}
 .pret:disabled{background:var(--carte);border-color:var(--bord-fin);color:var(--sourd);cursor:not-allowed}
@@ -105,6 +191,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 
   <header class="entete" id="entete" style="display:none">
     <span class="badge" id="monBadge"></span>
+    <span class="monmazal" id="monMazal"></span>
     <span class="code-pill" id="monCode"></span>
   </header>
 
@@ -138,6 +225,119 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
     </div>
   </section>
 
+  <!-- ============ ACCUEIL 1 : NAISSANCE ============ -->
+  <section class="ecran" id="eNaissance">
+    <p class="sur-titre">Ta naissance</p>
+    <h1>Ta date, <em>et on lit ton ciel</em>.</h1>
+    <p class="chapeau">Le mazal se lit sur le jour où tu es né.</p>
+
+    <div class="champ-bloc">
+      <label for="dateN">Date de naissance</label>
+      <input id="dateN" type="date" min="1920-01-01">
+      <label class="bascule-ligne">
+        <input type="checkbox" id="nuit" class="sr">
+        <span class="case" aria-hidden="true"><svg width="14" height="11" viewBox="0 0 14 11"><path d="M2 5.5l3.6 3.6L12 2" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span>Je suis né le soir, après la tombée de la nuit</span>
+      </label>
+      <p class="mini">Le jour hébraïque commence au coucher du soleil. Un vendredi soir, c'est déjà chabbat.</p>
+    </div>
+
+    <div class="champ-bloc">
+      <label for="lieuN">Lieu de naissance</label>
+      <select id="lieuN"><option value="">Choisis une ville</option></select>
+    </div>
+
+    <button class="primaire" id="bNaissance" disabled>Découvrir mon mazal</button>
+  </section>
+
+  <!-- ============ ACCUEIL 2 : LE JEU DE LA DATE ============ -->
+  <section class="ecran" id="eJeu">
+    <p class="sur-titre">Une seule est la bonne</p>
+    <h1>D'après ta date, <em>tu es né un…</em></h1>
+    <p class="chapeau">Une seule de ces quatre dates est la tienne. Choisis, on te dira tout de suite.</p>
+    <div class="cartes" id="cartes"></div>
+    <button class="primaire" id="bJeu" disabled>Valider mon choix</button>
+  </section>
+
+  <!-- ============ ACCUEIL 3 : LA DATE HÉBRAÏQUE ============ -->
+  <section class="ecran" id="eDateHeb">
+    <div class="reveal">
+      <p class="intro-mazal">Ta date hébraïque</p>
+      <div class="he-grand" id="rDate" style="font-size:44px;line-height:1.15">—</div>
+      <p class="chapeau" id="rVerdict" style="margin-top:20px"></p>
+      <button class="primaire" id="bDateHeb">Et maintenant, ton mazal</button>
+    </div>
+  </section>
+
+  <!-- ============ ACCUEIL 4 : LE MAZAL ============ -->
+  <section class="ecran" id="eMazal">
+    <div class="reveal">
+      <p class="intro-mazal">Ton mazal est</p>
+      <div class="logo-mazal" id="rLogo"></div>
+      <div class="he-grand" id="rHe">—</div>
+      <div class="fr-nom" id="rFr">—</div>
+      <div class="plaque">
+        <div class="ligne"><span class="cle">Badge</span><span class="val num" id="pBadge">—</span></div>
+        <div class="ligne"><span class="cle">Né à</span><span class="val" id="pLieu">—</span></div>
+      </div>
+      <div class="talmud">
+        <div class="he">אין מזל לישראל</div>
+        <p>Le Talmud donne ces sept étoiles, puis ajoute aussitôt que rien là-dedans ne t'enferme. C'est un point de départ, pas une sentence.</p>
+      </div>
+      <button class="primaire" id="bMazal">Continuer</button>
+    </div>
+  </section>
+
+  <!-- ============ ACCUEIL 5 : AIGUILLAGE ============ -->
+  <section class="ecran" id="eCherche">
+    <p class="sur-titre">Dernière ligne droite</p>
+    <h1>Tu cherches quoi, <em>ce soir</em> ?</h1>
+    <div class="choix" id="chercheChoix"></div>
+    <p class="prive"><span aria-hidden="true">🔒</span>
+      <span>Ta réponse reste privée. Personne ne la verra — ni les autres, ni l'écran géant —
+      et elle sera <b>supprimée à la fin de la soirée</b>.</span></p>
+  </section>
+
+  <!-- ============ ACCUEIL 6 : ÂGE ============ -->
+  <section class="ecran" id="eAge">
+    <p class="sur-titre">Entre nous</p>
+    <h1>Ton âge.</h1>
+    <div class="age-val" id="ageVal">30</div>
+    <p class="age-sub">ans</p>
+    <input type="range" id="inAge" min="18" max="75" step="1" value="30"
+           aria-label="Ton âge, de 18 à 75 ans">
+    <button class="primaire" id="bAge" style="margin-top:22px">Continuer</button>
+    <p class="prive"><span aria-hidden="true">🔒</span>
+      <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
+  </section>
+
+  <!-- ============ ACCUEIL 7 : SOUHAIT D'ENFANTS ============ -->
+  <section class="ecran" id="eEnfSouhait">
+    <p class="sur-titre">Entre nous</p>
+    <h1>Des enfants, un jour ?</h1>
+    <div class="choix" id="enfSouhaitChoix"></div>
+    <p class="prive"><span aria-hidden="true">🔒</span>
+      <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
+  </section>
+
+  <!-- ============ ACCUEIL 8 : AS-TU DES ENFANTS ============ -->
+  <section class="ecran" id="eEnfA">
+    <p class="sur-titre">Entre nous</p>
+    <h1>As-tu déjà des enfants ?</h1>
+    <div class="choix" id="enfAChoix"></div>
+    <p class="prive"><span aria-hidden="true">🔒</span>
+      <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
+  </section>
+
+  <!-- ============ ACCUEIL 9 : SI LA PERSONNE EN A ============ -->
+  <section class="ecran" id="eEnfAccepte">
+    <p class="sur-titre">Entre nous</p>
+    <h1>Et si la personne en a déjà ?</h1>
+    <div class="choix" id="enfAccepteChoix"></div>
+    <p class="prive"><span aria-hidden="true">🔒</span>
+      <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
+  </section>
+
   <!-- ============ SALLE EN ATTENTE ============ -->
   <section class="ecran" id="eSalleAttente">
     <p class="sur-titre">Tu es dans la soirée</p>
@@ -167,6 +367,12 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
       <div class="coin-nom" id="cNom"></div>
     </div>
     <p class="coin-phrase" id="cPhrase"></p>
+    <div class="liste-tete" id="listeTete" style="display:none">
+      <p class="sur" id="lSur"></p>
+      <p class="titre" id="lTitre">Trouve <b>avec qui</b> ça vaut le coup.</p>
+    </div>
+    <div class="numeros" id="numeros" style="display:none"></div>
+    <p class="liste-note" id="lNote" style="display:none"></p>
     <button class="pret" id="bPret" disabled>Prêt à continuer</button>
     <p class="pret-note" id="pretNote"></p>
   </section>
@@ -183,39 +389,85 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
 <script src="commun.js"></script>
+<script src="suggestions.js"></script>
 <script>
 (function(){
 "use strict";
 /* ============================================================
-   ❤️ Kod — l'écran du participant (étape 1)
-   - Le coin vient UNIQUEMENT de la réponse à la question en cours.
-   - Le chronomètre vient du serveur (phaseAt + dureeMs) via
-     l'offset .info/serverTimeOffset. Jamais de décompte local libre.
-   - Reprise de session : localStorage (code + badge) → on
-     retrouve l'écran exact, réponse et « prêt » compris.
-   - Aucune statistique n'est visible ici. Jamais.
+   ❤️ Kod — l'écran du participant (spec v2)
+   - Accueil intégré : mazal + date hébraïque (code vérifié,
+     repris tel quel de kod-accueil.html), puis aiguillage
+     « tu cherches quoi ce soir ? » et — uniquement pour
+     « rencontrer quelqu'un » — âge et enfants, tout au pouce.
+   - Le coin vient UNIQUEMENT de la réponse à la question en
+     cours — sauf la toute première migration, par le mazal
+     (et on ne l'explique jamais : l'écran dit juste le coin).
+   - Les cinq numéros : lus depuis la base (la console calcule),
+     barrables, réciproques. Aucun critère n'est jamais affiché.
+   - Chronos sur l'heure serveur. Reprise de session par badge :
+     un accueil déjà complété ne se refait jamais.
    ============================================================ */
 var K = KOD.init();
 var el = function(id){ return document.getElementById(id); };
 var COINS = KOD.COINS;
 
-var MOI = { code: null, badge: null, genre: null };
-var S = {
-  etat: null,          // state de la session
-  qId: null,           // question affichée
-  maReponse: null,     // {coin, at} pour la question en cours
-  pretEnvoye: false,
-  tic: null,           // chrono de la question
-  tic2: null,          // décompte du bouton prêt
-  refEtat: null
+/* ---------- données du mazal — reprises telles quelles de kod-accueil.html ---------- */
+var VILLES=["Paris","Lyon","Marseille","Nice","Toulouse","Strasbourg","Bordeaux","Lille","Nancy","Grenoble","Montpellier",
+"Tel Aviv","Jérusalem","Haïfa","Netanya","Beer Sheva","Ashdod","Raanana","Casablanca","Marrakech","Fès",
+"Rabat","Tunis","Djerba","Alger","Oran","Constantine","Bruxelles","Anvers","Genève","Zurich","Londres",
+"Manchester","Madrid","Barcelone","Rome","Milan","Montréal","Toronto","New York","Miami","Los Angeles",
+"Buenos Aires","São Paulo","Mexico","Moscou","Kiev","Odessa","Téhéran","Istanbul","Le Caire","Autre / ailleurs"];
+
+var LOGO={
+ "'Hama":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/></svg>',
+ "Levana":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M15.4 3.2a9.2 9.2 0 1 0 0 17.6 7.4 7.4 0 0 1 0-17.6z"/></svg>',
+ "Maadim":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9.5" cy="14.5" r="6"/><path d="M14.2 9.8 20.5 3.5"/><path d="M15.2 3.5h5.3v5.3"/></svg>',
+ "Kokhav":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="11.5" r="5"/><path d="M8.4 4.6a5 5 0 0 0 7.2 0"/><path d="M12 16.5v5"/><path d="M8.8 19h6.4"/></svg>',
+ "Tzedek":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M14.6 5.5v14"/><path d="M9.5 19.5h9.4"/><path d="M5.2 6.2c0-1.9 1.5-3 3-3 2.1 0 3.3 1.8 3.3 4.2 0 2.6-1.9 4.6-4.4 5.9"/></svg>',
+ "Nogah":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8.8" r="5.8"/><path d="M12 14.6v7"/><path d="M8.6 18.4h6.8"/></svg>',
+ "Chabtaï":'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 3.2v9.4"/><path d="M4.4 6.6h7.2"/><path d="M8 12.6c1.6-1.6 3.6-1.4 4.9 0 1.5 1.6 1.7 4.3 1 6.6"/><path d="M18.6 20.4c-1.5-.4-2.5-1.4-2.9-2.6"/></svg>'
 };
 
-var ECRANS = ['eRejoindre','eSalleAttente','eQuestion','eEnvoye','eCoin','eFin'];
+var MAZAL={
+  0:{he:"חמה",fr:"'Hama",jour:"dimanche",p:"Celui qui éclaire par lui-même, et ne doit rien à personne."},
+  1:{he:"לבנה",fr:"Levana",jour:"lundi",p:"Celui qui bâtit, défait, rebâtit — et recommence sans se lasser."},
+  2:{he:"מאדים",fr:"Maadim",jour:"mardi",p:"L'énergie franche. Celle qui tranche, et qui n'a pas peur."},
+  3:{he:"כוכב",fr:"Kokhav",jour:"mercredi",p:"L'esprit vif, la parole juste, une curiosité qui ne se calme jamais."},
+  4:{he:"צדק",fr:"Tzedek",jour:"jeudi",p:"Le penchant pour ce qui est juste, même quand ça coûte."},
+  5:{he:"נוגה",fr:"Nogah",jour:"vendredi",p:"La douceur, le goût des belles choses, et une générosité qui revient toujours."},
+  6:{he:"שבתאי",fr:"Chabtaï",jour:"chabbat",p:"La patience longue, celle qui obtient ce que la hâte n'obtient jamais."}
+};
+var MOIS_FR={"Tishri":"Tichri","Heshvan":"'Hechvan","Marheshvan":"'Hechvan","Kislev":"Kislev","Tevet":"Tevet",
+ "Shevat":"Chevat","Adar":"Adar","Adar I":"Adar I","Adar II":"Adar II","Nisan":"Nissan","Iyar":"Iyar",
+ "Sivan":"Sivan","Tamuz":"Tamouz","Av":"Av","Elul":"Eloul"};
+var fmtEn=new Intl.DateTimeFormat('en-u-ca-hebrew',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+function dateHebraique(ms){
+  var p=fmtEn.formatToParts(new Date(ms)).reduce(function(a,x){a[x.type]=x.value;return a;},{});
+  var an=parseInt(String(p.year).replace(/\D/g,''),10);
+  return p.day+' '+(MOIS_FR[p.month]||p.month)+' '+an;
+}
+
+/* ---------- état ---------- */
+var MOI = { code:null, badge:null, genre:null,
+            mazal:null, cherche:null, age:null, enfSouhait:null, enfA:null, enfAccepte:null };
+var S = {
+  etat: null, qId: null, maReponse: null, pretEnvoye: false,
+  accueilOk: false,
+  sugg: null,          // suggestions/{badge} : { qId, liste }
+  rencontres: {},      // rencontres/{badge} : { autre: true }
+  coinAffiche: null,   // 'question' | 'mazal' | null
+  tic: null, tic2: null, refEtat: null
+};
+var ACC = { jourMs:null, lieu:null, choix:null };
+
+var ECRANS = ['eRejoindre','eNaissance','eJeu','eDateHeb','eMazal','eCherche','eAge',
+              'eEnfSouhait','eEnfA','eEnfAccepte','eSalleAttente','eQuestion','eEnvoye','eCoin','eFin'];
 function montre(id){
   ECRANS.forEach(function(x){ el(x).classList.toggle('actif', x === id); });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function refSession(){ return K.db.ref('sessions/' + MOI.code); }
+function moiRef(){ return refSession().child('participants/' + MOI.badge); }
 
 /* ---------- genre : par l'URL des deux QR (?g=f / ?g=h) ---------- */
 var params = KOD.litParamsURL();
@@ -277,12 +529,22 @@ function branche(){
   el('entete').style.display = 'flex';
 
   /* présence : badge = seule identité (anonymat total) */
-  var moiRef = refSession().child('participants/' + MOI.badge);
-  moiRef.update({ genre: MOI.genre, lastSeen: K.TS, online: true });
+  var mr = moiRef();
+  mr.update({ genre: MOI.genre, lastSeen: K.TS, online: true });
   K.db.ref('.info/connected').on('value', function(s){
     if (s.val() !== true) return;
-    moiRef.onDisconnect().update({ online: false, lastSeen: K.TS });
-    moiRef.update({ online: true, lastSeen: K.TS });
+    mr.onDisconnect().update({ online: false, lastSeen: K.TS });
+    mr.update({ online: true, lastSeen: K.TS });
+  });
+
+  /* mes cinq numéros + mes rencontres barrées (survivent à la reprise) */
+  refSession().child('suggestions/' + MOI.badge).on('value', function(s){
+    S.sugg = s.val();
+    if (el('eCoin').classList.contains('actif')) dessineNumeros();
+  });
+  refSession().child('rencontres/' + MOI.badge).on('value', function(s){
+    S.rencontres = s.val() || {};
+    if (el('eCoin').classList.contains('actif')) dessineNumeros();
   });
 
   S.refEtat = refSession().child('state');
@@ -290,19 +552,214 @@ function branche(){
     S.etat = snap.val() || {};
     surEtat();
   });
+
+  /* reprise de l'accueil : déjà complété → on ne le refait JAMAIS */
+  mr.once('value').then(function(snap){
+    var p = snap.val() || {};
+    if (typeof p.mazal === 'number' && p.cherche){
+      MOI.mazal = p.mazal; MOI.cherche = p.cherche;
+      if (typeof p.age === 'number') MOI.age = p.age;
+      MOI.enfSouhait = p.enfSouhait || MOI.enfSouhait;
+      MOI.enfA = p.enfA || MOI.enfA;
+      MOI.enfAccepte = p.enfAccepte || MOI.enfAccepte;
+      finAccueil(false);
+    } else if (typeof MOI.mazal === 'number' && MOI.cherche){
+      finAccueil(true); /* le téléphone sait, la base a perdu : on réécrit */
+    } else {
+      demarreAccueil();
+    }
+  }).catch(function(){
+    /* réseau coupé : on tente l'accueil local si déjà fait, sinon on le joue */
+    if (typeof MOI.mazal === 'number' && MOI.cherche) finAccueil(true);
+    else demarreAccueil();
+  });
 }
 
-/* ---------- l'état pilote tout l'affichage ---------- */
-function surEtat(){
-  var e = S.etat, phase = e.phase || 'attente';
+/* ============================================================
+   L'ACCUEIL — < 3 minutes, tout au pouce, aucun champ libre
+   ============================================================ */
+function demarreAccueil(){ montre('eNaissance'); }
 
-  /* nouvelle question ? on repart de zéro (aucune mémoire des réponses passées) */
+/* étape naissance */
+var selVille = el('lieuN');
+VILLES.forEach(function(v){
+  var o = document.createElement('option'); o.value = v; o.textContent = v; selVille.appendChild(o);
+});
+var inDate = el('dateN');
+inDate.max = new Date().toISOString().slice(0,10);
+function verifieNaissance(){ el('bNaissance').disabled = !(inDate.value && selVille.value); }
+inDate.addEventListener('input', verifieNaissance);
+selVille.addEventListener('change', verifieNaissance);
+
+el('bNaissance').addEventListener('click', function(){
+  var parts = inDate.value.split('-').map(Number);
+  var ms = Date.UTC(parts[0], parts[1]-1, parts[2], 12);
+  if (el('nuit').checked) ms += 864e5;
+  ACC.jourMs = ms;
+  ACC.lieu = selVille.value;
+  MOI.mazal = new Date(ms).getUTCDay();
+  var z = MAZAL[MOI.mazal];
+  el('rLogo').innerHTML = LOGO[z.fr] || '';
+  el('rHe').textContent = z.he;
+  el('rFr').textContent = z.fr;
+  el('pBadge').textContent = String(MOI.badge).padStart(2,'0');
+  el('pLieu').textContent = ACC.lieu;
+  construitQCM(ms);
+  montre('eJeu');
+});
+
+/* le jeu de la date hébraïque — repris tel quel (années à 13 mois comprises) */
+function construitQCM(jourMs){
+  var vraie = dateHebraique(jourMs), an = vraie.split(' ').pop();
+  var vues = {}; vues[vraie] = true;
+  var leurres = [];
+  [[18,70],[80,150],[160,200]].forEach(function(mm){
+    var min = mm[0], max = mm[1], t = null;
+    for (var i=0; i<300 && !t; i++){
+      var n = min + Math.floor(Math.random()*(max-min));
+      var c = dateHebraique(jourMs + (Math.random()<.5?-n:n)*864e5);
+      if (c.split(' ').pop() === an && !vues[c]) t = c;
+    }
+    if (!t) for (var n2=min; n2<=340 && !t; n2++){
+      for (var si=0; si<2 && !t; si++){
+        var c2 = dateHebraique(jourMs + (si?-1:1)*n2*864e5);
+        if (c2.split(' ').pop() === an && !vues[c2]) t = c2;
+      }
+    }
+    vues[t] = true; leurres.push(t);
+  });
+  var opts = [{d:vraie,juste:true}];
+  leurres.forEach(function(d){ opts.push({d:d,juste:false}); });
+  for (var i2=3; i2>0; i2--){
+    var j = Math.floor(Math.random()*(i2+1));
+    var tmp = opts[i2]; opts[i2] = opts[j]; opts[j] = tmp;
+  }
+  var box = el('cartes'); box.innerHTML = '';
+  opts.forEach(function(o){
+    var b = document.createElement('button');
+    b.className = 'carte'; b.type = 'button';
+    b.setAttribute('aria-pressed','false'); b.textContent = o.d;
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(box.children, function(c){ c.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      ACC.choix = o;
+      el('bJeu').disabled = false;
+    });
+    box.appendChild(b);
+  });
+}
+
+el('bJeu').addEventListener('click', function(){
+  var vraie = dateHebraique(ACC.jourMs);
+  el('rDate').textContent = vraie;
+  el('rVerdict').textContent = ACC.choix && ACC.choix.juste
+    ? "Bien vu. C'était la bonne."
+    : "Raté — mais tu la connais maintenant, et c'est la tienne pour toujours.";
+  montre('eDateHeb');
+});
+el('bDateHeb').addEventListener('click', function(){ montre('eMazal'); });
+el('bMazal').addEventListener('click', function(){ montre('eCherche'); });
+
+/* aiguillage + critères : boutons à une main, un tap = on avance */
+function boutonsChoix(idBox, options, surChoix){
+  var box = el(idBox); box.innerHTML = '';
+  options.forEach(function(o){
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed','false');
+    b.textContent = o.texte;
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(box.children, function(x){
+        x.setAttribute('aria-pressed','false'); x.disabled = true;
+      });
+      b.disabled = false; b.setAttribute('aria-pressed','true');
+      setTimeout(function(){
+        Array.prototype.forEach.call(box.children, function(x){ x.disabled = false; });
+        surChoix(o.v);
+      }, 380);
+    });
+    box.appendChild(b);
+  });
+}
+
+boutonsChoix('chercheChoix', [
+  { v:'rencontre', texte:'Rencontrer quelqu\u2019un' },
+  { v:'amis',      texte:'Des amis, du monde' },
+  { v:'projet',    texte:'Un partenaire de projet ou de voyage' },
+  { v:'saisPas',   texte:'Je ne sais pas encore' }
+], function(v){
+  MOI.cherche = v;
+  if (v === 'rencontre') montre('eAge');
+  else finAccueil(true);
+});
+
+/* l'âge : un seul nombre, au pouce, pas de saisie libre */
+var inAge = el('inAge');
+inAge.addEventListener('input', function(){ el('ageVal').textContent = inAge.value; });
+el('bAge').addEventListener('click', function(){
+  MOI.age = parseInt(inAge.value, 10);
+  montre('eEnfSouhait');
+});
+
+boutonsChoix('enfSouhaitChoix', [
+  { v:'oui',    texte:'Je souhaite avoir des enfants' },
+  { v:'non',    texte:'Je ne souhaite pas avoir d\u2019enfants' },
+  { v:'ouvert', texte:'Ouvert à la discussion, ça dépend de la personne' }
+], function(v){ MOI.enfSouhait = v; montre('eEnfA'); });
+
+boutonsChoix('enfAChoix', [
+  { v:'oui', texte:'Oui' },
+  { v:'non', texte:'Non' }
+], function(v){ MOI.enfA = v; montre('eEnfAccepte'); });
+
+boutonsChoix('enfAccepteChoix', [
+  { v:'oui',  texte:'J\u2019accepte que la personne ait déjà des enfants' },
+  { v:'non',  texte:'Je préfère qu\u2019elle n\u2019en ait pas' },
+  { v:'egal', texte:'Sans préférence' }
+], function(v){ MOI.enfAccepte = v; finAccueil(true); });
+
+/* fin d'accueil : on écrit une fois, et on n'y revient jamais */
+function finAccueil(ecrire){
+  S.accueilOk = true;
+  sauve();
+  majMazalPill();
+  if (ecrire){
+    var d = { mazal: MOI.mazal, cherche: MOI.cherche, accueilFait: true };
+    if (MOI.cherche === 'rencontre'){
+      d.age = MOI.age; d.enfSouhait = MOI.enfSouhait;
+      d.enfA = MOI.enfA; d.enfAccepte = MOI.enfAccepte;
+    }
+    moiRef().update(d); /* Firebase met en file d'attente si le réseau coupe */
+  }
+  surEtat(); /* on rejoint l'état réel de la soirée */
+}
+
+function majMazalPill(){
+  if (typeof MOI.mazal !== 'number' || !MAZAL[MOI.mazal]) return;
+  var z = MAZAL[MOI.mazal];
+  el('monMazal').innerHTML = (LOGO[z.fr]||'') + '<span>' + z.he + '</span>';
+  el('monMazal').style.display = 'flex';
+}
+
+/* ============================================================
+   LA BOUCLE DE SOIRÉE — l'état pilote tout l'affichage
+   ============================================================ */
+function modeMazal(){
+  var e = S.etat || {};
+  return e.phase === 'migration' && e.migration === 'mazal';
+}
+function qKeyCourante(){ return modeMazal() ? 0 : S.qId; }
+
+function surEtat(){
+  if (!S.etat) return;
+  var e = S.etat;
+
+  /* nouvelle question (ou première migration mazal, qId 0) ?
+     on repart de zéro : aucune mémoire des réponses passées */
   if (e.qId != null && e.qId !== S.qId){
     S.qId = e.qId;
     S.maReponse = null;
     S.pretEnvoye = false;
     enleveCoin();
-    /* reprise de session : ai-je déjà répondu à CETTE question ? */
     Promise.all([
       refSession().child('reponses/' + S.qId + '/' + MOI.badge).once('value'),
       refSession().child('prets/' + S.qId + '/' + MOI.badge).once('value')
@@ -324,12 +781,30 @@ function dessine(){
 
   if (phase === 'fin'){ enleveCoin(); montre('eFin'); return; }
 
-  if (phase === 'attente' || !e.q || e.qId == null){
+  /* accueil en cours : lui seul gère l'écran */
+  if (!S.accueilOk) return;
+
+  if (phase === 'attente' || e.qId == null){
     enleveCoin(); montre('eSalleAttente'); return;
   }
 
+  /* première migration : par le mazal — l'écran dit juste le coin */
+  if (modeMazal()){
+    if (typeof MOI.mazal === 'number' && KOD_SUGG.coinDuMazal(MOI.mazal)){
+      dessineCoin('mazal');
+    } else {
+      enleveCoin(); montre('eEnvoye');
+      el('eEnvoye').querySelector('h1').textContent = 'Regarde l\u2019écran géant.';
+      el('eEnvoye').querySelector('.attente').textContent =
+        'La prochaine question arrivera ici. Garde ton téléphone en main.';
+    }
+    return;
+  }
+
+  if (!e.q){ enleveCoin(); montre('eSalleAttente'); return; }
+
   /* j'ai répondu → mon coin (et rien d'autre : pas de stats ici) */
-  if (S.maReponse){ dessineCoin(); return; }
+  if (S.maReponse){ dessineCoin('question'); return; }
 
   /* je n'ai pas répondu */
   if (phase === 'question'){ dessineQuestion(); return; }
@@ -349,13 +824,10 @@ function dessineQuestion(){
   el('qTexte').textContent = q.texte || '';
 
   var box = el('qChoix');
-  /* on ne reconstruit pas les boutons si la même question est déjà affichée
-     (un message envoyé à l'écran géant passe par le même état) */
   if (box.dataset.qid !== String(e.qId)){
     box.dataset.qid = String(e.qId);
     box.innerHTML = '';
-    /* ordre mélangé, mais stable pour ce badge et cette question :
-       après une reconnexion, on revoit le même ordre */
+    /* ordre mélangé, mais stable pour ce badge et cette question */
     var choix = KOD.melange(q.choix || [], (MOI.badge * 1000 + (e.qId || 0)));
     choix.forEach(function(ch){
       var b = document.createElement('button');
@@ -394,39 +866,117 @@ function envoieReponse(coin){
       return refSession().child('reponses/' + qId + '/' + MOI.badge).once('value');
     })
     .then(function(snap){
-      if (S.qId !== qId) return; /* la soirée a déjà avancé */
-      S.maReponse = snap.val();  /* on relit pour avoir le vrai timestamp serveur */
+      if (S.qId !== qId) return;
+      S.maReponse = snap.val();
       clearInterval(S.tic);
       montre('eEnvoye');
       el('eEnvoye').querySelector('h1').textContent = 'Garde ton téléphone en main.';
       el('eEnvoye').querySelector('.attente').textContent =
         'On attend les derniers. Dans quelques secondes, tu sauras où aller.';
-      setTimeout(function(){ if (S.qId === qId && S.maReponse) dessineCoin(); }, 2200);
+      setTimeout(function(){ if (S.qId === qId && S.maReponse) dessineCoin('question'); }, 2200);
     })
     .catch(function(){
-      /* écriture refusée ou réseau coupé : on laisse réessayer */
       Array.prototype.forEach.call(el('qChoix').children, function(x){
         x.disabled = false; x.setAttribute('aria-pressed', 'false');
       });
     });
 }
 
-/* ---------- écran coin ---------- */
-function dessineCoin(){
-  var coin = S.maReponse.coin, c = COINS[coin];
+/* ---------- écran coin (+ les cinq numéros) ---------- */
+function dessineCoin(mode){
+  var coin = mode === 'mazal'
+    ? KOD_SUGG.coinDuMazal(MOI.mazal)
+    : S.maReponse.coin;
+  var c = COINS[coin];
+  S.coinAffiche = mode;
   document.body.className = 'encoin';
   document.body.style.setProperty('--teinte', c.doux);
   el('cLettre').style.setProperty('--coin', c.c);
   el('cNom').style.setProperty('--coin', c.c);
+  el('lTitre').style.setProperty('--coin', c.c);
   el('cLettre').textContent = coin;
   el('cNom').textContent = c.nom;
-  el('cPhrase').innerHTML = 'Vous êtes tous en <b>' + coin + '</b>. Trouvez pourquoi.';
+  dessineNumeros();
   dessinePret();
   montre('eCoin');
 }
 function enleveCoin(){
   document.body.className = '';
+  S.coinAffiche = null;
   clearInterval(S.tic2);
+}
+
+/* les cinq numéros : la console les calcule, on ne fait que les lire.
+   Jamais d'âge, jamais d'enfants, jamais de critère — nulle part. */
+var MOTS = ['','Une personne ici a répondu comme toi',
+  'Deux personnes ici ont répondu comme toi','Trois personnes ici ont répondu comme toi',
+  'Quatre personnes ici ont répondu comme toi','Cinq personnes ici ont répondu comme toi'];
+var MOTS_MZ = ['','Un numéro à trouver dans ce coin','Deux numéros à trouver dans ce coin',
+  'Trois numéros à trouver dans ce coin','Quatre numéros à trouver dans ce coin',
+  'Cinq numéros à trouver dans ce coin'];
+
+function dessineNumeros(){
+  if (!S.coinAffiche) return;
+  var mode = S.coinAffiche;
+  var coin = mode === 'mazal' ? KOD_SUGG.coinDuMazal(MOI.mazal) : (S.maReponse && S.maReponse.coin);
+  if (!coin) return;
+
+  var liste = null;
+  if (S.sugg && S.sugg.qId === qKeyCourante() && S.sugg.liste && S.sugg.liste.length){
+    liste = S.sugg.liste;
+  }
+
+  var tete = el('listeTete'), nums = el('numeros'), note = el('lNote'), phrase = el('cPhrase');
+  if (!liste){
+    tete.style.display = 'none'; nums.style.display = 'none'; note.style.display = 'none';
+    phrase.style.display = '';
+    phrase.innerHTML = 'Vous êtes tous en <b>' + coin + '</b>. Trouvez pourquoi.';
+    return;
+  }
+  phrase.style.display = 'none';
+  tete.style.display = ''; nums.style.display = 'flex'; note.style.display = '';
+
+  var n = Math.min(liste.length, 5);
+  el('lSur').textContent = (mode === 'mazal' ? MOTS_MZ[n] : MOTS[n]) || '';
+
+  nums.innerHTML = '';
+  var z = MAZAL[MOI.mazal] || null;
+  liste.forEach(function(sug){
+    var b = document.createElement('button');
+    b.type = 'button';
+    var fait = S.rencontres[sug.n] === true;
+    b.className = 'num' + (sug.mz ? ' memeMazal' : '') + (fait ? ' fait' : '');
+    var info;
+    if (sug.mz && z){
+      info = '<b>Même mazal que toi</b>Vous êtes tous les deux ' + z.fr + '.';
+    } else {
+      info = mode === 'mazal' ? 'Va te présenter.' : 'A répondu comme toi.';
+    }
+    b.innerHTML =
+      '<span class="chiffre">' + String(sug.n).padStart(2,'0') + '</span>' +
+      '<span class="info">' + info + '</span>' +
+      (sug.mz && z ? '<span class="mz">' + (LOGO[z.fr]||'') + '</span>' : '');
+    b.addEventListener('click', function(){
+      var deja = S.rencontres[sug.n] === true;
+      /* état local immédiat + base (survit à la reprise) */
+      if (deja) delete S.rencontres[sug.n]; else S.rencontres[sug.n] = true;
+      b.classList.toggle('fait', !deja);
+      majNote();
+      refSession().child('rencontres/' + MOI.badge + '/' + sug.n).set(deja ? null : true);
+    });
+    nums.appendChild(b);
+  });
+
+  function majNote(){
+    var faits = 0;
+    liste.forEach(function(s2){ if (S.rencontres[s2.n] === true) faits++; });
+    note.textContent = faits === 0
+      ? 'Touche un numéro quand tu l\u2019as rencontré.'
+      : (faits >= liste.length
+          ? 'Tu les as tous vus. Reste, ou fais connaissance librement.'
+          : faits + ' sur ' + liste.length + '. Continue.');
+  }
+  majNote();
 }
 
 /* ---------- bouton « prêt » : grisé 180 s (heure serveur), puis actif ---------- */
@@ -443,7 +993,11 @@ function dessinePret(){
   }
   b.removeAttribute('data-etat');
 
-  var actifA = (S.maReponse.at || 0) + KOD.DUREES.PRET_PLANCHER * 1000;
+  /* ancre : ma réponse (question) ou le début de la migration (mazal) */
+  var ancre = S.coinAffiche === 'mazal'
+    ? ((S.etat && S.etat.phaseAt) || 0)
+    : ((S.maReponse && S.maReponse.at) || 0);
+  var actifA = ancre + KOD.DUREES.PRET_PLANCHER * 1000;
   function tick(){
     var reste = (actifA - K.now()) / 1000;
     if (reste > 0){
@@ -463,7 +1017,8 @@ function dessinePret(){
   b.onclick = function(){
     if (b.disabled) return;
     b.disabled = true;
-    refSession().child('prets/' + S.qId + '/' + MOI.badge).set(true).then(function(){
+    var qKey = qKeyCourante();
+    refSession().child('prets/' + qKey + '/' + MOI.badge).set(true).then(function(){
       S.pretEnvoye = true;
       dessinePret();
     }).catch(function(){ b.disabled = false; });
@@ -478,7 +1033,8 @@ if (K){
       connu.badge >= 1 && connu.badge <= 999 &&
       (connu.genre === 'f' || connu.genre === 'h')){
     MOI = connu;
-    branche(); /* on retrouve l'état exact, sans rien redemander */
+    if (MOI.mazal === undefined) MOI.mazal = null;
+    branche(); /* on retrouve l'état exact, accueil compris, sans rien redemander */
   } else if (!MOI.genre){
     el('blocGenre').style.display = 'block'; /* pas passé par un QR : on demande */
   }
