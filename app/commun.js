@@ -46,10 +46,15 @@ window.KOD = (function () {
   function configOk() {
     var c = window.KOD_FIREBASE_CONFIG;
     if (!c || typeof c !== "object") return false;
-    var cles = ["apiKey", "databaseURL", "projectId", "appId"];
+    /* l'essentiel pour la Realtime Database : apiKey, databaseURL, projectId */
+    var cles = ["apiKey", "databaseURL", "projectId"];
     for (var i = 0; i < cles.length; i++) {
       var v = c[cles[i]];
       if (typeof v !== "string" || !v || v.indexOf("COLLER_ICI") !== -1) return false;
+    }
+    /* aucun placeholder oublié ailleurs */
+    for (var k in c) {
+      if (typeof c[k] === "string" && c[k].indexOf("COLLER_ICI") !== -1) return false;
     }
     if (c.databaseURL.indexOf("https://") !== 0) return false;
     return true;

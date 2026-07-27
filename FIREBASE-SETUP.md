@@ -2,6 +2,13 @@
 
 *Pour Lili. Aucune connaissance technique nécessaire. Compte 15 minutes, un ordinateur, et un compte Google (Gmail).*
 
+> **État actuel : déjà branché. ✅**
+> Le projet **kod-soiree** existe, la Realtime Database (europe-west1) répond, et la
+> configuration est déjà remplie dans `app/config.js`. Les étapes 1, 2, 3 et 5 sont faites.
+> **Il reste une seule chose à faire : l'étape 4** (coller les règles de sécurité) — la base
+> est pour l'instant en « mode test », qui ouvre tout et **expire au bout de 30 jours**.
+> Ce guide complet reste là au cas où il faudrait un jour tout recréer de zéro.
+
 Firebase, c'est le service de Google qui va faire parler les cent téléphones entre eux, en temps réel. C'est **gratuit** pour une soirée comme la nôtre (le plan gratuit accepte 100 connexions en même temps).
 
 ---
