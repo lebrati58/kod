@@ -20,7 +20,7 @@
           "coin": "א"
         },
         {
-          "texte": "Un brunch qui s'éternise à trois",
+          "texte": "Un brunch qui s'éternise entre amis",
           "coin": "ג"
         },
         {
@@ -39,7 +39,7 @@
       "texte": "Tu arrives à une soirée où tu ne connais personne.",
       "choix": [
         {
-          "texte": "Je vais vers le groupe le plus bruyant",
+          "texte": "Je danse comme si personne ne regardait",
           "coin": "א"
         },
         {
@@ -47,7 +47,7 @@
           "coin": "ב"
         },
         {
-          "texte": "Je repère quelqu'un de seul et je vais lui parler",
+          "texte": "Je repère la personne seule et j'y vais",
           "coin": "ג"
         },
         {
@@ -112,11 +112,11 @@
           "coin": "א"
         },
         {
-          "texte": "La dvar Torah",
+          "texte": "Quand tout le monde se casse, enfin",
           "coin": "ב"
         },
         {
-          "texte": "Quand tout le monde parle en même temps",
+          "texte": "Le joyeux bordel où personne ne s'écoute",
           "coin": "ג"
         },
         {
@@ -128,7 +128,7 @@
     {
       "id": 6,
       "acte": 2,
-      "texte": "Une décision importante, tu la prends…",
+      "texte": "Une décision importante — cœur ou carrière — tu la prends…",
       "choix": [
         {
           "texte": "Au feeling, tout de suite",
@@ -174,22 +174,22 @@
     {
       "id": 8,
       "acte": 2,
-      "texte": "Ce qui te fatigue le plus.",
+      "texte": "Toi et le sport.",
       "choix": [
         {
-          "texte": "Ne rien faire",
+          "texte": "Je bouge tout le temps, ça déborde",
           "coin": "א"
         },
         {
-          "texte": "Le bruit",
+          "texte": "Une marche tranquille, ça me suffit",
           "coin": "ב"
         },
         {
-          "texte": "Les gens faux",
+          "texte": "Seulement si c'est en équipe",
           "coin": "ג"
         },
         {
-          "texte": "Perdre mon temps",
+          "texte": "Salle à 6h, régularité militaire",
           "coin": "ד"
         }
       ]
@@ -250,7 +250,7 @@
           "coin": "א"
         },
         {
-          "texte": "Je déconnecte vraiment",
+          "texte": "Shomer Shabbat, tout est éteint",
           "coin": "ב"
         },
         {
@@ -258,7 +258,7 @@
           "coin": "ג"
         },
         {
-          "texte": "J'en profite pour réfléchir à ma semaine",
+          "texte": "Je le vis à ma façon, sans pression",
           "coin": "ד"
         }
       ]
@@ -304,7 +304,7 @@
           "coin": "ג"
         },
         {
-          "texte": "Passer à côté de ma vie",
+          "texte": "Passer à côté de l'âme sœur",
           "coin": "ד"
         }
       ]
@@ -361,7 +361,7 @@
       "texte": "Le coup de foudre.",
       "choix": [
         {
-          "texte": "Je ne fonctionne qu'à ça",
+          "texte": "J'y crois, et j'attends le prochain",
           "coin": "א"
         },
         {
@@ -369,11 +369,11 @@
           "coin": "ב"
         },
         {
-          "texte": "Ça m'est arrivé",
+          "texte": "Ça m'est arrivé, je sais que c'est vrai",
           "coin": "ג"
         },
         {
-          "texte": "Je n'y crois pas une seconde",
+          "texte": "Ça se construit, ça ne tombe pas du ciel",
           "coin": "ד"
         }
       ]
@@ -388,7 +388,7 @@
           "coin": "א"
         },
         {
-          "texte": "Par un silence gênant assumé",
+          "texte": "Par une nuit blanche à repenser à tout",
           "coin": "ב"
         },
         {
@@ -415,11 +415,11 @@
           "coin": "ב"
         },
         {
-          "texte": "Quand on me surprend",
+          "texte": "Quand la personne se montre vulnérable",
           "coin": "ג"
         },
         {
-          "texte": "Quand je vois comment la personne traite les autres",
+          "texte": "Quand je vois comment elle traite les autres",
           "coin": "ד"
         }
       ]
@@ -430,19 +430,19 @@
       "texte": "Ce qui te toucherait le plus venant de quelqu'un.",
       "choix": [
         {
-          "texte": "Un week-end surprise",
+          "texte": "Un week-end surprise, valise déjà prête",
           "coin": "א"
         },
         {
-          "texte": "Qu'il soit là un jour difficile",
+          "texte": "Sa présence le jour où tout va mal",
           "coin": "ב"
         },
         {
-          "texte": "Une lettre",
+          "texte": "Une lettre écrite à la main",
           "coin": "ג"
         },
         {
-          "texte": "Qu'il croie à mon projet",
+          "texte": "Qu'il croie en mes projets",
           "coin": "ד"
         }
       ]
@@ -453,11 +453,11 @@
       "texte": "La rencontre idéale.",
       "choix": [
         {
-          "texte": "Dans un bar, par hasard",
+          "texte": "Dans un bar, un soir de Tou B'Av",
           "coin": "א"
         },
         {
-          "texte": "On se connaît depuis toujours et un jour ça bascule",
+          "texte": "Une amitié qui bascule un jour",
           "coin": "ב"
         },
         {
@@ -658,7 +658,7 @@
       "id": 29,
       "acte": 0,
       "drole": true,
-      "texte": "Ta mère t'appelle. Tu n'as pas rappelé depuis trois jours.",
+      "texte": "Ta famille t'appelle. Tu n'as pas rappelé depuis trois jours.",
       "choix": [
         {
           "texte": "Je décroche, j'assume, je prends",
@@ -793,7 +793,7 @@
           "coin": "ג"
         },
         {
-          "texte": "L'addition",
+          "texte": "« Et toi alors, c'est pour quand ? »",
           "coin": "ד"
         }
       ]
@@ -813,11 +813,11 @@
           "coin": "ב"
         },
         {
-          "texte": "J'envoie un ami en éclaireur",
+          "texte": "Je demande à ChatGPT quoi lui dire",
           "coin": "ג"
         },
         {
-          "texte": "Je rentre chez moi et je regrette",
+          "texte": "Je retrouve son insta en cinq minutes",
           "coin": "ד"
         }
       ]
@@ -826,14 +826,14 @@
       "id": 36,
       "acte": 0,
       "drole": true,
-      "texte": "Ton drapeau rouge, celui que tu assumes complètement.",
+      "texte": "Ton red flag, celui que tu assumes complètement.",
       "choix": [
         {
           "texte": "Je réponds aux messages trois jours après",
           "coin": "א"
         },
         {
-          "texte": "Je suis toujours en retard",
+          "texte": "Chez moi, c'est le bordel permanent",
           "coin": "ב"
         },
         {
