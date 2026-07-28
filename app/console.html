@@ -510,16 +510,16 @@ function attache(code){
   });
   refSession().child('carrousel').on('value', function(snap){
     var c = snap.val() || {};
-    var inscrits = (c.ordre || []).length;
+    var nF = (c.femmes || []).length, nH = (c.hommes || []).length;
     var jouees = Object.keys(c.dejaVues || {}).length;
     var box = el('blocRdv');
-    if (!inscrits){ box.style.display = 'none'; return; }
+    if (!nF && !nH){ box.style.display = 'none'; return; }
     box.style.display = 'block';
-    el('rdvEtat').textContent = inscrits + ' inscrits';
+    el('rdvEtat').textContent = nF + ' F · ' + nH + ' H';
     el('rdvNote').textContent = jouees + ' paire' + (jouees > 1 ? 's' : '') +
       ' d\u00e9j\u00e0 jou\u00e9e' + (jouees > 1 ? 's' : '') +
-      ' \u00b7 chacun peut rencontrer tout le monde en ' + Math.max(1, inscrits - 1) +
-      ' tours, sans jamais revoir la m\u00eame personne.';
+      ' \u00b7 uniquement femme ↔ homme · ' + Math.max(nF, nH) +
+      ' tours pour que chacune rencontre chacun, sans répétition.';
   });
   clearInterval(S.tic);
   S.tic = setInterval(majBandeau, 500);
@@ -678,10 +678,12 @@ function demarrer(){
 }
 
 /* ------------------------------------------------------------
-   Le tour de rendez-vous — carrousel déterministe, zéro répétition.
+   Le tour de rendez-vous — carrousel femme ↔ homme, zéro répétition.
+   On ne fait se rencontrer QUE des femmes et des hommes : les femmes
+   gardent leur place, les hommes tournent d'un cran à chaque tour.
    La console calcule tout et écrit en base : chaque téléphone lit
-   rdv/{badge} → « retrouve le badge N au coin X ». Celui qui tombe
-   face au fantôme (nombre impair) se repose — jamais deux fois le même.
+   rdv/{badge} → « retrouve le badge N au coin X ». Si les effectifs
+   sont inégaux, le surplus se repose — jamais deux fois les mêmes.
    ------------------------------------------------------------ */
 function lancerRdv(){
   if (!S.code) return;
@@ -690,22 +692,27 @@ function lancerRdv(){
     refSession().child('carrousel').once('value')
   ]).then(function(r){
     /* présents = en ligne, ou vus il y a moins de 10 minutes
-       (un téléphone verrouillé n\u2019est pas quelqu\u2019un qui est parti) */
-    var maintenant = K.now(), presents = [];
+       (un téléphone verrouillé n\u2019est pas quelqu\u2019un qui est parti) —
+       séparés par genre : le carrousel n'apparie que femme ↔ homme */
+    var maintenant = K.now(), presentsF = [], presentsH = [];
     r[0].forEach(function(c){
       var p = c.val() || {};
-      if (p.online === true ||
-          (typeof p.lastSeen === 'number' && maintenant - p.lastSeen < 10*60*1000))
-        presents.push(Number(c.key));
+      var la = p.online === true ||
+        (typeof p.lastSeen === 'number' && maintenant - p.lastSeen < 10*60*1000);
+      if (!la) return;
+      if (p.genre === 'f') presentsF.push(Number(c.key));
+      else if (p.genre === 'h') presentsH.push(Number(c.key));
     });
     var car = r[1].val() || {};
     var res = KOD_RDV.calculeTour({
-      ordre: car.ordre || null,
+      femmes: car.femmes || null,
+      hommes: car.hommes || null,
       rotation: car.rotation || 0,
       dejaVues: car.dejaVues || {},
-      presents: presents
+      presentsF: presentsF,
+      presentsH: presentsH
     });
-    if (!res){ journal('⚠️ Pas assez de monde pour un rendez-vous (2 minimum).'); return; }
+    if (!res){ journal('⚠️ Rendez-vous impossible : il faut au moins une femme ET un homme connectés.'); return; }
     var num = ((S.etat && S.etat.rdvNum) || 0) + 1;
     var maj = {
       'state/phase': 'rdv',
@@ -713,7 +720,8 @@ function lancerRdv(){
       'state/migration': null,
       'state/phaseAt': K.TS,
       'state/dureeMs': KOD.DUREES.RDV * 1000,
-      'carrousel/ordre': res.ordre,
+      'carrousel/femmes': res.femmes,
+      'carrousel/hommes': res.hommes,
       'carrousel/rotation': res.rotation
     };
     res.coins.forEach(function(pc){
@@ -722,11 +730,13 @@ function lancerRdv(){
       maj['rdv/' + b] = { tour: num, avec: a, coin: pc.coin };
       maj['carrousel/dejaVues/' + KOD_RDV.cle(a, b)] = true;
     });
-    if (res.repos != null) maj['rdv/' + res.repos] = { tour: num };
+    (res.repos || []).forEach(function(b){
+      maj['rdv/' + b] = { tour: num };
+    });
     return refSession().update(maj).then(function(){
-      journal('Rendez-vous n°' + num + ' : ' + res.paires.length + ' paires' +
-        (res.repos != null ? ' · le badge ' + res.repos + ' se repose' : '') +
-        (res.nouveaux.length ? ' · ' + res.nouveaux.length + ' nouveau(x) dans le carrousel' : '') + '.');
+      journal('Rendez-vous n°' + num + ' : ' + res.paires.length + ' paires femme–homme' +
+        (res.repos.length ? ' · ' + res.repos.length + ' au repos' : '') +
+        (res.nouveaux.length ? ' · ' + res.nouveaux.length + ' nouveau(x)' : '') + '.');
     });
   }).catch(function(e){
     journal('⚠️ Rendez-vous impossible : ' + e.message);
