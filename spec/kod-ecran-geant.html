@@ -41,6 +41,8 @@ body.souris{cursor:default}
   border:.35vw solid;background:rgba(255,255,255,.04)}
 .case .l{font-family:var(--he);font-weight:700;font-size:6.4vw;line-height:1;flex:0 0 auto}
 .case .t{font-size:2.5vw;font-weight:600;text-align:left;line-height:1.28}
+.consigne{font-family:var(--corps);font-weight:700;font-size:2.1vw;color:var(--sourd);
+  margin-top:4vh;letter-spacing:.02em}
 .ca{border-color:var(--a)} .ca .l{color:var(--a)}
 .cb{border-color:var(--b)} .cb .l{color:var(--b)}
 .cg{border-color:var(--g)} .cg .l{color:var(--g)}
@@ -65,6 +67,12 @@ body.souris{cursor:default}
 .deco-sous{font-family:var(--data);font-size:2vw;letter-spacing:.3em;text-transform:uppercase;
   color:var(--sourd);margin-top:2vh}
 
+/* consignes sans voix */
+.regle-gros{font-family:var(--display);font-weight:300;font-size:7.2vw;line-height:1.15;max-width:90vw}
+.regle-gros em{font-style:normal;color:var(--g)}
+.regle-sous{font-family:var(--corps);font-weight:600;font-size:2.6vw;line-height:1.5;
+  color:var(--sourd);margin-top:5vh;max-width:70vw}
+
 /* message libre */
 .msg{font-family:var(--display);font-weight:300;font-size:7vw;line-height:1.2;max-width:90vw}
 
@@ -85,6 +93,11 @@ body.souris{cursor:default}
 
 <div class="vue" id="vPhrase"><div class="phrase" id="phraseTxt"></div></div>
 
+<div class="vue" id="vRegle">
+  <div class="regle-gros" id="regleGros"></div>
+  <div class="regle-sous" id="regleSous"></div>
+</div>
+
 <div class="vue" id="vQuestion">
   <div class="q-titre" id="qTitre"></div>
   <div class="grille">
@@ -93,6 +106,7 @@ body.souris{cursor:default}
     <div class="case cg"><span class="l">ג</span><span class="t" id="qg"></span></div>
     <div class="case cd"><span class="l">ד</span><span class="t" id="qd"></span></div>
   </div>
+  <div class="consigne">Choisissez votre réponse · allez dans le coin qui porte sa lettre</div>
 </div>
 
 <div class="vue" id="vMigration">
@@ -106,7 +120,7 @@ body.souris{cursor:default}
 
 <div class="vue" id="vDeco">
   <div class="deco" id="decoTxt">60</div>
-  <div class="deco-sous">rejoignez votre coin</div>
+  <div class="deco-sous">rejoignez le coin de votre réponse</div>
 </div>
 
 <div class="vue" id="vMsg"><div class="msg" id="msgTxt"></div></div>
@@ -114,7 +128,8 @@ body.souris{cursor:default}
 <div class="aide" id="aide">
   <b>ESPACE</b> passer à la suite &nbsp;·&nbsp; <b>M</b> migration &nbsp;·&nbsp; <b>D</b> décompte 60 s &nbsp;·&nbsp;
   <b>←→</b> changer de question &nbsp;·&nbsp; <b>1</b> la blague &nbsp;·&nbsp; <b>2</b> « on sait déjà » &nbsp;·&nbsp;
-  <b>3</b> « trouvez avec qui » &nbsp;·&nbsp; <b>T</b> écrire un message &nbsp;·&nbsp; <b>0</b> écran d'attente &nbsp;·&nbsp;
+  <b>3</b> « ton mazal » &nbsp;·&nbsp; <b>4</b> la convention musique &nbsp;·&nbsp; <b>5</b> comment jouer &nbsp;·&nbsp;
+  <b>6</b> parlez-vous &nbsp;·&nbsp; <b>7</b> trois personnes &nbsp;·&nbsp; <b>T</b> message libre &nbsp;·&nbsp; <b>0</b> attente &nbsp;·&nbsp;
   <b>F</b> plein écran &nbsp;·&nbsp; <b>H</b> cacher cette aide
 </div>
 
@@ -125,10 +140,21 @@ const MAZAL = {
   a:"Hama · Levana", b:"Tzedek · Nogah", g:"Maadim · Chabtaï", d:"Kokhav"
 };
 
+const REGLES = {
+  4:["Quand la musique s'arrête,<br><em>regardez cet écran.</em>",
+     "C'est le seul signal de la soirée. Il n'y en aura pas d'autre."],
+  5:["Lisez la question.<br>Choisissez <em>votre réponse</em>.",
+     "Puis allez dans le coin qui porte sa lettre. Les panneaux sont aux quatre coins de la salle."],
+  6:["Vous êtes arrivés.<br><em>Parlez-vous.</em>",
+     "Personne ne vous dira pourquoi vous êtes ensemble. La musique reprendra quand ce sera le moment de bouger."],
+  7:["Ne partez pas<br><em>sans avoir parlé à trois personnes</em> de votre coin.",
+     "C'est tout ce qu'on vous demande ce soir."]
+};
+
 const PHRASES = {
   1:"Ce soir, on vous a déjà donné <em>votre mazal</em>.<br><br>Ce n'est pas celui que vous êtes venus chercher.",
   2:"Vous n'avez rien répondu.<br><br><em>On sait déjà où vous allez.</em>",
-  3:"Cinq personnes ici ont répondu comme vous.<br><br><em>Trouvez avec qui ça vaut le coup.</em>"
+  3:"<em>Vous vous rapprochez de votre mazal.</em>"
 };
 
 let i = 0, tic = null;
@@ -172,6 +198,14 @@ function phrase(n){
   montre('vPhrase');
 }
 
+function regle(n){
+  const r = REGLES[n];
+  if(!r) return;
+  el('regleGros').innerHTML = r[0];
+  el('regleSous').innerHTML = r[1];
+  montre('vRegle');
+}
+
 document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if(k === ' '){ e.preventDefault(); question(i + 1); return; }
@@ -180,6 +214,7 @@ document.addEventListener('keydown', e => {
   if(k === 'm'){ migration(el('vAttente').classList.contains('on') || el('vPhrase').classList.contains('on')); return; }
   if(k === 'd'){ decompte(); return; }
   if(k === '1' || k === '2' || k === '3'){ phrase(+k); return; }
+  if(['4','5','6','7'].includes(k)){ regle(+k); return; }
   if(k === '0'){ clearInterval(tic); montre('vAttente'); return; }
   if(k === 'h'){ el('aide').classList.toggle('on'); return; }
   if(k === 'f'){

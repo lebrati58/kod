@@ -131,7 +131,10 @@ body.sombre .primaire{color:#2A0A13}
 .logo-mazal{display:flex;justify-content:center;margin-top:18px;color:var(--or);
   animation:apparait .7s both}
 .logo-mazal svg{width:46px;height:46px}
-.cartes{display:flex;flex-direction:column;gap:11px;margin-top:4px}
+.cartes{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.cartes .emo{display:flex;align-items:center;gap:14px;font-family:var(--corps);
+  font-size:16.5px;font-weight:600;line-height:1.35;padding:17px 16px;min-height:66px;text-align:left}
+.cartes .emo .e{font-size:23px;flex:0 0 auto}
 .carte{width:100%;text-align:left;cursor:pointer;background:var(--carte);
   border:2px solid var(--bord-fin);border-radius:16px;padding:19px 17px;transition:.16s;
   font-family:var(--display);font-weight:300;font-size:23px;color:var(--encre)}
@@ -184,6 +187,34 @@ body.sombre .primaire{color:#2A0A13}
 
     <button class="primaire" id="b2" disabled>Découvrir mon mazal</button>
     <p class="aide" id="a2"></p>
+  </section>
+
+  <section class="etape" id="eT">
+    <p class="sur-titre">Une seconde</p>
+    <h1>Tu cherches quoi, <em>ce soir</em> ?</h1>
+    <p class="chapeau">Aucune mauvaise réponse. Ça nous aide juste à ne pas te proposer n'importe qui.</p>
+    <div class="cartes" id="cT"></div>
+  </section>
+
+  <section class="etape" id="eS">
+    <p class="sur-titre">Question 1 sur 3</p>
+    <h1>Chabbat, <em>pour toi</em>, c'est…</h1>
+    <p class="chapeau">Celle qui évite les malentendus du vendredi soir.</p>
+    <div class="cartes" id="cS"></div>
+  </section>
+
+  <section class="etape" id="eC">
+    <p class="sur-titre">Question 2 sur 3</p>
+    <h1>Cachère ?</h1>
+    <p class="chapeau">Parce qu'un premier dîner, ça se prépare.</p>
+    <div class="cartes" id="cC"></div>
+  </section>
+
+  <section class="etape" id="eE">
+    <p class="sur-titre">Question 3 sur 3</p>
+    <h1>Des enfants, <em>dans ta vie</em> ?</h1>
+    <p class="chapeau">On préfère demander maintenant que dans quatre ans.</p>
+    <div class="cartes" id="cE"></div>
   </section>
 
   <section class="etape" id="e3">
@@ -277,13 +308,50 @@ document.getElementById('theme').addEventListener('click',e=>{
   e.target.textContent=document.body.classList.contains('sombre')?'Clair':'Sombre';
 });
 
-function aller(n){
-  ['e1','e2','e3','e4','e5'].forEach((id,i)=>document.getElementById(id).classList.toggle('actif',i===n));
-  const pas=[1,2,3,3,3][n];
+function aller(n){ montre(['e1','e2','e3','e4','e5'][n]); }
+
+/* --- les questions de tri, posées avant le jeu --- */
+const TRI={
+  eT:{cle:'cherche', suite:v=>v===0?'eS':'e3', opts:[
+    ["❤️","Rencontrer quelqu'un"],["🍷","Des amis, du monde"],
+    ["✈️","Un partenaire de projet ou de voyage"],["🤷","Je ne sais pas encore"]]},
+  eS:{cle:'chabbat', suite:()=>'eC', opts:[
+    ["🕯️","Sacré, on ne négocie pas"],["🍷","Un vendredi soir en famille"],
+    ["🏖️","Un samedi comme les autres"],["🤔","Ça dépend de qui m'invite"]]},
+  eC:{cle:'cachere', suite:()=>'eE', opts:[
+    ["✅","Strictement"],["🏠","À la maison oui, dehors on verra"],
+    ["🥓","Pas du tout"],["😅","Je fais semblant devant ma mère"]]},
+  eE:{cle:'enfants', suite:()=>'e3', opts:[
+    ["👶","J'en veux"],["👨‍👩‍👧","J'en ai, j'en voudrais d'autres"],
+    ["🧸","J'en ai déjà, et ça suffit"],["🚫","Non merci"],["🤷","On verra bien"]]}
+};
+
+function construitTri(){
+  Object.entries(TRI).forEach(([id,q])=>{
+    const box=document.getElementById('c'+id.slice(1));
+    box.innerHTML='';
+    q.opts.forEach(([e,t],i)=>{
+      const b=document.createElement('button');
+      b.className='carte emo'; b.type='button';
+      b.innerHTML=`<span class="e">${e}</span><span>${t}</span>`;
+      b.addEventListener('click',()=>{
+        S[q.cle]=i;
+        montre(q.suite(i));
+      });
+      box.appendChild(b);
+    });
+  });
+}
+
+const ECRANS=['e1','e2','eT','eS','eC','eE','e3','e4','e5'];
+function montre(id){
+  ECRANS.forEach(x=>document.getElementById(x).classList.toggle('actif',x===id));
+  const pas = id==='e1'?1 : (id==='e2'||id==='eT'||id==='eS'||id==='eC'||id==='eE')?2 : 3;
   document.getElementById('etapeNum').textContent=`0${pas} / 03`;
-  document.getElementById('f1').className=n>0?'faite':'encours';
-  document.getElementById('f2').className=n>1?'faite':n===1?'encours':'';
-  document.getElementById('f3').className=n>3?'faite':n>=2?'encours':'';
+  document.getElementById('f1').className=pas>1?'faite':'encours';
+  document.getElementById('f2').className=pas>2?'faite':pas===2?'encours':'';
+  document.getElementById('f3').className=pas===3?'encours':'';
+  if(id==='e5'){['f1','f2','f3'].forEach(f=>document.getElementById(f).className='faite');}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -296,6 +364,7 @@ inBadge.addEventListener('input',()=>{
   a.classList.toggle('alerte',!!(inBadge.value&&!ok));
 });
 b1.addEventListener('click',()=>{S.badge=+inBadge.value;aller(1);});
+construitTri();
 
 const inDate=document.getElementById('dateN'),cbNuit=document.getElementById('nuit'),b2=document.getElementById('b2');
 inDate.max=new Date().toISOString().slice(0,10);
@@ -314,7 +383,7 @@ b2.addEventListener('click',()=>{
   document.getElementById('pLieu').textContent=sel.value;
   S.jourHeb=ms; S.mazal=z;
   construitQCM(ms);
-  aller(2);
+  montre('eT');          /* on passe par les questions de tri */
 });
 
 function construitQCM(jourMs){

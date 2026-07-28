@@ -128,14 +128,14 @@ h1{font-family:var(--display);font-weight:300;font-size:30px;line-height:1.17;ma
       <div class="coin-nom" id="cNom">JAUNE</div>
     </div>
     <div class="liste-tete">
-      <p class="sur" id="lSur">Cinq personnes ici ont répondu comme toi</p>
-      <p class="titre" id="lTitre">Trouve <b>avec qui</b> ça vaut le coup.</p>
+      <p class="sur" id="lSur">Tu es en ג</p>
+      <p class="titre" id="lTitre">Tu te rapproches de <b>ton mazal</b>.</p>
     </div>
 
     <div class="numeros" id="numeros"></div>
     <p class="liste-note" id="lNote"></p>
 
-    <button class="pret" id="bPret" disabled>Prêt à continuer</button>
+    <button class="pret" id="bPret" disabled>Encore un peu…</button>
     <p class="pret-note" id="pretNote"></p>
 
     <div class="demo">
@@ -267,30 +267,30 @@ function vaAuCoin(i){
     });
     box.appendChild(b);
   });
-  el('lSur').textContent=`Cinq personnes en ${c.l} ont répondu comme toi`;
+  el('lSur').textContent=`Tu es en ${c.l}`;
   el('lNote').textContent="Touche un numéro quand tu l'as rencontré.";
 
   /* bouton prêt : grisé, puis actif */
   S.plancher=PLANCHER;
   const b=el('bPret'), n=el('pretNote');
-  b.disabled=true; b.removeAttribute('data-etat'); b.textContent='Prêt à continuer';
+  b.disabled=true; b.removeAttribute('data-etat'); b.textContent='Encore un peu…';
   clearInterval(S.tic2);
   S.tic2=setInterval(()=>{
     S.plancher--;
     if(S.plancher>0){
-      b.textContent=`Prêt à continuer · ${mmss(S.plancher)}`;
-      n.textContent="Le bouton s'activera dans un moment. Profites-en.";
+      b.textContent=`Encore un peu… ${mmss(S.plancher)}`;
+      n.textContent="Profites-en. Le bouton s'ouvrira tout seul.";
     } else {
       clearInterval(S.tic2);
-      b.disabled=false; b.textContent='Prêt à continuer';
-      n.textContent="Quand assez de monde ici sera prêt, on passera à la suite.";
+      b.disabled=false; b.textContent='Continuons !';
+      n.textContent="Touche quand tu as fini. On avance dès qu'assez de monde ici est prêt.";
     }
   },1000);
   b.onclick=()=>{
     b.setAttribute('data-etat','envoye');
-    b.textContent='✓ Tu es prêt';
+    b.textContent='✓ C\'est noté';
     b.disabled=true;
-    n.textContent="C'est noté. Continue à parler en attendant les autres.";
+    n.textContent="On attend les autres. Continue à parler en attendant.";
   };
   montre('eCoin');
 }
