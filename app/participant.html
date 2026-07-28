@@ -290,50 +290,41 @@ input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3
 
   <!-- ============ ACCUEIL 5 : AIGUILLAGE ============ -->
   <section class="ecran" id="eCherche">
-    <p class="sur-titre">Dernière ligne droite</p>
+    <p class="sur-titre">Une seconde</p>
     <h1>Tu cherches quoi, <em>ce soir</em> ?</h1>
+    <p class="chapeau">Aucune mauvaise réponse. Ça nous aide juste à ne pas te proposer n'importe qui.</p>
     <div class="choix" id="chercheChoix"></div>
     <p class="prive"><span aria-hidden="true">🔒</span>
       <span>Ta réponse reste privée. Personne ne la verra — ni les autres, ni l'écran géant —
       et elle sera <b>supprimée à la fin de la soirée</b>.</span></p>
   </section>
 
-  <!-- ============ ACCUEIL 6 : ÂGE ============ -->
-  <section class="ecran" id="eAge">
-    <p class="sur-titre">Entre nous</p>
-    <h1>Ton âge.</h1>
-    <div class="age-val" id="ageVal">30</div>
-    <p class="age-sub">ans</p>
-    <input type="range" id="inAge" min="18" max="75" step="1" value="30"
-           aria-label="Ton âge, de 18 à 75 ans">
-    <button class="primaire" id="bAge" style="margin-top:22px">Continuer</button>
+  <!-- ============ ACCUEIL 6 : CHABBAT ============ -->
+  <section class="ecran" id="eChabbat">
+    <p class="sur-titre">Question 1 sur 3</p>
+    <h1>Chabbat, <em>pour toi</em>, c'est…</h1>
+    <p class="chapeau">Celle qui évite les malentendus du vendredi soir.</p>
+    <div class="choix" id="chabbatChoix"></div>
     <p class="prive"><span aria-hidden="true">🔒</span>
       <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
   </section>
 
-  <!-- ============ ACCUEIL 7 : SOUHAIT D'ENFANTS ============ -->
-  <section class="ecran" id="eEnfSouhait">
-    <p class="sur-titre">Entre nous</p>
-    <h1>Des enfants, un jour ?</h1>
-    <div class="choix" id="enfSouhaitChoix"></div>
+  <!-- ============ ACCUEIL 7 : CACHÈRE ============ -->
+  <section class="ecran" id="eCachere">
+    <p class="sur-titre">Question 2 sur 3</p>
+    <h1>Cachère ?</h1>
+    <p class="chapeau">Parce qu'un premier dîner, ça se prépare.</p>
+    <div class="choix" id="cachereChoix"></div>
     <p class="prive"><span aria-hidden="true">🔒</span>
       <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
   </section>
 
-  <!-- ============ ACCUEIL 8 : AS-TU DES ENFANTS ============ -->
-  <section class="ecran" id="eEnfA">
-    <p class="sur-titre">Entre nous</p>
-    <h1>As-tu déjà des enfants ?</h1>
-    <div class="choix" id="enfAChoix"></div>
-    <p class="prive"><span aria-hidden="true">🔒</span>
-      <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
-  </section>
-
-  <!-- ============ ACCUEIL 9 : SI LA PERSONNE EN A ============ -->
-  <section class="ecran" id="eEnfAccepte">
-    <p class="sur-titre">Entre nous</p>
-    <h1>Et si la personne en a déjà ?</h1>
-    <div class="choix" id="enfAccepteChoix"></div>
+  <!-- ============ ACCUEIL 8 : ENFANTS ============ -->
+  <section class="ecran" id="eEnfants">
+    <p class="sur-titre">Question 3 sur 3</p>
+    <h1>Des enfants, <em>dans ta vie</em> ?</h1>
+    <p class="chapeau">On préfère demander maintenant que dans quatre ans.</p>
+    <div class="choix" id="enfantsChoix"></div>
     <p class="prive"><span aria-hidden="true">🔒</span>
       <span>Privé, jamais affiché nulle part, supprimé à la fin de la soirée.</span></p>
   </section>
@@ -461,7 +452,7 @@ function dateHebraique(ms){
 
 /* ---------- état ---------- */
 var MOI = { code:null, badge:null, genre:null,
-            mazal:null, cherche:null, age:null, enfSouhait:null, enfA:null, enfAccepte:null };
+            mazal:null, cherche:null, chabbat:null, cachere:null, enfants:null };
 var S = {
   etat: null, qId: null, maReponse: null, pretEnvoye: false,
   accueilOk: false,
@@ -473,8 +464,8 @@ var S = {
 };
 var ACC = { jourMs:null, lieu:null, choix:null };
 
-var ECRANS = ['eRejoindre','eNaissance','eJeu','eDateHeb','eMazal','eCherche','eAge',
-              'eEnfSouhait','eEnfA','eEnfAccepte','eSalleAttente','eQuestion','eEnvoye','eCoin','eRdv','eFin'];
+var ECRANS = ['eRejoindre','eNaissance','eJeu','eDateHeb','eMazal','eCherche','eChabbat',
+              'eCachere','eEnfants','eSalleAttente','eQuestion','eEnvoye','eCoin','eRdv','eFin'];
 function montre(id){
   ECRANS.forEach(function(x){ el(x).classList.toggle('actif', x === id); });
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -577,10 +568,9 @@ function branche(){
     if (!p.arriveA) mr.child('arriveA').set(K.TS);
     if (typeof p.mazal === 'number' && p.cherche){
       MOI.mazal = p.mazal; MOI.cherche = p.cherche;
-      if (typeof p.age === 'number') MOI.age = p.age;
-      MOI.enfSouhait = p.enfSouhait || MOI.enfSouhait;
-      MOI.enfA = p.enfA || MOI.enfA;
-      MOI.enfAccepte = p.enfAccepte || MOI.enfAccepte;
+      if (typeof p.chabbat === 'number') MOI.chabbat = p.chabbat;
+      if (typeof p.cachere === 'number') MOI.cachere = p.cachere;
+      if (typeof p.enfants === 'number') MOI.enfants = p.enfants;
       finAccueil(false);
     } else if (typeof MOI.mazal === 'number' && MOI.cherche){
       finAccueil(true); /* le téléphone sait, la base a perdu : on réécrit */
@@ -624,7 +614,7 @@ el('bNaissance').addEventListener('click', function(){
   el('pBadge').textContent = String(MOI.badge).padStart(2,'0');
   el('pLieu').textContent = ACC.lieu;
   construitQCM(ms);
-  montre('eJeu');
+  montre('eCherche'); /* les questions de tri d'abord, le mazal reste le sommet */
 });
 
 /* le jeu de la date hébraïque — repris tel quel (années à 13 mois comprises) */
@@ -677,7 +667,7 @@ el('bJeu').addEventListener('click', function(){
   montre('eDateHeb');
 });
 el('bDateHeb').addEventListener('click', function(){ montre('eMazal'); });
-el('bMazal').addEventListener('click', function(){ montre('eCherche'); });
+el('bMazal').addEventListener('click', function(){ finAccueil(true); });
 
 /* aiguillage + critères : boutons à une main, un tap = on avance */
 function boutonsChoix(idBox, options, surChoix){
@@ -701,40 +691,37 @@ function boutonsChoix(idBox, options, surChoix){
 }
 
 boutonsChoix('chercheChoix', [
-  { v:'rencontre', texte:'Rencontrer quelqu\u2019un' },
-  { v:'amis',      texte:'Des amis, du monde' },
-  { v:'projet',    texte:'Un partenaire de projet ou de voyage' },
-  { v:'saisPas',   texte:'Je ne sais pas encore' }
+  { v:'rencontre', texte:'❤️ Rencontrer quelqu\u2019un' },
+  { v:'amis',      texte:'🍷 Des amis, du monde' },
+  { v:'projet',    texte:'✈️ Un partenaire de projet ou de voyage' },
+  { v:'saisPas',   texte:'🤷 Je ne sais pas encore' }
 ], function(v){
   MOI.cherche = v;
-  if (v === 'rencontre') montre('eAge');
-  else finAccueil(true);
+  if (v === 'rencontre') montre('eChabbat');
+  else montre('eJeu'); /* pas de critères : direct au jeu de la date */
 });
 
-/* l'âge : un seul nombre, au pouce, pas de saisie libre */
-var inAge = el('inAge');
-inAge.addEventListener('input', function(){ el('ageVal').textContent = inAge.value; });
-el('bAge').addEventListener('click', function(){
-  MOI.age = parseInt(inAge.value, 10);
-  montre('eEnfSouhait');
-});
+boutonsChoix('chabbatChoix', [
+  { v:0, texte:'🕯️ Sacré, on ne négocie pas' },
+  { v:1, texte:'🍷 Un vendredi soir en famille' },
+  { v:2, texte:'🏖️ Un samedi comme les autres' },
+  { v:3, texte:'🤔 Ça dépend de qui m\u2019invite' }
+], function(v){ MOI.chabbat = v; montre('eCachere'); });
 
-boutonsChoix('enfSouhaitChoix', [
-  { v:'oui',    texte:'Je souhaite avoir des enfants' },
-  { v:'non',    texte:'Je ne souhaite pas avoir d\u2019enfants' },
-  { v:'ouvert', texte:'Ouvert à la discussion, ça dépend de la personne' }
-], function(v){ MOI.enfSouhait = v; montre('eEnfA'); });
+boutonsChoix('cachereChoix', [
+  { v:0, texte:'✅ Strictement' },
+  { v:1, texte:'🏠 À la maison oui, dehors on verra' },
+  { v:2, texte:'🥪 Pas du tout' },
+  { v:3, texte:'😅 Je fais semblant devant ma mère' }
+], function(v){ MOI.cachere = v; montre('eEnfants'); });
 
-boutonsChoix('enfAChoix', [
-  { v:'oui', texte:'Oui' },
-  { v:'non', texte:'Non' }
-], function(v){ MOI.enfA = v; montre('eEnfAccepte'); });
-
-boutonsChoix('enfAccepteChoix', [
-  { v:'oui',  texte:'J\u2019accepte que la personne ait déjà des enfants' },
-  { v:'non',  texte:'Je préfère qu\u2019elle n\u2019en ait pas' },
-  { v:'egal', texte:'Sans préférence' }
-], function(v){ MOI.enfAccepte = v; finAccueil(true); });
+boutonsChoix('enfantsChoix', [
+  { v:0, texte:'👶 J\u2019en veux' },
+  { v:1, texte:'👨‍👩‍👧 J\u2019en ai, j\u2019en voudrais d\u2019autres' },
+  { v:2, texte:'🧸 J\u2019en ai déjà, et ça suffit' },
+  { v:3, texte:'🚫 Non merci' },
+  { v:4, texte:'🤷 On verra bien' }
+], function(v){ MOI.enfants = v; montre('eJeu'); });
 
 /* fin d'accueil : on écrit une fois, et on n'y revient jamais */
 function finAccueil(ecrire){
@@ -744,8 +731,7 @@ function finAccueil(ecrire){
   if (ecrire){
     var d = { mazal: MOI.mazal, cherche: MOI.cherche, accueilFait: true };
     if (MOI.cherche === 'rencontre'){
-      d.age = MOI.age; d.enfSouhait = MOI.enfSouhait;
-      d.enfA = MOI.enfA; d.enfAccepte = MOI.enfAccepte;
+      d.chabbat = MOI.chabbat; d.cachere = MOI.cachere; d.enfants = MOI.enfants;
     }
     moiRef().update(d); /* Firebase met en file d'attente si le réseau coupe */
   }

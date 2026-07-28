@@ -9,11 +9,15 @@
    - Les suggestions sont RÉCIPROQUES : construites par paires.
      Si 47 est sur la liste de 15, 15 est sur celle de 47.
    - Filtres durs, UNIQUEMENT entre deux personnes qui ont
-     répondu « rencontrer quelqu'un » :
-       · écart d'âge > valeur console (99 = filtre désactivé)
-       · l'un veut des enfants, l'autre n'en veut pas
-         (« ouvert à la discussion » est compatible avec les deux)
-       · l'un a des enfants, l'autre préfère que non
+     répondu « rencontrer quelqu'un » (accueil du 28/07 :
+     chabbat / cachère / enfants — plus de question d'âge) :
+       · chabbat : « sacré, on ne négocie pas » et « un samedi
+         comme les autres » ne sont jamais suggérés ensemble
+       · cachère : « strictement » et « pas du tout » non plus
+       · enfants : en veut (ou en reveut) ↔ n'en veut pas/plus ;
+         « on verra bien » est compatible avec tout le monde
+       · écart d'âge : conservé si des âges existent en base
+         (rétro-compatibilité), sinon sans effet
    - Ceux qui ne cherchent pas à rencontrer quelqu'un sont
      suggérés librement : aucun critère ne s'applique à eux
      ni contre eux.
@@ -51,6 +55,19 @@
     if (ecart < 99 &&
         typeof pa.age === "number" && typeof pb.age === "number" &&
         Math.abs(pa.age - pb.age) > ecart) return false;
+    /* chabbat : 0 sacré · 1 vendredi famille · 2 samedi ordinaire · 3 ça dépend */
+    if ((pa.chabbat === 0 && pb.chabbat === 2) ||
+        (pa.chabbat === 2 && pb.chabbat === 0)) return false;
+    /* cachère : 0 strictement · 1 maison · 2 pas du tout · 3 semblant */
+    if ((pa.cachere === 0 && pb.cachere === 2) ||
+        (pa.cachere === 2 && pb.cachere === 0)) return false;
+    /* enfants : 0 en veut · 1 en a + en reveut · 2 en a, stop · 3 non merci · 4 on verra */
+    var veutA = pa.enfants === 0 || pa.enfants === 1,
+        pasA  = pa.enfants === 2 || pa.enfants === 3,
+        veutB = pb.enfants === 0 || pb.enfants === 1,
+        pasB  = pb.enfants === 2 || pb.enfants === 3;
+    if ((veutA && pasB) || (pasA && veutB)) return false;
+    /* anciens champs (rétro-compatibilité, sans effet si absents) */
     if ((pa.enfSouhait === "oui" && pb.enfSouhait === "non") ||
         (pa.enfSouhait === "non" && pb.enfSouhait === "oui")) return false;
     if ((pa.enfA === "oui" && pb.enfAccepte === "non") ||
@@ -61,8 +78,8 @@
   /* ------------------------------------------------------------
      calcule({ coins, participants, dejaSuggere, ecart, k, rnd })
      - coins        : { badge: "א"|"ב"|"ג"|"ד" } — qui est dans quel coin
-     - participants : { badge: { cherche, age, enfSouhait, enfA,
-                                 enfAccepte, mazal } }
+     - participants : { badge: { cherche, chabbat, cachere,
+                                 enfants, mazal } }
      - dejaSuggere  : { badge: { autre: true } } — historique soirée
      - ecart        : écart d'âge max (console) ; 99 = désactivé
      - k            : taille de liste (5)

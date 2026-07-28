@@ -843,7 +843,7 @@ function recalculer(){
    sur les enfants de tous les participants (promesse de l'accueil) */
 function terminerSoiree(){
   if (!S.code) return;
-  if (!confirm('Terminer la soirée ? L\u2019âge et les réponses sur les enfants seront effacés de la base.')) return;
+  if (!confirm('Terminer la soirée ? Les réponses privées de l\u2019accueil (chabbat, cachère, enfants) seront effacées de la base.')) return;
   refSession().child('participants').once('value').then(function(snap){
     var maj = {
       'state/phase': 'fin',
@@ -852,13 +852,13 @@ function terminerSoiree(){
       'state/msgEcran': null
     };
     snap.forEach(function(c){
-      ['age', 'enfSouhait', 'enfA', 'enfAccepte'].forEach(function(k){
+      ['age', 'enfSouhait', 'enfA', 'enfAccepte', 'chabbat', 'cachere', 'enfants'].forEach(function(k){
         maj['participants/' + c.key + '/' + k] = null;
       });
     });
     return refSession().update(maj);
   }).then(function(){
-    journal('Soirée terminée. Âge et réponses enfants effacés de la base.');
+    journal('Soirée terminée. Réponses privées de l\u2019accueil effacées de la base.');
   }).catch(function(e){
     journal('⚠️ Fin de soirée : ' + e.message);
   });
