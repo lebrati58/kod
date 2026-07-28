@@ -183,6 +183,12 @@ input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3
 .quitter{margin-top:34px;padding-top:18px;border-top:1.5px solid var(--bord-fin);text-align:center}
 .quitter button{font-family:var(--corps);font-size:12.5px;font-weight:600;background:none;
   border:1.5px solid var(--bord-fin);border-radius:11px;padding:9px 13px;cursor:pointer;color:var(--sourd)}
+
+/* ---------- le rendez-vous (carrousel) ---------- */
+.rdv-badge{font-family:var(--data);font-size:92px;font-weight:700;color:var(--accent);
+  text-align:center;line-height:1;margin:24px 0 4px;animation:apparait .7s both}
+.rdv-sous{font-family:var(--data);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--sourd);font-weight:700;text-align:center;margin-bottom:18px}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -199,15 +205,9 @@ input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3
   <section class="ecran actif" id="eRejoindre">
     <div style="padding-top:22px">
       <p class="sur-titre">Bienvenue</p>
-      <h1>Deux chiffres, et c'est parti.</h1>
-      <p class="chapeau">Le code de la soirée est affiché sur l'écran géant.
-         Ton numéro, c'est celui de ton badge.</p>
+      <h1>Ton numéro, et c'est parti.</h1>
+      <p class="chapeau">Ton numéro, c'est celui de ton badge.</p>
 
-      <div class="champ-bloc">
-        <label for="inCode">Le code de la soirée</label>
-        <input id="inCode" class="grande-saisie" maxlength="4" autocomplete="off"
-               autocapitalize="characters" spellcheck="false" placeholder="ABCD">
-      </div>
       <div class="champ-bloc">
         <label for="inBadge">Ton numéro de badge</label>
         <input id="inBadge" class="grande-saisie" type="number" inputmode="numeric"
@@ -377,6 +377,18 @@ input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:3
     <p class="pret-note" id="pretNote"></p>
   </section>
 
+  <!-- ============ LE RENDEZ-VOUS (carrousel) ============ -->
+  <section class="ecran" id="eRdv">
+    <p class="sur-titre"><span id="rdvTour">Rendez-vous</span> <span class="chrono" id="rdvChrono"></span></p>
+    <div class="rdv-badge" id="rdvBadge">—</div>
+    <p class="rdv-sous" id="rdvSous">le badge à retrouver</p>
+    <div class="coin-tete" id="rdvCoinTete" style="padding:0">
+      <div class="coin-lettre" id="rdvLettre" style="font-size:72px"></div>
+      <div class="coin-nom" id="rdvNom"></div>
+    </div>
+    <p class="coin-phrase" id="rdvPhrase"></p>
+  </section>
+
   <!-- ============ FIN ============ -->
   <section class="ecran" id="eFin">
     <p class="sur-titre">C'est la fin</p>
@@ -455,13 +467,14 @@ var S = {
   accueilOk: false,
   sugg: null,          // suggestions/{badge} : { qId, liste }
   rencontres: {},      // rencontres/{badge} : { autre: true }
+  rdv: null,           // rdv/{badge} : { tour, avec, coin }
   coinAffiche: null,   // 'question' | 'mazal' | null
   tic: null, tic2: null, refEtat: null
 };
 var ACC = { jourMs:null, lieu:null, choix:null };
 
 var ECRANS = ['eRejoindre','eNaissance','eJeu','eDateHeb','eMazal','eCherche','eAge',
-              'eEnfSouhait','eEnfA','eEnfAccepte','eSalleAttente','eQuestion','eEnvoye','eCoin','eFin'];
+              'eEnfSouhait','eEnfA','eEnfAccepte','eSalleAttente','eQuestion','eEnvoye','eCoin','eRdv','eFin'];
 function montre(id){
   ECRANS.forEach(function(x){ el(x).classList.toggle('actif', x === id); });
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -472,7 +485,6 @@ function moiRef(){ return refSession().child('participants/' + MOI.badge); }
 /* ---------- genre : par l'URL des deux QR (?g=f / ?g=h) ---------- */
 var params = KOD.litParamsURL();
 if (params.g === 'f' || params.g === 'h') MOI.genre = params.g;
-if (params.code && /^[A-Za-z]{4}$/.test(params.code)) el('inCode').value = params.code.toUpperCase();
 
 var genreChoisi = null;
 function majGenreBoutons(){
@@ -494,11 +506,10 @@ el('bQuitter1').addEventListener('click', oublie);
 
 function rejoindre(){
   var aide = el('rejAide');
-  var code = el('inCode').value.toUpperCase().trim();
+  var code = KOD.CODE_SOIREE; /* une seule soirée : le code est figé dans l'app */
   var badge = parseInt(el('inBadge').value, 10);
   var genre = MOI.genre || genreChoisi;
   aide.className = 'aide alerte';
-  if (!/^[A-Z]{4}$/.test(code)){ aide.textContent = 'Le code fait quatre lettres — il est sur l\u2019écran géant.'; return; }
   if (!(badge >= 1 && badge <= 999)){ aide.textContent = 'Ton numéro de badge, entre 1 et 999.'; return; }
   if (genre !== 'f' && genre !== 'h'){ aide.textContent = 'Choisis « Femme » ou « Homme ».'; return; }
   aide.className = 'aide'; aide.textContent = 'Connexion…';
@@ -507,7 +518,7 @@ function rejoindre(){
   K.db.ref('sessions/' + code + '/state').once('value').then(function(snap){
     if (!snap.exists()){
       aide.className = 'aide alerte';
-      aide.textContent = 'Aucune soirée avec le code ' + code + '. Vérifie sur l\u2019écran géant.';
+      aide.textContent = 'La soirée n\u2019est pas encore ouverte — réessaie dans un instant.';
       el('bRejoindre').disabled = false;
       return;
     }
@@ -545,6 +556,11 @@ function branche(){
   refSession().child('rencontres/' + MOI.badge).on('value', function(s){
     S.rencontres = s.val() || {};
     if (el('eCoin').classList.contains('actif')) dessineNumeros();
+  });
+  /* mon rendez-vous du tour (carrousel) : la console calcule, on lit */
+  refSession().child('rdv/' + MOI.badge).on('value', function(s){
+    S.rdv = s.val();
+    if (S.etat && S.etat.phase === 'rdv') dessine();
   });
 
   S.refEtat = refSession().child('state');
@@ -801,6 +817,9 @@ function dessine(){
   /* accueil en cours : lui seul gère l'écran */
   if (!S.accueilOk) return;
 
+  /* tour de rendez-vous (carrousel) : il prime sur tout le reste */
+  if (phase === 'rdv'){ dessineRdv(); return; }
+
   if (phase === 'attente' || e.qId == null){
     /* arrivée (ou reprise) pendant une pause EN COURS de soirée :
        on l'installe dans le coin de son mazal, chaleureusement,
@@ -941,6 +960,51 @@ function enleveCoin(){
   clearInterval(S.tic2);
 }
 
+/* ---------- écran rendez-vous (carrousel) ----------
+   La console a calculé les paires ; ici on ne fait que lire
+   rdv/{badge}. Trois cas : un binôme + un coin · un tour de
+   repos (nombre impair) · arrivé pendant le tour (pas encore
+   dans le carrousel). Jamais « tu n'as personne ». */
+function dessineRdv(){
+  var e = S.etat || {};
+  enleveCoin();
+  var r = (S.rdv && S.rdv.tour === e.rdvNum) ? S.rdv : null;
+
+  el('rdvTour').textContent = 'Rendez-vous' + (e.rdvNum ? ' n°' + e.rdvNum : '');
+  function tick(){
+    var fin = (e.phaseAt || 0) + (e.dureeMs || 0);
+    var reste = (fin - K.now()) / 1000;
+    el('rdvChrono').textContent = reste > 0 ? KOD.mmss(reste) : '';
+    el('rdvChrono').classList.toggle('chaud', reste > 0 && reste <= 30);
+  }
+  tick();
+  S.tic = setInterval(tick, 250);
+
+  var badge = el('rdvBadge'), sous = el('rdvSous'),
+      tete = el('rdvCoinTete'), phrase = el('rdvPhrase');
+
+  if (r && r.avec != null && COINS[r.coin]){
+    var c = COINS[r.coin];
+    document.body.className = 'encoin';
+    document.body.style.setProperty('--teinte', c.doux);
+    badge.style.display = ''; sous.style.display = ''; tete.style.display = '';
+    badge.textContent = String(r.avec).padStart(2,'0');
+    el('rdvLettre').style.setProperty('--coin', c.c);
+    el('rdvLettre').textContent = r.coin;
+    el('rdvNom').style.setProperty('--coin', c.c);
+    el('rdvNom').textContent = c.nom;
+    phrase.innerHTML = 'Retrouvez-vous au coin <b>' + r.coin + '</b>.<br>Ce tour est rien que pour vous deux.';
+  } else if (r){
+    /* face au fantôme : tour de repos — jamais deux fois la même personne */
+    badge.style.display = 'none'; sous.style.display = 'none'; tete.style.display = 'none';
+    phrase.textContent = 'Ce tour-ci, tu es libre : va au bar, souffle un peu. Au prochain tour, c\u2019est reparti.';
+  } else {
+    badge.style.display = 'none'; sous.style.display = 'none'; tete.style.display = 'none';
+    phrase.textContent = 'Un tour de rendez-vous est en cours. Tu seras de la partie au prochain tour.';
+  }
+  montre('eRdv');
+}
+
 /* les cinq numéros : la console les calcule, on ne fait que les lire.
    Jamais d'âge, jamais d'enfants, jamais de critère — nulle part. */
 var MOTS = ['','Une personne ici a répondu comme toi',
@@ -1068,10 +1132,11 @@ function dessinePret(){
 if (K){
   var connu = null;
   try { connu = JSON.parse(localStorage.getItem('kodMoi') || 'null'); } catch(e){}
-  if (connu && /^[A-Z]{4}$/.test(connu.code || '') &&
+  if (connu &&
       connu.badge >= 1 && connu.badge <= 999 &&
       (connu.genre === 'f' || connu.genre === 'h')){
     MOI = connu;
+    MOI.code = KOD.CODE_SOIREE; /* une seule soirée : on écrase un éventuel vieux code */
     if (MOI.mazal === undefined) MOI.mazal = null;
     branche(); /* on retrouve l'état exact, accueil compris, sans rien redemander */
   } else if (!MOI.genre){

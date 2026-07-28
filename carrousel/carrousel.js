@@ -9,7 +9,15 @@
  * Nombre impair : on ajoute un participant fantôme. Celui qui tombe en face
  * de lui se repose ce tour-ci — et grâce au carrousel, ce n'est jamais deux
  * fois la même personne.
+ *
+ * Chargeable dans le navigateur (window.KOD_CARROUSEL) et dans Node
+ * (module.exports) : le même code est testé en Node et exécuté le soir J.
  */
+(function (racine, fabrique) {
+  if (typeof module === "object" && module.exports) module.exports = fabrique();
+  else racine.KOD_CARROUSEL = fabrique();
+})(typeof self !== "undefined" ? self : this, function () {
+"use strict";
 
 const REPOS = null; // le fantôme
 
@@ -99,4 +107,5 @@ function prochainePaires(carrousel, rotation, dejaVues) {
   return best;
 }
 
-module.exports = { creerCarrousel, pairesDe, repartirEnCoins, ajouterArrivants, prochainePaires, COINS };
+return { creerCarrousel, pairesDe, repartirEnCoins, ajouterArrivants, prochainePaires, COINS };
+});

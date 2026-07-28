@@ -85,20 +85,11 @@ body{background:var(--fond);color:var(--encre);font-family:var(--corps);
 
 <div class="coin-code" id="coinCode"></div>
 
-<!-- saisie du code (si pas de ?code=XXXX dans l'URL) -->
-<section class="scene actif saisie" id="sSaisie">
-  <div class="marque"><span class="c">❤️</span> Kod — écran géant</div>
-  <input id="inCode" maxlength="4" autocomplete="off" autocapitalize="characters"
-         spellcheck="false" placeholder="CODE" aria-label="Code de la soirée">
-  <button id="bBrancher">Brancher l'écran</button>
-  <p class="err" id="errCode"></p>
-</section>
-
 <!-- attente -->
-<section class="scene" id="sAttente">
+<section class="scene actif" id="sAttente">
   <div class="marque"><span class="c">❤️</span> Kod</div>
-  <div class="gros-code" id="grosCode"></div>
-  <p class="sous">Scanne ton QR code à l'entrée, entre ce code et ton numéro de badge.<br>Ça commence bientôt.</p>
+  <div class="gros-code" style="font-size:22vmin">❤️</div>
+  <p class="sous">Scanne ton QR code à l'entrée et entre ton numéro de badge.<br>Ça commence bientôt.</p>
 </section>
 
 <!-- question -->
@@ -120,6 +111,13 @@ body{background:var(--fond);color:var(--encre);font-family:var(--corps);
   <p class="m-phrase">Regardez votre téléphone.<br>Vous avez une lettre.</p>
   <div class="m-compte" id="mCompte">60</div>
   <div class="m-lettres" id="mLettres"></div>
+</section>
+
+<!-- rendez-vous (carrousel) -->
+<section class="scene" id="sRdv">
+  <p class="m-phrase">Rendez-vous en tête-à-tête.<br>Regardez votre téléphone : un numéro vous attend dans un coin.</p>
+  <div class="m-compte" id="rdvCompte" style="font-size:22vmin">5:00</div>
+  <div class="m-lettres" id="rdvLettres"></div>
 </section>
 
 <!-- fin -->
@@ -157,7 +155,7 @@ var S = {
   raf: null, tic: null
 };
 
-var SCENES = ['sSaisie','sAttente','sQuestion','sResultats','sMigration','sFin'];
+var SCENES = ['sAttente','sQuestion','sResultats','sMigration','sRdv','sFin'];
 function scene(id){
   SCENES.forEach(function(x){ el(x).classList.toggle('actif', x === id); });
 }
@@ -165,8 +163,6 @@ function scene(id){
 /* ---------- branchement ---------- */
 function branche(code){
   S.code = code;
-  el('coinCode').textContent = code;
-  try { localStorage.setItem('kodEcran', code); } catch(e){}
   K.db.ref('sessions/' + code + '/state').on('value', function(snap){
     S.etat = snap.val() || {};
     surEtat();
@@ -193,10 +189,16 @@ function surEtat(){
   if (e.qId != null && e.qId !== S.qIdEcoute) ecouteReponses(e.qId);
 
   if (phase === 'fin'){ scene('sFin'); return; }
+  /* le tour de rendez-vous prime : il peut arriver même sans question */
+  if (phase === 'rdv'){
+    el('rdvLettres').innerHTML = LET.map(function(l){
+      return '<span style="color:' + COINS[l].c + '">' + l + '</span>';
+    }).join('');
+    scene('sRdv'); return;
+  }
   /* la première migration (par le mazal) n'a pas de question : q est nul,
      mais le compte à rebours plein écran doit tourner quand même */
   if (phase === 'attente' || e.qId == null || (!e.q && phase !== 'migration')){
-    el('grosCode').textContent = S.code;
     scene('sAttente'); return;
   }
   if (phase === 'question'){
@@ -286,39 +288,15 @@ function chrono(){
     el('qChrono').classList.toggle('chaud', reste <= 10);
   } else if (e.phase === 'migration'){
     el('mCompte').textContent = String(Math.max(0, Math.ceil(reste)));
+  } else if (e.phase === 'rdv'){
+    el('rdvCompte').textContent = KOD.mmss(reste);
   }
 }
 
-/* ---------- démarrage ---------- */
-function tenter(code){
-  code = (code || '').toUpperCase().trim();
-  if (!/^[A-Z]{4}$/.test(code)){
-    el('errCode').textContent = 'Le code fait quatre lettres.';
-    return;
-  }
-  K.db.ref('sessions/' + code + '/state').once('value').then(function(snap){
-    if (!snap.exists()){
-      el('errCode').textContent = 'Aucune soirée avec le code ' + code + '.';
-      return;
-    }
-    branche(code);
-  });
-}
-el('bBrancher').addEventListener('click', function(){ tenter(el('inCode').value); });
-el('inCode').addEventListener('keydown', function(ev){
-  if (ev.key === 'Enter') tenter(el('inCode').value);
-});
-
-if (K){
-  var p = KOD.litParamsURL();
-  var code = (p.code || '').toUpperCase();
-  if (!/^[A-Z]{4}$/.test(code)){
-    try { code = localStorage.getItem('kodEcran') || ''; } catch(e){ code = ''; }
-  }
-  if (/^[A-Z]{4}$/.test(code)) tenter(code);
-} else {
-  el('bBrancher').disabled = true;
-}
+/* ---------- démarrage : une seule soirée, code figé dans l'app ----------
+   On se branche directement : si la console n'a pas encore ouvert la
+   soirée, l'écran d'attente s'affiche et tout arrive tout seul. */
+if (K) branche(KOD.CODE_SOIREE);
 })();
 </script>
 </body>

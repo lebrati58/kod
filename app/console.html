@@ -142,19 +142,11 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <div class="pastille-etat" id="etat">console</div>
   </header>
 
-  <!-- ============ ENTRÉE : créer ou reprendre une soirée ============ -->
+  <!-- ============ ENTRÉE : connexion automatique à LA soirée ============ -->
   <section class="ecran actif entree" id="eEntree">
     <h1>La console de la soirée.</h1>
-    <p>Crée une soirée : un code de quatre lettres apparaît. C'est lui que l'écran géant et la page de
-       test utilisent. Les participants, eux, passent par les deux QR codes.</p>
-    <label for="inEcart">Écart d'âge maximum entre deux personnes suggérées (99 = désactivé)</label>
-    <input id="inEcart" class="petit" type="number" inputmode="numeric" min="1" max="99" value="10"
-           aria-label="Écart d'âge maximum">
-    <button class="plein large" id="bCreer" style="width:100%">Créer une soirée</button>
-    <p class="ou">— ou reprendre une soirée existante —</p>
-    <input id="codeEntree" maxlength="4" autocomplete="off" autocapitalize="characters"
-           spellcheck="false" placeholder="CODE" aria-label="Code de la soirée">
-    <button class="large" id="bReprendre" style="width:100%">Reprendre cette soirée</button>
+    <p>L'app est faite pour cette soirée : rien à créer, rien à saisir.
+       Connexion en cours…</p>
     <p class="aide" id="entreeAide"></p>
   </section>
 
@@ -196,6 +188,12 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
       <button class="mini-btn" id="bResultats" disabled>Afficher résultats</button>
       <button class="mini-btn" id="bMigration" disabled>Lancer la migration</button>
       <button class="mini-btn" id="bAttente" disabled>Écran d'attente</button>
+      <button class="large mini-btn" id="bRdv" disabled>🎠 Rendez-vous en tête-à-tête (5 min)</button>
+    </div>
+
+    <div class="msg" id="blocRdv" style="display:none">
+      <h2>Carrousel <b id="rdvEtat"></b></h2>
+      <div class="pret-note" id="rdvNote"></div>
     </div>
 
     <div class="msg">
@@ -247,6 +245,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 <script src="config.js"></script>
 <script src="commun.js"></script>
 <script src="suggestions.js"></script>
+<script src="../carrousel/carrousel.js"></script>
+<script src="rdv.js"></script>
 <script>
 (function(){
 "use strict";
@@ -474,7 +474,7 @@ function majBandeau(){
   if (e && e.phase === 'question' && e.phaseAt && e.dureeMs){
     var reste = (e.phaseAt + e.dureeMs - K.now())/1000;
     el('bTemps').textContent = reste > 0 ? Math.ceil(reste) + 's' : 'fini';
-  } else if (e && e.phase === 'migration' && e.phaseAt && e.dureeMs){
+  } else if (e && (e.phase === 'migration' || e.phase === 'rdv') && e.phaseAt && e.dureeMs){
     var r2 = (e.phaseAt + e.dureeMs - K.now())/1000;
     el('bTemps').textContent = r2 > 0 ? KOD.mmss(r2) : 'libre';
   } else el('bTemps').textContent = e && e.phase === 'resultats' ? 'libre' : '—';
@@ -485,7 +485,6 @@ function refSession(){ return K.db.ref('sessions/' + S.code); }
 
 function attache(code){
   S.code = code;
-  try { localStorage.setItem('kodConsole', code); } catch(e){}
   el('codeSession').textContent = code;
   el('codeSession').style.display = 'inline-block';
   montre('ePilotage');
@@ -509,6 +508,19 @@ function attache(code){
     S.arriveesInit = true;
     majBandeau(); verifieEquilibre();
   });
+  refSession().child('carrousel').on('value', function(snap){
+    var c = snap.val() || {};
+    var inscrits = (c.ordre || []).length;
+    var jouees = Object.keys(c.dejaVues || {}).length;
+    var box = el('blocRdv');
+    if (!inscrits){ box.style.display = 'none'; return; }
+    box.style.display = 'block';
+    el('rdvEtat').textContent = inscrits + ' inscrits';
+    el('rdvNote').textContent = jouees + ' paire' + (jouees > 1 ? 's' : '') +
+      ' d\u00e9j\u00e0 jou\u00e9e' + (jouees > 1 ? 's' : '') +
+      ' \u00b7 chacun peut rencontrer tout le monde en ' + Math.max(1, inscrits - 1) +
+      ' tours, sans jamais revoir la m\u00eame personne.';
+  });
   clearInterval(S.tic);
   S.tic = setInterval(majBandeau, 500);
 }
@@ -522,15 +534,17 @@ function surEtat(){
   var e = S.etat;
   var phase = e.phase || 'attente';
   var libelles = { attente:'salle en attente', question:'question en cours',
-    resultats:'résultats à l\u2019écran', migration:'discussion dans les coins', fin:'soirée terminée' };
+    resultats:'résultats à l\u2019écran', migration:'discussion dans les coins',
+    rdv:'rendez-vous en cours', fin:'soirée terminée' };
   setEtat(libelles[phase] || phase);
 
-  ['bPlus'].forEach(function(b){ el(b).disabled = phase !== 'question'; });
+  ['bPlus'].forEach(function(b){ el(b).disabled = (phase !== 'question' && phase !== 'rdv'); });
   el('bResultats').disabled = !(phase === 'question');
   el('bMigration').disabled = !(phase === 'question' || phase === 'resultats');
   el('bAttente').disabled = (phase === 'attente');
   /* la première migration ne se lance qu'une fois, avant toute question */
   el('bMazal').disabled = (e.qId != null || phase === 'fin');
+  el('bRdv').disabled = (!S.code || phase === 'fin' || phase === 'question');
   el('bRecalc').disabled = (phase !== 'migration' || e.qId == null);
   el('bFin').disabled = (phase === 'fin');
 
@@ -633,50 +647,89 @@ function litEcart(id){
   if (!(v >= 1 && v <= 99)) return null;
   return v;
 }
-function creerSoiree(){
+function refFor(code){ return K.db.ref('sessions/' + code); }
+
+/* LA soirée : code figé dans commun.js. La console la crée au premier
+   lancement, puis s'y rebranche telle quelle à chaque ouverture. */
+function demarrer(){
   if (!K) return;
-  var code = KOD.codeAleatoire();
-  var ecart = litEcart('inEcart');
-  if (ecart === null){
-    el('entreeAide').textContent = 'L\u2019écart d\u2019âge est un nombre entre 1 et 99 (99 = désactivé).';
-    el('entreeAide').className = 'aide alerte';
-    return;
-  }
-  S.ecart = ecart;
-  refFor(code).child('state').set({
-    phase: 'attente',
-    qId: null, qNum: 0, q: null,
-    phaseAt: K.TS, dureeMs: null,
-    msgEcran: null,
-    ecartAge: ecart,
-    createdAt: K.TS
-  }).then(function(){
-    attache(code);
-    journal('Soirée créée. Code : ' + code + ' · écart d\u2019âge max ' +
-      (ecart >= 99 ? 'désactivé' : ecart + ' ans') + '.');
+  var code = KOD.CODE_SOIREE;
+  refFor(code).child('state').once('value').then(function(snap){
+    if (snap.exists()){
+      attache(code);
+      journal('Console rebranchée sur la soirée.');
+      return;
+    }
+    return refFor(code).child('state').set({
+      phase: 'attente',
+      qId: null, qNum: 0, q: null,
+      phaseAt: K.TS, dureeMs: null,
+      msgEcran: null,
+      ecartAge: S.ecart,
+      createdAt: K.TS
+    }).then(function(){
+      attache(code);
+      journal('Soirée prête · écart d\u2019âge max ' + S.ecart + ' ans (modifiable ci-dessous).');
+    });
   }).catch(function(e){
-    el('entreeAide').textContent = 'Écriture refusée : ' + e.message;
+    el('entreeAide').textContent = 'Connexion impossible : ' + e.message + ' — recharge la page.';
     el('entreeAide').className = 'aide alerte';
   });
 }
-function refFor(code){ return K.db.ref('sessions/' + code); }
 
-function reprendre(code){
-  if (!K) return;
-  code = (code||'').toUpperCase().trim();
-  if (!/^[A-Z]{4}$/.test(code)){
-    el('entreeAide').textContent = 'Le code fait quatre lettres.';
-    el('entreeAide').className = 'aide alerte';
-    return;
-  }
-  refFor(code).child('state').once('value').then(function(snap){
-    if (!snap.exists()){
-      el('entreeAide').textContent = 'Aucune soirée avec le code ' + code + '.';
-      el('entreeAide').className = 'aide alerte';
-      return;
-    }
-    attache(code);
-    journal('Console rebranchée sur la soirée ' + code + '.');
+/* ------------------------------------------------------------
+   Le tour de rendez-vous — carrousel déterministe, zéro répétition.
+   La console calcule tout et écrit en base : chaque téléphone lit
+   rdv/{badge} → « retrouve le badge N au coin X ». Celui qui tombe
+   face au fantôme (nombre impair) se repose — jamais deux fois le même.
+   ------------------------------------------------------------ */
+function lancerRdv(){
+  if (!S.code) return;
+  Promise.all([
+    refSession().child('participants').once('value'),
+    refSession().child('carrousel').once('value')
+  ]).then(function(r){
+    /* présents = en ligne, ou vus il y a moins de 10 minutes
+       (un téléphone verrouillé n\u2019est pas quelqu\u2019un qui est parti) */
+    var maintenant = K.now(), presents = [];
+    r[0].forEach(function(c){
+      var p = c.val() || {};
+      if (p.online === true ||
+          (typeof p.lastSeen === 'number' && maintenant - p.lastSeen < 10*60*1000))
+        presents.push(Number(c.key));
+    });
+    var car = r[1].val() || {};
+    var res = KOD_RDV.calculeTour({
+      ordre: car.ordre || null,
+      rotation: car.rotation || 0,
+      dejaVues: car.dejaVues || {},
+      presents: presents
+    });
+    if (!res){ journal('⚠️ Pas assez de monde pour un rendez-vous (2 minimum).'); return; }
+    var num = ((S.etat && S.etat.rdvNum) || 0) + 1;
+    var maj = {
+      'state/phase': 'rdv',
+      'state/rdvNum': num,
+      'state/migration': null,
+      'state/phaseAt': K.TS,
+      'state/dureeMs': KOD.DUREES.RDV * 1000,
+      'carrousel/ordre': res.ordre,
+      'carrousel/rotation': res.rotation
+    };
+    res.coins.forEach(function(pc){
+      var a = pc.paire[0], b = pc.paire[1];
+      maj['rdv/' + a] = { tour: num, avec: b, coin: pc.coin };
+      maj['rdv/' + b] = { tour: num, avec: a, coin: pc.coin };
+      maj['carrousel/dejaVues/' + KOD_RDV.cle(a, b)] = true;
+    });
+    if (res.repos != null) maj['rdv/' + res.repos] = { tour: num };
+    return refSession().update(maj).then(function(){
+      journal('Rendez-vous n°' + num + ' : ' + res.paires.length + ' paires' +
+        (res.repos != null ? ' · le badge ' + res.repos + ' se repose' : '') +
+        (res.nouveaux.length ? ' · ' + res.nouveaux.length + ' nouveau(x) dans le carrousel' : '') + '.');
+    });
+  }).catch(function(e){
+    journal('⚠️ Rendez-vous impossible : ' + e.message);
   });
 }
 
@@ -840,17 +893,13 @@ function effacerMessage(){
 }
 
 /* ---------- branchements ---------- */
-el('bCreer').addEventListener('click', creerSoiree);
-el('bReprendre').addEventListener('click', function(){ reprendre(el('codeEntree').value); });
-el('codeEntree').addEventListener('keydown', function(ev){
-  if (ev.key === 'Enter') reprendre(el('codeEntree').value);
-});
 el('bLancer').addEventListener('click', lancerQuestion);
 el('bPlus').addEventListener('click', plusDeuxMinutes);
 el('bResultats').addEventListener('click', afficherResultats);
 el('bMigration').addEventListener('click', lancerMigration);
 el('bAttente').addEventListener('click', ecranAttente);
 el('bMazal').addEventListener('click', lancerMigrationMazal);
+el('bRdv').addEventListener('click', lancerRdv);
 el('bEcart').addEventListener('click', appliquerEcart);
 el('bRecalc').addEventListener('click', recalculer);
 el('bFin').addEventListener('click', terminerSoiree);
@@ -865,19 +914,7 @@ el('bFermerPanneau').addEventListener('click', function(){
 chargeQuestions().then(function(){
   S.selId = prochaineConseillee();
   afficheSelection();
-  if (!K){
-    el('bCreer').disabled = true;
-    el('bReprendre').disabled = true;
-    return;
-  }
-  /* la console reprend sa soirée si l'onglet a été fermé */
-  var sauve = null;
-  try { sauve = localStorage.getItem('kodConsole'); } catch(e){}
-  if (sauve && /^[A-Z]{4}$/.test(sauve)){
-    el('codeEntree').value = sauve;
-    el('entreeAide').textContent = 'Dernière soirée : ' + sauve + ' — « Reprendre » pour la retrouver.';
-    el('entreeAide').className = 'aide';
-  }
+  demarrer(); /* code figé : la console crée ou reprend LA soirée toute seule */
 });
 })();
 </script>

@@ -92,7 +92,7 @@ Une fois le site en ligne sur GitHub Pages (une ou deux minutes après le push) 
 
 1. Ouvre **https://lebrati58.github.io/kod/app/console.html** sur ton téléphone.
    - Si un bandeau rouge « Configuration Firebase manquante » s'affiche → l'étape 5 n'est pas bonne, revérifie `app/config.js`.
-2. Appuie sur **« Créer une soirée »** → un code de 4 lettres apparaît en haut. 🎉 La base répond.
+2. La console se branche toute seule sur LA soirée (code figé dans l'app, rien à saisir). 🎉 Si le pilotage apparaît, la base répond.
 3. Ouvre **https://lebrati58.github.io/kod/app/ecran.html** sur un ordinateur, entre le code → l'écran affiche « Kod » et le code en géant.
 4. Ouvre **https://lebrati58.github.io/kod/app/participant.html?g=f** sur un autre téléphone, entre le code et un numéro de badge (par exemple 34) → sur la console, le compteur « connectés » passe à 1.
 5. Depuis la console, choisis une question et **« Lancer »** → elle apparaît dans la seconde sur le téléphone participant et sur l'écran géant, avec le même chronomètre partout.

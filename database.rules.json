@@ -10,11 +10,13 @@
         ".validate": "$code.matches(/^[A-Z]{4}$/)",
 
         "state": {
-          "phase": { ".validate": "newData.isString() && newData.val().matches(/^(attente|question|resultats|migration|fin)$/)" },
+          "phase": { ".validate": "newData.isString() && newData.val().matches(/^(attente|question|resultats|migration|rdv|fin)$/)" },
           "qId": { ".validate": "newData.isNumber()" },
           "migration": { ".validate": "newData.isString() && newData.val() == 'mazal'" },
           "ecartAge": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 99" },
           "qNum": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99" },
+          "rdvNum": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 999" },
+          "tourLanceA": { ".validate": "newData.isNumber()" },
           "phaseAt": { ".validate": "newData.isNumber()" },
           "dureeMs": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3600000" },
           "createdAt": { ".validate": "newData.isNumber()" },
@@ -98,6 +100,27 @@
         "prets": {
           "$qId": {
             "$badge": { ".validate": "$badge.matches(/^[0-9]{1,4}$/) && newData.isBoolean()" }
+          }
+        },
+
+        "carrousel": {
+          "ordre": {
+            "$i": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 9999" }
+          },
+          "rotation": { ".validate": "newData.isNumber() && newData.val() >= 0" },
+          "dejaVues": {
+            "$paire": { ".validate": "$paire.matches(/^[0-9]{1,4}-[0-9]{1,4}$/) && newData.isBoolean()" }
+          },
+          "$autre": { ".validate": false }
+        },
+
+        "rdv": {
+          "$badge": {
+            ".validate": "$badge.matches(/^[0-9]{1,4}$/)",
+            "tour": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 999" },
+            "avec": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 9999" },
+            "coin": { ".validate": "newData.isString() && (newData.val() == 'א' || newData.val() == 'ב' || newData.val() == 'ג' || newData.val() == 'ד')" },
+            "$autre": { ".validate": false }
           }
         },
 

@@ -13,6 +13,12 @@
 window.KOD = (function () {
   "use strict";
 
+  /* ---------- LA soirée ----------
+     L'app est faite pour une seule soirée : le code est figé ici.
+     Personne n'a rien à saisir — ni console, ni écran, ni participants.
+     (S'il y a une autre soirée un jour, on changera cette constante.) */
+  var CODE_SOIREE = "AHAV";
+
   /* ---------- les quatre coins ---------- */
   var LETTRES = ["א", "ב", "ג", "ד"];
   var COINS = {
@@ -26,6 +32,7 @@ window.KOD = (function () {
   var DUREES = {
     QUESTION: 45,      // fenêtre de réponse
     MIGRATION: 60,     // compte à rebours plein écran
+    RDV: 300,          // rendez-vous en tête-à-tête (5 min, prolongeable)
     PRET_PLANCHER: 180 // bouton « prêt » grisé
   };
   var SEUIL_PRET = 0.60; // 60 % de prêts dans un coin → alerte console
@@ -133,6 +140,7 @@ window.KOD = (function () {
   }
 
   return {
+    CODE_SOIREE: CODE_SOIREE,
     LETTRES: LETTRES,
     COINS: COINS,
     DUREES: DUREES,
